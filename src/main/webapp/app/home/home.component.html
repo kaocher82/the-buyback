@@ -1,0 +1,16 @@
+<div class="row">
+    <div class="col-md-2">
+
+    </div>
+    <div class="col-md-10">
+        <h1 class="display-4">Welcome, Braveling!</h1>
+
+        <div *ngIf="!isAuthenticated()">
+            Redirecting...
+        </div>
+
+        <div *ngIf="isAuthenticated()">
+            Signed in.
+        </div>
+    </div>
+</div>
