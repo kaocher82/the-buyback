@@ -54,11 +54,6 @@ public class ContractParser {
         this.typeNameService = typeNameService;
     }
 
-    @PostConstruct
-    public void init() throws UnirestException {
-        loadNonCompletedContracts();
-    }
-
     @Scheduled(cron = "0 */30 * * * *")
     @Async
     @Timed
