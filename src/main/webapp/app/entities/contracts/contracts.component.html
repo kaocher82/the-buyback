@@ -1,0 +1,24 @@
+<div *ngIf="contracts" class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Client</th>
+            <th>Created</th>
+            <th>Price</th>
+            <th>Jita Buy</th>
+            <th>Ratio</th>
+            <th>Jita Buy 90%</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let contract of contracts">
+            <td>{{contract.client}}</td>
+            <td>{{contract.created | date:'medium'}}</td>
+            <td>{{contract.price | number:'1.0-0'}} ISK</td>
+            <td>{{contract.jitaBuy | number:'1.0-0'}} ISK</td>
+            <td>{{(contract.price / contract.jitaBuy) * 100  | number:'1.0-0'}} %</td>
+            <td>{{contract.jitaBuy * 0.9  | number:'1.0-0'}} ISK</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

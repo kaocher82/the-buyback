@@ -3,6 +3,7 @@ package com.thebuyback.eve.web.rest;
 import com.thebuyback.eve.domain.Appraisal;
 import com.codahale.metrics.annotation.Timed;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.thebuyback.eve.service.AppraisalUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

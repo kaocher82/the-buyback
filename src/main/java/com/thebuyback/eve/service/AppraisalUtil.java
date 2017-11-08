@@ -1,4 +1,4 @@
-package com.thebuyback.eve.web.rest;
+package com.thebuyback.eve.service;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,14 +17,17 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class AppraisalUtil {
+public class AppraisalUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(AppraisalUtil.class);
 
     private AppraisalUtil() {
     }
 
-    static String getLinkFromRaw(String raw) throws UnirestException {
+    public static String getLinkFromRaw(String raw) throws UnirestException {
+        if (raw.isEmpty()) {
+            return null;
+        }
         HttpResponse<String> stringHttpResponse = Unirest.post("http://evepraisal.com/appraisal")
                                                          .field("raw_textarea", raw)
                                                          .field("market", "jita")
@@ -35,7 +38,7 @@ class AppraisalUtil {
         return "http://evepraisal.com/a/" + listingId;
     }
 
-    static double getBuy(final String appraisalLink) throws UnirestException {
+    public static double getBuy(final String appraisalLink) throws UnirestException {
         String url = appraisalLink + ".json";
         HttpResponse<JsonNode> jsonResponse = Unirest.get(url).asJson();
         double sell = 0;
@@ -47,7 +50,7 @@ class AppraisalUtil {
         return sell;
     }
 
-    static List<ItemWithQuantity> getItems(final String appraisalLink) throws UnirestException {
+    public static List<ItemWithQuantity> getItems(final String appraisalLink) throws UnirestException {
         List<ItemWithQuantity> result = new ArrayList<>();
         HttpResponse<JsonNode> jsonResponse = Unirest.get(appraisalLink + ".json").asJson();
         JSONObject body = jsonResponse.getBody().getObject();
@@ -62,5 +65,17 @@ class AppraisalUtil {
         return result.stream()
             .sorted(Comparator.comparing(ItemWithQuantity::getTypeName))
             .collect(Collectors.toList());
+    }
+
+    static double getSell(final String appraisalLink) throws UnirestException {
+        String url = appraisalLink + ".json";
+        HttpResponse<JsonNode> jsonResponse = Unirest.get(url).asJson();
+        double sell = 0;
+        try {
+            sell = jsonResponse.getBody().getObject().getJSONObject("totals").getDouble("sell");
+        } catch (JSONException e) {
+            LOG.warn("an exception occurred", e);
+        }
+        return sell;
     }
 }

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { JhiEventManager } from 'ng-jhipster';
 
 import { Account, Principal } from '../shared';
-import {Http} from "@angular/http";
 import {Router} from "@angular/router";
 
 @Component({
@@ -20,12 +19,22 @@ export class HomeComponent implements OnInit {
         private eventManager: JhiEventManager,
         private router: Router
     ) {
-        this.router.navigate(["/the-buyback"]);
     }
 
     ngOnInit() {
         this.principal.identity().then((account) => {
             this.account = account;
+            if (!account) {
+                this.router.navigate(['/the-buyback']);
+            } else {
+                if (this.account.authorities.indexOf('ROLE_MANAGER') !== -1) {
+                    this.router.navigate(['/contracts']);
+                } else {
+                    this.router.navigate(['/the-buyback']);
+                }
+            }
+
+            // if (this.account.authorities.indexOf('ROLE_MANAGER'))
         });
         this.registerAuthenticationSuccess();
     }

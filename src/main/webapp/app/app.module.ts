@@ -26,6 +26,7 @@ import {
 } from './layouts';
 import {SsoComponent} from "./layouts/callback/sso.component";
 import {TheBuybackTheBuybackModule} from "./the-buyback/the-buyback.module";
+import {LoginComponent} from "./layouts/login/login.component";
 
 @NgModule({
     imports: [
@@ -46,7 +47,8 @@ import {TheBuybackTheBuybackModule} from "./the-buyback/the-buyback.module";
         ErrorComponent,
         PageRibbonComponent,
         FooterComponent,
-        SsoComponent
+        SsoComponent,
+        LoginComponent
     ],
     providers: [
         ProfileService,
