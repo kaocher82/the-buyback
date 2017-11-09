@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 @SuppressWarnings("unused")
 @Repository
 public interface ContractRepository extends MongoRepository<Contract,String> {
-    Optional<Contract> findByContractId(long contractId);
-
     List<Contract> findAllByStatusAndAssigneeId(String status, long assigneeId);
+    Optional<Contract> findById(long contractId);
 }

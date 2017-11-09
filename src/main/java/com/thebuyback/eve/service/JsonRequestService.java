@@ -11,6 +11,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.BaseRequest;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.body.MultipartBody;
+import com.mashape.unirest.request.body.RequestBodyEntity;
 import com.thebuyback.eve.domain.Token;
 
 import org.json.JSONObject;
@@ -23,7 +24,9 @@ public class JsonRequestService {
 
     private static final String WRONG_STATUS_CODE = "{} returned status code {}.";
     private static final String UNIREST_EXCEPTION = "Failed to get data from url={}";
+    private static final String BODY_TEMPLATE = "{\"recipients\": [{\"recipient_type\": \"character\",\"recipient_id\": %d}],\"subject\": \"The Buyback - Wrong contract price\",\"body\": \"%s\", \"approved_cost\": 100000}";
     private static final long CORPORATION = 98503372L;
+    private static final long MAIL_CHAR = 93475128L;
     private static final String ESI_BASE_URL = "https://esi.tech.ccp.is";
     private final Logger log = LoggerFactory.getLogger(getClass());
     private Map<String, String> defaultHeaders;
@@ -46,7 +49,7 @@ public class JsonRequestService {
         return executeRequest(getRequest);
     }
 
-    String getAccessToken(final Token token) throws UnirestException {
+    public String getAccessToken(final Token token) throws UnirestException {
         HttpResponse<JsonNode> response = Unirest.post("https://login.eveonline.com/oauth/token")
                                                  .headers(defaultHeaders)
                                                  .field("grant_type","refresh_token")
@@ -106,6 +109,10 @@ public class JsonRequestService {
         return Unirest.post(url).basicAuth(username, password).headers(defaultHeaders).headers(headers).fields(fields);
     }
 
+    RequestBodyEntity post(final String url, final String body) {
+        return Unirest.post(url).body(body);
+    }
+
     Optional<JsonNode> getCorpContracts(final String accessToken) {
         return justGet(String.format("%s/v1/corporations/%d/contracts/?token=%s", ESI_BASE_URL, CORPORATION, accessToken));
     }
@@ -116,5 +123,22 @@ public class JsonRequestService {
 
     Optional<JsonNode> getCharacterName(final long characterId) {
         return justGet(String.format("%s/v1/characters/names/?character_ids=%d", ESI_BASE_URL, characterId));
+    }
+
+    public Optional<String> sendMail(final long issuerId, final String mail, final String accessToken) {
+        final String body = String.format(BODY_TEMPLATE, issuerId, mail);
+        RequestBodyEntity request = post(ESI_BASE_URL + String.format("/v1/characters/%d/mail/?token=%s", MAIL_CHAR, accessToken), body);
+
+        try {
+            HttpResponse<String> response = request.asString();
+            if (response.getStatus() != 201) {
+                log.warn(WRONG_STATUS_CODE, request.getHttpRequest().getUrl(), response.getStatus());
+                return Optional.empty();
+            }
+            return Optional.of(response.getBody());
+        } catch (UnirestException e) {
+            log.error(UNIREST_EXCEPTION, request.getHttpRequest().getUrl(), e);
+            return Optional.empty();
+        }
     }
 }

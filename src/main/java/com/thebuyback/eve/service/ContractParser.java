@@ -37,7 +37,7 @@ public class ContractParser {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private static final String PARSER_CLIENT = "e072368e841242288618e4c718dc6c5c";
+    public static final String PARSER_CLIENT = "e072368e841242288618e4c718dc6c5c";
 
     private final JsonRequestService requestService;
     private final TokenRepository tokenRepository;
@@ -68,7 +68,7 @@ public class ContractParser {
                 long contractId = jsonContract.getLong("contract_id");
                 long issuerId = jsonContract.getLong("issuer_id");
 
-                final Optional<Contract> optional = contractRepository.findByContractId(contractId);
+                final Optional<Contract> optional = contractRepository.findById(contractId);
                 String appraisalLink;
                 double buyValue = 0.0;
                 double sellValue = 0.0;

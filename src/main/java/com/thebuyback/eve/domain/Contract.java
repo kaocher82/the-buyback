@@ -14,7 +14,7 @@ import org.springframework.data.annotation.Id;
  */
 public class Contract {
     @Id
-    private long contractId;
+    private long id;
     private long issuerId;
     private long issuerCorporationId;
     private long assigneeId;
@@ -29,16 +29,17 @@ public class Contract {
     private Instant dateIssued;
     private Instant dateCompleted;
     private String client;
+    private boolean declineMailSent;
 
     public Contract() {
     }
 
-    public Contract(final long contractId, final long issuerId, final long issuerCorporationId,
+    public Contract(final long id, final long issuerId, final long issuerCorporationId,
                     final long assigneeId, final String status, final long startLocationId,
                     final double price, final Map<Integer, Integer> items, final String appraisalLink,
                     final double buyValue, final double sellValue, final String title,
                     final Instant dateIssued, final Instant dateCompleted, final String client) {
-        this.contractId = contractId;
+        this.id = id;
         this.issuerId = issuerId;
         this.issuerCorporationId = issuerCorporationId;
         this.assigneeId = assigneeId;
@@ -53,6 +54,14 @@ public class Contract {
         this.dateIssued = dateIssued;
         this.dateCompleted = dateCompleted;
         this.client = client;
+    }
+
+    public boolean isDeclineMailSent() {
+        return declineMailSent;
+    }
+
+    public void setDeclineMailSent(final boolean declineMailSent) {
+        this.declineMailSent = declineMailSent;
     }
 
     public Instant getDateIssued() {
@@ -151,12 +160,12 @@ public class Contract {
         return price;
     }
 
-    public long getContractId() {
-        return contractId;
+    public long getId() {
+        return id;
     }
 
-    public void setContractId(final long contractId) {
-        this.contractId = contractId;
+    public void setId(final long id) {
+        this.id = id;
     }
 
     public Map<Integer, Integer> getItems() {

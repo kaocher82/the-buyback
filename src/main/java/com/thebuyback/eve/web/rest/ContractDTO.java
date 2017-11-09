@@ -14,17 +14,27 @@ public class ContractDTO {
     private Instant created;
     private double price;
     private double jitaBuy;
+    private boolean declineMailSent;
 
     public ContractDTO() {
     }
 
     public ContractDTO(final long id, final String client, final Instant created, final double price,
-                       final double jitaBuy) {
+                       final double jitaBuy, final boolean declineMailSent) {
         this.id = id;
         this.client = client;
         this.created = created;
         this.price = price;
         this.jitaBuy = jitaBuy;
+        this.declineMailSent = declineMailSent;
+    }
+
+    public boolean isDeclineMailSent() {
+        return declineMailSent;
+    }
+
+    public void setDeclineMailSent(final boolean declineMailSent) {
+        this.declineMailSent = declineMailSent;
     }
 
     public long getId() {
