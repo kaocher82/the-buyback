@@ -17,6 +17,8 @@ import com.thebuyback.eve.domain.Token;
 import com.thebuyback.eve.repository.ContractRepository;
 import com.thebuyback.eve.repository.TokenRepository;
 
+import static com.thebuyback.eve.web.rest.ContractsResource.THE_BUYBACK;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -65,8 +67,15 @@ public class ContractParser {
             JSONArray contractArray = corpContracts.get().getArray();
             for (int i = 0; i < contractArray.length(); i++) {
                 final JSONObject jsonContract = contractArray.getJSONObject(i);
+
                 long contractId = jsonContract.getLong("contract_id");
                 long issuerId = jsonContract.getLong("issuer_id");
+                long assigneeId = jsonContract.getLong("assignee_id");
+                long issuerCorporationId = jsonContract.getLong("issuer_corporation_id");
+
+                if (isAssignedToBraveCollective(assigneeId)  && !isFromTheBuyback(issuerCorporationId)) {
+                    continue;
+                }
 
                 final Optional<Contract> optional = contractRepository.findById(contractId);
                 String appraisalLink;
@@ -104,8 +113,6 @@ public class ContractParser {
                                                                             .getString("character_name"));
                 }
 
-                long issuerCorporationId = jsonContract.getLong("issuer_corporation_id");
-                long assigneeId = jsonContract.getLong("assignee_id");
                 String status = jsonContract.getString("status");
                 long startLocationId = jsonContract.getLong("start_location_id");
                 double price = jsonContract.getDouble("price");
@@ -129,6 +136,14 @@ public class ContractParser {
         } else {
             log.warn("ESI did not return any contracts.");
         }
+    }
+
+    private boolean isFromTheBuyback(final long assigneeId) {
+        return assigneeId == THE_BUYBACK;
+    }
+
+    private boolean isAssignedToBraveCollective(final long assigneeId) {
+        return assigneeId == 99003214L;
     }
 
     private String getRaw(final Map<Integer, Integer> items) {
