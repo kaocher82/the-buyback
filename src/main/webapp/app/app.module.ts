@@ -27,6 +27,8 @@ import {
 import {SsoComponent} from "./layouts/callback/sso.component";
 import {TheBuybackTheBuybackModule} from "./the-buyback/the-buyback.module";
 import {LoginComponent} from "./layouts/login/login.component";
+import {CapsOnContractComponent} from "./caps-on-contract/capsoncontract.component";
+import {AppraisalComponent} from "./appraisal/appraisal.component";
 
 @NgModule({
     imports: [

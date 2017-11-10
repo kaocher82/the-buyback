@@ -26,7 +26,7 @@ export class ContractsComponent implements OnInit {
         this.declineSuccess = false;
         this.errorMessage = null;
 
-        this.contracts.forEach(contract => {
+        this.contracts.forEach((contract) => {
             if (contract.id === contractId) {
                 contract.declineMailSent = true;
             }

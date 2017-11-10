@@ -79,64 +79,8 @@
 
     </div>
     <div class="col-md-5">
-        <div class="row">
-            <div class="col-md-12">
-                <h2>Buyback Appraisal</h2>
-                <p>Paste your loot in this box:</p>
-                <div class="form-group">
-                <textarea class="form-control"
-                      name="message"
-                      rows="10"
-                      id="field_message"
-                      [(ngModel)]="appraisal.additionalRaw"></textarea>
-                </div>
-                <button class="btn btn-primary" (click)="executeAppraisal()">Evaluate Loot</button>
-                <p>Questions? Ask Avend Avalhar, Algorthan Gaterau or Rihan Shazih on Slack.</p>
-                <span *ngIf="isLoadingAppraisal">Loading ...</span>
-                <div *ngIf="appraisal.link">
-                    <br/>
-                    <span>Buyback Price: {{appraisal.totalBuy * 0.9 | number:'1.0-0'}} ISK (90% Jita Buy)</span>
-                    <br />
-                    <span>Link: <a href="{{appraisal.link}}" target="_blank">{{appraisal.link}}</a></span>
-                    <br/>
-                    <table class="table table-striped" *ngIf="appraisal && appraisal.items" style="background-color: #eee">
-                        <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Quantity</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr *ngFor="let item of appraisal.items">
-                            <td><img src="https://image.eveonline.com/Type/{{item['typeID']}}_32.png" /> {{item['typeName']}}</td>
-                            <td>{{item['quantity'] | number:'1.0-0'}}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        <jhi-appraisal></jhi-appraisal>
         <br/>
-        <div class="row" *ngIf="capsOnContract">
-            <div class="col-md-12">
-                <h2>Sexy Caps</h2>
-                <p>Grab one from the public contracts in GE! No waiting, no deposits, just caps.</p>
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Hull</th>
-                        <th>Price</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr *ngFor="let item of capsOnContract">
-                        <td><img src="https://image.eveonline.com/Type/{{item['typeId']}}_32.png" /> {{item['typeName']}}</td>
-                        <td>{{item['price'] | number:'1.0-0'}} ISK</td>
-                    </tr>
-                    </tbody>
-                </table>
-                <p>Want more? Ask Avend Avalhar, Algorthan Gaterau or Rihan Shazih on Slack!</p>
-            </div>
-        </div>
+        <jhi-caps-on-contract></jhi-caps-on-contract>
     </div>
 </div>

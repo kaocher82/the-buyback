@@ -1,0 +1,21 @@
+<div class="row" *ngIf="capsOnContract">
+    <div class="col-md-12">
+        <h2>Sexy Caps</h2>
+        <p>Grab one from the public contracts in GE! No waiting, no deposits, just caps.</p>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Hull</th>
+                <th>Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of capsOnContract">
+                <td><img src="https://image.eveonline.com/Type/{{item['typeId']}}_32.png" /> {{item['typeName']}}</td>
+                <td>{{item['price'] | number:'1.0-0'}} ISK</td>
+            </tr>
+            </tbody>
+        </table>
+        <p>Want more? Ask Avend Avalhar, Algorthan Gaterau or Rihan Shazih on Slack!</p>
+    </div>
+</div>

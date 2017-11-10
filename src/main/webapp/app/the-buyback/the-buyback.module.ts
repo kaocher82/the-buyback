@@ -4,6 +4,8 @@ import { RouterModule } from '@angular/router';
 import { TheBuybackSharedModule } from '../shared';
 
 import { TheBuyback_ROUTE, TheBuybackComponent } from './';
+import {AppraisalComponent} from "../appraisal/appraisal.component";
+import {CapsOnContractComponent} from "../caps-on-contract/capsoncontract.component";
 
 @NgModule({
     imports: [
@@ -12,6 +14,8 @@ import { TheBuyback_ROUTE, TheBuybackComponent } from './';
     ],
     declarations: [
         TheBuybackComponent,
+        CapsOnContractComponent,
+        AppraisalComponent
     ],
     entryComponents: [
     ],
