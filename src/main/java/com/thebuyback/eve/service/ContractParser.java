@@ -2,18 +2,21 @@ package com.thebuyback.eve.service;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 
-import javax.annotation.PostConstruct;
-
 import com.codahale.metrics.annotation.Timed;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.thebuyback.eve.domain.CapitalShip;
+import com.thebuyback.eve.domain.CapitalShipStatus;
 import com.thebuyback.eve.domain.Contract;
 import com.thebuyback.eve.domain.Token;
+import com.thebuyback.eve.repository.CapitalShipRepository;
 import com.thebuyback.eve.repository.ContractRepository;
 import com.thebuyback.eve.repository.TokenRepository;
 
@@ -45,18 +48,21 @@ public class ContractParser {
     private final TokenRepository tokenRepository;
     private final ContractRepository contractRepository;
     private final TypeNameService typeNameService;
+    private final CapitalShipRepository capitalShipRepository;
 
     public ContractParser(final JsonRequestService requestService,
                           final TokenRepository tokenRepository,
                           final ContractRepository contractRepository,
-                          final TypeNameService typeNameService) {
+                          final TypeNameService typeNameService,
+                          final CapitalShipRepository capitalShipRepository) {
         this.requestService = requestService;
         this.tokenRepository = tokenRepository;
         this.contractRepository = contractRepository;
         this.typeNameService = typeNameService;
+        this.capitalShipRepository = capitalShipRepository;
     }
 
-    @Scheduled(cron = "0 */10 * * * *")
+    @Scheduled(cron = "0 1/10 * * * *")
     @Async
     @Timed
     public void loadNonCompletedContracts() throws UnirestException {
@@ -66,76 +72,104 @@ public class ContractParser {
         if (corpContracts.isPresent()) {
             JSONArray contractArray = corpContracts.get().getArray();
             for (int i = 0; i < contractArray.length(); i++) {
-                final JSONObject jsonContract = contractArray.getJSONObject(i);
-
-                long contractId = jsonContract.getLong("contract_id");
-                long issuerId = jsonContract.getLong("issuer_id");
-                long assigneeId = jsonContract.getLong("assignee_id");
-                long issuerCorporationId = jsonContract.getLong("issuer_corporation_id");
-
-                if (isAssignedToBraveCollective(assigneeId)  && !isFromTheBuyback(issuerCorporationId)) {
-                    continue;
-                }
-
-                final Optional<Contract> optional = contractRepository.findById(contractId);
-                String appraisalLink;
-                double buyValue = 0.0;
-                double sellValue = 0.0;
-                final String[] client = {null};
-                Map<Integer, Integer> items;
-                if (optional.isPresent()) {
-                    Contract contract = optional.get();
-                    if (asList("finished", "rejected", "deleted").contains(contract.getStatus())) {
-                        // skip contracts that are done and already in the db
-                        log.debug("Skipping {} as it already exists.", contractId);
-                        continue;
-                    }
-                    items = contract.getItems();
-
-                    appraisalLink = contract.getAppraisalLink();
-                    buyValue = contract.getBuyValue();
-                    sellValue = contract.getSellValue();
-                    client[0] = contract.getClient();
-
-                    // delete existing contract as we'll overwrite it in a second
-                    contractRepository.delete(contract);
-                } else {
-                    items = getItemsForContract(contractId, accessToken);
-
-                    appraisalLink = AppraisalUtil.getLinkFromRaw(getRaw(items));
-                    if (null != appraisalLink) {
-                        buyValue = AppraisalUtil.getBuy(appraisalLink);
-                        sellValue = AppraisalUtil.getSell(appraisalLink);
-                    }
-
-                    Optional<JsonNode> characterName = requestService.getCharacterName(issuerId);
-                    characterName.ifPresent(jsonNode -> client[0] = jsonNode.getArray().getJSONObject(0)
-                                                                            .getString("character_name"));
-                }
-
-                String status = jsonContract.getString("status");
-                long startLocationId = jsonContract.getLong("start_location_id");
-                double price = jsonContract.getDouble("price");
-                String title = null;
-                if (jsonContract.has("title")) {
-                    title = jsonContract.getString("title");
-                }
-                Instant dateIssued = Instant.parse(jsonContract.getString("date_issued"));
-                Instant dateCompleted = null;
-                if (jsonContract.has("date_completed")) {
-                    dateCompleted = Instant.parse(jsonContract.getString("date_completed"));
-                }
-
-                final Contract contract = new Contract(contractId, issuerId, issuerCorporationId, assigneeId, status,
-                                                       startLocationId, price, items, appraisalLink, buyValue,
-                                                       sellValue, title, dateIssued, dateCompleted, client[0]);
-                contractRepository.save(contract);
-                log.debug("Saved contract {}.", contractId);
+                parseContract(accessToken, contractArray, i);
             }
             log.info("Contract parsing complete.");
         } else {
             log.warn("ESI did not return any contracts.");
         }
+    }
+
+    @Scheduled(cron = "0 5/10 * * * *")
+    @Async
+    @Timed
+    public void loadOutstandingCaps() {
+        List<CapitalShip> outstandingCaps = contractRepository
+            .findAllByStatusAndAssigneeIdAndIssuerCorporationId("outstanding", 0L, THE_BUYBACK)
+            .stream().map(this::mapToCapitalShip).collect(Collectors.toList());
+
+        capitalShipRepository.deleteByStatus(CapitalShipStatus.PUBLIC_CONTRACT);
+        capitalShipRepository.save(outstandingCaps);
+    }
+
+    private CapitalShip mapToCapitalShip(final Contract contract) {
+        Entry<Integer, Integer> first = contract.getItems().entrySet().iterator().next();
+        int typeId = first.getKey();
+        final String typeName = typeNameService.getTypeName(typeId);
+        return new CapitalShip(CapitalShipStatus.PUBLIC_CONTRACT, contract.getPrice(), typeId, typeName);
+    }
+
+    private void parseContract(final String accessToken, final JSONArray contractArray, final int i)
+        throws UnirestException {
+        final JSONObject jsonContract = contractArray.getJSONObject(i);
+
+        long contractId = jsonContract.getLong("contract_id");
+        long issuerId = jsonContract.getLong("issuer_id");
+        long assigneeId = jsonContract.getLong("assignee_id");
+        long issuerCorporationId = jsonContract.getLong("issuer_corporation_id");
+
+        if (!"item_exchange".equals(jsonContract.getString("type"))) {
+            return;
+        }
+
+        if (isAssignedToBraveCollective(assigneeId)  && !isFromTheBuyback(issuerCorporationId)) {
+            return;
+        }
+
+        final Optional<Contract> optional = contractRepository.findById(contractId);
+        String appraisalLink;
+        double buyValue = 0.0;
+        double sellValue = 0.0;
+        final String[] client = {null};
+        Map<Integer, Integer> items;
+        if (optional.isPresent()) {
+            Contract contract = optional.get();
+            if (asList("finished", "rejected", "deleted").contains(contract.getStatus())) {
+                // skip contracts that are done and already in the db
+                log.debug("Skipping {} as it already exists.", contractId);
+                return;
+            }
+            items = contract.getItems();
+
+            appraisalLink = contract.getAppraisalLink();
+            buyValue = contract.getBuyValue();
+            sellValue = contract.getSellValue();
+            client[0] = contract.getClient();
+
+            // delete existing contract as we'll overwrite it in a second
+            contractRepository.delete(contract);
+        } else {
+            items = getItemsForContract(contractId, accessToken);
+
+            appraisalLink = AppraisalUtil.getLinkFromRaw(getRaw(items));
+            if (null != appraisalLink) {
+                buyValue = AppraisalUtil.getBuy(appraisalLink);
+                sellValue = AppraisalUtil.getSell(appraisalLink);
+            }
+
+            Optional<JsonNode> characterName = requestService.getCharacterName(issuerId);
+            characterName.ifPresent(jsonNode -> client[0] = jsonNode.getArray().getJSONObject(0)
+                                                                    .getString("character_name"));
+        }
+
+        String status = jsonContract.getString("status");
+        long startLocationId = jsonContract.getLong("start_location_id");
+        double price = jsonContract.getDouble("price");
+        String title = null;
+        if (jsonContract.has("title")) {
+            title = jsonContract.getString("title");
+        }
+        Instant dateIssued = Instant.parse(jsonContract.getString("date_issued"));
+        Instant dateCompleted = null;
+        if (jsonContract.has("date_completed")) {
+            dateCompleted = Instant.parse(jsonContract.getString("date_completed"));
+        }
+
+        final Contract contract = new Contract(contractId, issuerId, issuerCorporationId, assigneeId, status,
+                                               startLocationId, price, items, appraisalLink, buyValue,
+                                               sellValue, title, dateIssued, dateCompleted, client[0]);
+        contractRepository.save(contract);
+        log.debug("Saved contract {}.", contractId);
     }
 
     private boolean isFromTheBuyback(final long assigneeId) {
