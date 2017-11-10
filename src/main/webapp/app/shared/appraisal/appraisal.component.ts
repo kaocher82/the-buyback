@@ -1,12 +1,13 @@
 import {Component, OnInit} from '@angular/core';
-import {Appraisal} from "../the-buyback/appraisal.model";
 import {Http} from "@angular/http";
+import {Appraisal} from "./appraisal.model";
 
 @Component({
     selector: 'jhi-appraisal',
     templateUrl: './appraisal.component.html'
 })
 export class AppraisalComponent implements OnInit {
+
     isLoadingAppraisal: boolean;
     submitDone: boolean;
     appraisal: Appraisal;

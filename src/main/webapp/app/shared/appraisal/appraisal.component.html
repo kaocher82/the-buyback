@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-md-12">
         <h2>Buyback Appraisal</h2>
-        <p>Paste your loot in this box:</p>
+        <p>Paste your stuff into this box:</p>
         <div class="form-group">
                 <textarea class="form-control"
                           name="message"
@@ -9,15 +9,15 @@
                           id="field_message"
                           [(ngModel)]="appraisal.additionalRaw"></textarea>
         </div>
-        <button class="btn btn-primary" (click)="executeAppraisal()">Evaluate Loot</button>
+        <p>
+            <button class="btn btn-primary" (click)="executeAppraisal()">Evaluate</button>
+            <a href="#/the-buyback" class="pull-right">How to create a buyback contract</a>
+        </p>
         <p>Questions? Ask Avend Avalhar, Algorthan Gaterau or Rihan Shazih on Slack.</p>
         <span *ngIf="isLoadingAppraisal">Loading ...</span>
         <div *ngIf="appraisal.link">
-            <br/>
-            <span>Buyback Price: {{appraisal.totalBuy * 0.9 | number:'1.0-0'}} ISK (90% Jita Buy)</span>
-            <br />
-            <span>Link: <a href="{{appraisal.link}}" target="_blank">{{appraisal.link}}</a></span>
-            <br/>
+            <p>Buyback Price: {{appraisal.totalBuy * 0.9 | number:'1.0-0'}} ISK (90% Jita Buy)</p>
+            <p>Link: <a href="{{appraisal.link}}" target="_blank">{{appraisal.link}}</a></p>
             <table class="table table-striped" *ngIf="appraisal && appraisal.items" style="background-color: #eee">
                 <thead>
                 <tr>

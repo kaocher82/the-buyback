@@ -6,7 +6,6 @@ import {Component} from '@angular/core';
     styleUrls: [
         'the-buyback.css'
     ]
-
 })
 export class TheBuybackComponent {
 }
