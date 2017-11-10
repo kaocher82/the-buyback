@@ -15,6 +15,7 @@ export class TheBuybackComponent implements OnInit {
     isLoadingAppraisal: boolean;
     submitDone: boolean;
     appraisal: Appraisal;
+    capsOnContract: any[]
 
     constructor(
         private http: Http
@@ -25,6 +26,9 @@ export class TheBuybackComponent implements OnInit {
         if (!this.appraisal) {
             this.appraisal = new Appraisal();
         }
+        this.http.get('/api/contracts/caps').subscribe(
+            (data) => this.capsOnContract = data.json()
+        );
     }
 
     executeAppraisal() {
