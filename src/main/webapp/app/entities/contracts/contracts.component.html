@@ -1,5 +1,5 @@
 <div *ngIf="declineSuccess" class="alert alert-success">Decline mail sent.</div>
-<div *ngIf="!declineSuccess && errorMessage" class="alert alert-danger">{{errorMessage}}</div>
+<div *ngIf="!declineSuccess && errorMessage !== null" class="alert alert-danger">{{errorMessage}}</div>
 <div *ngIf="contracts" class="table-responsive">
     <table class="table table-striped">
         <thead>

@@ -12,7 +12,7 @@ export class ContractsComponent implements OnInit {
 
     contracts: Contracts[];
     declineSuccess: boolean;
-    errorMessage: string;
+    errorMessage: string = null;
 
     constructor(private contractsService: ContractsService, private http: Http) { }
 
@@ -26,9 +26,9 @@ export class ContractsComponent implements OnInit {
         this.declineSuccess = false;
         this.errorMessage = null;
 
-        this.contracts.forEach(value => {
-            if (value.id === contractId) {
-                value.declineMailSent = true;
+        this.contracts.forEach(contract => {
+            if (contract.id === contractId) {
+                contract.declineMailSent = true;
             }
         });
 
