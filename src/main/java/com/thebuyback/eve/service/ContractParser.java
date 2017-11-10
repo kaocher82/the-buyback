@@ -7,8 +7,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 
-import javax.annotation.PostConstruct;
-
 import com.codahale.metrics.annotation.Timed;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -16,7 +14,6 @@ import com.thebuyback.eve.domain.Contract;
 import com.thebuyback.eve.domain.Token;
 import com.thebuyback.eve.repository.ContractRepository;
 import com.thebuyback.eve.repository.TokenRepository;
-
 import static com.thebuyback.eve.web.rest.ContractsResource.THE_BUYBACK;
 
 import org.json.JSONArray;
@@ -31,8 +28,6 @@ import org.springframework.stereotype.Service;
  * ContractParser
  *
  * Created on 08.11.2017
- *
- *
  */
 @Service
 public class ContractParser {
@@ -73,7 +68,7 @@ public class ContractParser {
                 long assigneeId = jsonContract.getLong("assignee_id");
                 long issuerCorporationId = jsonContract.getLong("issuer_corporation_id");
 
-                if (isAssignedToBraveCollective(assigneeId)  && !isFromTheBuyback(issuerCorporationId)) {
+                if (isAssignedToBraveCollective(assigneeId) && !isFromTheBuyback(issuerCorporationId)) {
                     continue;
                 }
 
@@ -83,6 +78,7 @@ public class ContractParser {
                 double sellValue = 0.0;
                 final String[] client = {null};
                 Map<Integer, Integer> items;
+                boolean declineMailSent;
                 if (optional.isPresent()) {
                     Contract contract = optional.get();
                     if (asList("finished", "rejected", "deleted").contains(contract.getStatus())) {
@@ -96,6 +92,7 @@ public class ContractParser {
                     buyValue = contract.getBuyValue();
                     sellValue = contract.getSellValue();
                     client[0] = contract.getClient();
+                    declineMailSent = contract.isDeclineMailSent();
 
                     // delete existing contract as we'll overwrite it in a second
                     contractRepository.delete(contract);
@@ -111,6 +108,7 @@ public class ContractParser {
                     Optional<JsonNode> characterName = requestService.getCharacterName(issuerId);
                     characterName.ifPresent(jsonNode -> client[0] = jsonNode.getArray().getJSONObject(0)
                                                                             .getString("character_name"));
+                    declineMailSent = false;
                 }
 
                 String status = jsonContract.getString("status");
@@ -128,7 +126,8 @@ public class ContractParser {
 
                 final Contract contract = new Contract(contractId, issuerId, issuerCorporationId, assigneeId, status,
                                                        startLocationId, price, items, appraisalLink, buyValue,
-                                                       sellValue, title, dateIssued, dateCompleted, client[0]);
+                                                       sellValue, title, dateIssued, dateCompleted, client[0],
+                                                       declineMailSent);
                 contractRepository.save(contract);
                 log.debug("Saved contract {}.", contractId);
             }
@@ -148,9 +147,9 @@ public class ContractParser {
 
     private String getRaw(final Map<Integer, Integer> items) {
         return items.entrySet().stream().map(entry -> {
-                            String typeName = typeNameService.getTypeName(entry.getKey());
-                            return typeName + " x" + entry.getValue();
-                        }).collect(Collectors.joining("\n"));
+            String typeName = typeNameService.getTypeName(entry.getKey());
+            return typeName + " x" + entry.getValue();
+        }).collect(Collectors.joining("\n"));
     }
 
     private Map<Integer, Integer> getItemsForContract(final long contractId, final String accessToken) {
