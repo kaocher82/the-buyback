@@ -17,9 +17,23 @@ export class ContractsComponent implements OnInit {
     constructor(private contractsService: ContractsService, private http: Http) { }
 
     ngOnInit(): void {
-        this.contractsService.loadBuybackContracts().subscribe(
-            (data) => this.contracts = data
-        )
+        this.loadContracts();
+    }
+
+    private loadContracts() {
+        this.contractsService.loadBuybackContracts().subscribe((data) => this.contracts = data)
+    }
+
+    approveContract(contractId: number) {
+        this.http.post('/api/contracts/buyback/' + contractId + '/approve/', null).subscribe(
+            (date) => this.loadContracts(),
+            (err) => {
+                if (err.status === 404) {
+                    this.errorMessage = "The contract could not be found. Sad!";
+                }
+            }
+        );
+
     }
 
     sendDeclineMail(contractId: number) {

@@ -8,6 +8,7 @@ export class Contracts implements BaseEntity {
         public price?: number,
         public jitaBuy?: number,
         public declineMailSent?: boolean,
+        public approved?: boolean,
     ) {
     }
 }

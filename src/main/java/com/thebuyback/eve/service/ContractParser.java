@@ -79,6 +79,7 @@ public class ContractParser {
                 final String[] client = {null};
                 Map<Integer, Integer> items;
                 boolean declineMailSent;
+                boolean approved;
                 if (optional.isPresent()) {
                     Contract contract = optional.get();
                     if (asList("finished", "rejected", "deleted").contains(contract.getStatus())) {
@@ -93,6 +94,7 @@ public class ContractParser {
                     sellValue = contract.getSellValue();
                     client[0] = contract.getClient();
                     declineMailSent = contract.isDeclineMailSent();
+                    approved = contract.isApproved();
 
                     // delete existing contract as we'll overwrite it in a second
                     contractRepository.delete(contract);
@@ -109,6 +111,7 @@ public class ContractParser {
                     characterName.ifPresent(jsonNode -> client[0] = jsonNode.getArray().getJSONObject(0)
                                                                             .getString("character_name"));
                     declineMailSent = false;
+                    approved = false;
                 }
 
                 String status = jsonContract.getString("status");
@@ -127,7 +130,7 @@ public class ContractParser {
                 final Contract contract = new Contract(contractId, issuerId, issuerCorporationId, assigneeId, status,
                                                        startLocationId, price, items, appraisalLink, buyValue,
                                                        sellValue, title, dateIssued, dateCompleted, client[0],
-                                                       declineMailSent);
+                                                       declineMailSent, approved);
                 contractRepository.save(contract);
                 log.debug("Saved contract {}.", contractId);
             }

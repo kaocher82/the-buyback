@@ -30,6 +30,7 @@ public class Contract {
     private Instant dateCompleted;
     private String client;
     private boolean declineMailSent;
+    private boolean approved;
 
     public Contract() {
     }
@@ -39,7 +40,7 @@ public class Contract {
                     final double price, final Map<Integer, Integer> items, final String appraisalLink,
                     final double buyValue, final double sellValue, final String title,
                     final Instant dateIssued, final Instant dateCompleted, final String client,
-                    final boolean declineMailSent) {
+                    final boolean declineMailSent, final boolean approved) {
         this.id = id;
         this.issuerId = issuerId;
         this.issuerCorporationId = issuerCorporationId;
@@ -56,6 +57,15 @@ public class Contract {
         this.dateCompleted = dateCompleted;
         this.client = client;
         this.declineMailSent = declineMailSent;
+        this.approved = approved;
+    }
+
+    public boolean isApproved() {
+        return approved;
+    }
+
+    public void setApproved(final boolean approved) {
+        this.approved = approved;
     }
 
     public boolean isDeclineMailSent() {

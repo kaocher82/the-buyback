@@ -63,6 +63,19 @@ public class ContractsResource {
         this.tokenRepository = tokenRepository;
     }
 
+    @PostMapping("/buyback/{contractId}/approve/")
+    public ResponseEntity approve(@PathVariable Long contractId) {
+        Optional<Contract> optional = contractRepository.findById(contractId);
+        if (optional.isPresent()) {
+            final Contract contract = optional.get();
+            contract.setApproved(true);
+            contractRepository.save(contract);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping("/buyback/{contractId}/decline/")
     public ResponseEntity sendDeclineMail(@PathVariable Long contractId) {
         Optional<Contract> optional = contractRepository.findById(contractId);
@@ -117,7 +130,7 @@ public class ContractsResource {
     @GetMapping("/buyback/pending")
     public ResponseEntity<List<ContractDTO>> getPendingBuybacks() {
         List<ContractDTO> contracts = contractRepository.findAllByStatusAndAssigneeId("outstanding", THE_BUYBACK)
-                                                          .stream().map(mapToDTO()).collect(Collectors.toList());
+                                                        .stream().map(mapToDTO()).collect(Collectors.toList());
         return ResponseEntity.ok(contracts);
     }
 
@@ -127,6 +140,7 @@ public class ContractsResource {
                                            contract.getDateIssued(),
                                            contract.getPrice(),
                                            contract.getBuyValue(),
-                                           contract.isDeclineMailSent());
+                                           contract.isDeclineMailSent(),
+                                           contract.isApproved());
     }
 }
