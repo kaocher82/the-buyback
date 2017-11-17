@@ -1,0 +1,111 @@
+<style>
+    .highlight {
+        background-color: rgba(86,214,89,0.38);
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="display-4">Order Capitals, Supers and Fittings</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <div *ngIf="!pickedHull">
+            <h2>Pick a Hull</h2>
+            <div class="row">
+                <div class="col-md-3" *ngFor="let hull of dreads">
+                    <div class="card" >
+                        <img class="card-img-top" src="https://image.eveonline.com/Render/{{hull.typeId}}_512.png" alt="Card image cap">
+                        <div class="card-body">
+                            <p>{{hull.price  | number:'1.0-0'}} ISK</p>
+                            <button class="btn btn-primary" (click)="pickHull(hull)">{{hull.name}}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-md-3" *ngFor="let hull of carriers">
+                    <div class="card" >
+                        <img class="card-img-top" src="https://image.eveonline.com/Render/{{hull.typeId}}_512.png" alt="Card image cap">
+                        <div class="card-body">
+                            <a href="#" class="btn btn-primary">{{hull.name}}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-md-3" *ngFor="let hull of supers">
+                    <div class="card" >
+                        <img class="card-img-top" src="https://image.eveonline.com/Render/{{hull.typeId}}_512.png" alt="Card image cap">
+                        <div class="card-body">
+                            <a href="#" class="btn btn-primary">{{hull.name}}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="false">
+            <p>Select a fitting that suits you best. You can edit the fittings later.<button class="btn btn-primary pull-right">No Fitting</button></p>
+            <h2>Base Fittings</h2>
+            <table class="table table-striped">
+                <tbody>
+                <tr *ngFor="let fitting of baseFittings">
+                    <td style="width: 40%" [ngClass]="highlightIfSelected(fitting)"><a href="{{fitting.link}}">{{fitting.name}}</a></td>
+                    <td style="width: 40%" [ngClass]="highlightIfSelected(fitting)">{{fitting.price  | number:'1.0-0'}} ISK</td>
+                    <td [ngClass]="highlightIfSelected(fitting)">
+                        <button *ngIf="!isSelected(fitting)" class="btn btn-primary pull-right" (click)="selectBaseFit(fitting)">Select</button>
+                        <span *ngIf="isSelected(fitting)" class="pull-right">Selected</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <h2>Refits</h2>
+            <table class="table table-striped">
+                <tbody>
+                <tr *ngFor="let fitting of refits">
+                    <td style="width: 40%"><a href="{{fitting.link}}">{{fitting.name}}</a></td>
+                    <td style="width: 40%">{{fitting.price  | number:'1.0-0'}} ISK</td>
+                    <td>
+                        <button *ngIf="!isSelected(fitting)" class="btn btn-primary pull-right" (click)="addRefit(fitting)">Add</button>
+                        <span *ngIf="isSelected(fitting)" class="pull-right">Added</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <h2>Selected Modules</h2>
+            <p *ngIf="!fittingInProgress">Please pick a fitting from above or <button class="btn btn-primary" (click)="startFittingInProgress()">create your own.</button></p>
+            <div class="form-group" *ngIf="fittingInProgress">
+                <textarea class="form-control"
+                          name="message"
+                          rows="20"
+                          id="fittingArea"
+                          [(ngModel)]="rawFitting"></textarea>
+            </div>
+        </div>
+        <div>
+            <h2>Pick a Delivery Location</h2>
+            <table class="table table-striped">
+                <tbody>
+                <tr *ngFor="let location of deliveryLocations">
+                    <td style="width: 40%">{{location.name}}</td>
+                    <td style="width: 40%">{{location.price  | number:'1.0-0'}} ISK</td>
+                    <td><button class="btn btn-primary pull-right" (click)="selectLocation(location)">Select</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <h2>Shopping List</h2>
+        <!--<p *ngIf="pickedHull">{{pickedHull.name}} <span class="pull-right">{{pickedHull.price  | number:'1.0-0'}} ISK</span></p>-->
+        <!--<p *ngIf="deliveryLocation">Delivery to {{deliveryLocation.system}} <span class="pull-right">{{deliveryLocation.price  | number:'1.0-0'}} ISK</span></p>-->
+        <p *ngIf="pickedBaseFitting">{{pickedBaseFitting.shortName}} <span class="pull-right">{{pickedBaseFitting.price  | number:'1.0-0'}} ISK</span></p>
+        <p *ngFor="let refit of pickedRefits">{{refit.shortName}} <span class="pull-right">{{refit.price  | number:'1.0-0'}} ISK</span></p>
+        <p style="color: green">Fully Fueled <span class="pull-right">free</span></p>
+        <hr/>
+        <p>Total <span class="pull-right">4,310,000,000 ISK</span> </p>
+        <p><a href="#" class="btn btn-success pull-right">Buy Now</a></p>
+    </div>
+</div>

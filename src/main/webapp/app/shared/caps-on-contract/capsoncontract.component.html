@@ -16,6 +16,8 @@
             </tr>
             </tbody>
         </table>
-        <p>Want more? Ask Avend Avalhar, Algorthan Gaterau or Rihan Shazih on Slack!</p>
+        <p>Want more?</p>
+        <p *ngIf="!account"><a href="#/login">Sign in</a> to order capitals, supers and fittings!</p>
+        <button *ngIf="account" class="btn btn-primary" [routerLink]="['/order-caps']">Place an Order</button>
     </div>
 </div>

@@ -16,11 +16,13 @@ import {
 } from './';
 import {CapsOnContractComponent} from "./caps-on-contract/capsoncontract.component";
 import {AppraisalComponent} from "./appraisal/appraisal.component";
+import {RouterModule} from "@angular/router";
 
 @NgModule({
     imports: [
         TheBuybackSharedLibsModule,
-        TheBuybackSharedCommonModule
+        TheBuybackSharedCommonModule,
+        RouterModule
     ],
     declarations: [
         HasAnyAuthorityDirective,
