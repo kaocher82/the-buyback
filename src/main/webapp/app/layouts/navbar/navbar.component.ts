@@ -19,6 +19,7 @@ export class NavbarComponent implements OnInit {
     isNavbarCollapsed: boolean;
     swaggerEnabled: boolean;
     version: string;
+    userName: string;
     private ssoUrl: string;
 
     constructor(
@@ -37,6 +38,9 @@ export class NavbarComponent implements OnInit {
             this.inProduction = profileInfo.inProduction;
             this.swaggerEnabled = profileInfo.swaggerEnabled;
         });
+        this.principal.identity().then((account) => {
+            this.userName = account.login;
+        });
         this.configService.getSsoUrl().subscribe((data) => this.ssoUrl = data);
     }
 
@@ -49,7 +53,8 @@ export class NavbarComponent implements OnInit {
     }
 
     login() {
-        window.location.href = this.ssoUrl;
+        this.router.navigate(['/login']);
+        // window.location.href = this.ssoUrl;
     }
 
     logout() {

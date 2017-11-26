@@ -16,28 +16,22 @@
         <table class="table table-striped">
             <thead>
             <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
-            <th jhiSortBy="id"><span>ID</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="recipient"><span>Recipient</span> <span class="fa fa-sort"></span></th>
-            <th jhiSortBy="typeId"><span>Type Id</span> <span class="fa fa-sort"></span></th>
-            <th jhiSortBy="typeName"><span>Type Name</span> <span class="fa fa-sort"></span></th>
-            <th jhiSortBy="price"><span>Price</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="typeName"><span>Hull</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="price"><span>Total Price</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="created"><span>Created</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="deliveryLocation"><span>Delivery Location</span> <span class="fa fa-sort"></span></th>
-            <th jhiSortBy="deliveryPrice"><span>Delivery Price</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="status"><span>Status</span> <span class="fa fa-sort"></span></th>
             <th></th>
             </tr>
             </thead>
             <tbody>
             <tr *ngFor="let capOrder of capOrders ;trackBy: trackId">
-                <td><a [routerLink]="['../cap-order', capOrder.id ]">{{capOrder.id}}</a></td>
                 <td>{{capOrder.recipient}}</td>
-                <td>{{capOrder.typeId}}</td>
                 <td>{{capOrder.typeName}}</td>
-                <td>{{capOrder.price}}</td>
-                <td>{{capOrder.created | date:'medium'}}</td>
+                <td>{{capOrder.price + capOrder.deliveryPrice | number:'1.0-0'}} ISK</td>
+                <td>{{capOrder.created | date:'short'}}</td>
                 <td>{{capOrder.deliveryLocation}}</td>
-                <td>{{capOrder.deliveryPrice}}</td>
                 <td>{{capOrder.status}}</td>
                 <td class="text-right">
                     <div class="btn-group flex-btn-group-container">
