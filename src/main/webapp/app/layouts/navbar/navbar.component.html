@@ -19,6 +19,18 @@
                     </span>
                 </a>
                 <ul class="dropdown-menu" ngbDropdownMenu>
+                    <li>
+                        <a class="dropdown-item" routerLink="cap-config" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <i class="fa fa-fw fa-asterisk" aria-hidden="true"></i>
+                            <span>Cap Config</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" routerLink="cap-order" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+                            <i class="fa fa-fw fa-asterisk" aria-hidden="true"></i>
+                            <span>Cap Order</span>
+                        </a>
+                    </li>
                     <!-- jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here -->
                 </ul>
             </li>
@@ -80,9 +92,8 @@
                 <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="account-menu">
                   <span *ngIf="!getImageUrl()">
                     <i class="fa fa-user" aria-hidden="true"></i>
-                    <span>
-                      Account
-                    </span>
+                    <span *ngIf="userName">{{userName}}</span>
+                    <span *ngIf="!userName">Account</span>
                     <b class="caret"></b>
                   </span>
                   <!--<span *ngIf="getImageUrl()">-->
@@ -90,12 +101,6 @@
                   <!--</span>-->
                 </a>
                 <ul class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
-                    <li *ngSwitchCase="true">
-                        <a class="dropdown-item" routerLink="settings" routerLinkActive="active" (click)="collapseNavbar()">
-                            <i class="fa fa-fw fa-wrench" aria-hidden="true"></i>
-                            <span>Settings</span>
-                        </a>
-                    </li>
                     <li>
                         <a class="dropdown-item" (click)="logout()" id="logout">
                             <i class="fa fa-fw fa-sign-out" aria-hidden="true"></i>
@@ -105,9 +110,9 @@
                 </ul>
             </li>
             <li *ngSwitchCase="false" class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-                <!--<a class="nav-link" routerLink="/" (click)="login()">-->
-                    <!--<img src="https://images.contentful.com/idjq7aai9ylm/12vrPsIMBQi28QwCGOAqGk/33234da7672c6b0cdca394fc8e0b1c2b/EVE_SSO_Login_Buttons_Small_Black.png?w=195&h=30"/>-->
-                <!--</a>-->
+                <a class="nav-link" routerLink="/" (click)="login()">
+                    <img src="https://images.contentful.com/idjq7aai9ylm/12vrPsIMBQi28QwCGOAqGk/33234da7672c6b0cdca394fc8e0b1c2b/EVE_SSO_Login_Buttons_Small_Black.png?w=195&h=30"/>
+                </a>
             </li>
         </ul>
     </div>

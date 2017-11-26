@@ -13,20 +13,24 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.thebuyback.eve.domain.CapitalShip;
+import com.thebuyback.eve.domain.CapitalShipStatus;
 import com.thebuyback.eve.domain.Contract;
 import com.thebuyback.eve.domain.Token;
+import com.thebuyback.eve.repository.CapitalShipRepository;
 import com.thebuyback.eve.repository.ContractRepository;
 import com.thebuyback.eve.repository.TokenRepository;
 import com.thebuyback.eve.service.JsonRequestService;
 
+import static com.thebuyback.eve.security.AuthoritiesConstants.MANAGER;
 import static com.thebuyback.eve.service.ContractParser.PARSER_CLIENT;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +47,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/contracts")
-@PreAuthorize("hasRole('ROLE_MANAGER')")
 public class ContractsResource {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -51,18 +54,23 @@ public class ContractsResource {
     public static final long THE_BUYBACK = 98503372L;
     private static final double BUYBACK_PERCENTAGE = 0.9;
     private static final String MAIL_TEMPLATE = "Hi %s,\\n\\nYour contract from %s does not have the correct price (90%% Jita buy).\\n\\nThe contract price should be %s ISK (%s). Please withdraw the contract (if we haven't rejected it yet) and create a new one with the correct price.\\n\\nThe Buyback\\n\\nPLEASE DO NOT REPLY TO THIS MAIL\\nContact Avend Avalhar, Algorthan Gaterau or Rihan Shazih on Slack";
+
     private final ContractRepository contractRepository;
     private final JsonRequestService requestService;
     private final TokenRepository tokenRepository;
+    private final CapitalShipRepository capitalShipRepository;
 
     public ContractsResource(final ContractRepository contractRepository,
                              final JsonRequestService requestService,
-                             final TokenRepository tokenRepository) {
+                             final TokenRepository tokenRepository,
+                             final CapitalShipRepository capitalShipRepository) {
         this.contractRepository = contractRepository;
         this.requestService = requestService;
         this.tokenRepository = tokenRepository;
+        this.capitalShipRepository = capitalShipRepository;
     }
 
+    @Secured(MANAGER)
     @PostMapping("/buyback/{contractId}/approve/")
     public ResponseEntity approve(@PathVariable Long contractId) {
         Optional<Contract> optional = contractRepository.findById(contractId);
@@ -76,6 +84,7 @@ public class ContractsResource {
         }
     }
 
+    @Secured(MANAGER)
     @PostMapping("/buyback/{contractId}/decline/")
     public ResponseEntity sendDeclineMail(@PathVariable Long contractId) {
         Optional<Contract> optional = contractRepository.findById(contractId);
@@ -127,11 +136,17 @@ public class ContractsResource {
         return String.format(MAIL_TEMPLATE, client, dateFormatter.format(dateIssued), formatter.format(correctPrice), appraisalLink);
     }
 
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @GetMapping("/buyback/pending")
     public ResponseEntity<List<ContractDTO>> getPendingBuybacks() {
         List<ContractDTO> contracts = contractRepository.findAllByStatusAndAssigneeId("outstanding", THE_BUYBACK)
                                                         .stream().map(mapToDTO()).collect(Collectors.toList());
         return ResponseEntity.ok(contracts);
+    }
+
+    @GetMapping("/caps")
+    public ResponseEntity<List<CapitalShip>> getPublicCapitals() {
+        return ResponseEntity.ok(capitalShipRepository.findAllByStatus(CapitalShipStatus.PUBLIC_CONTRACT));
     }
 
     private static Function<Contract, ContractDTO> mapToDTO() {

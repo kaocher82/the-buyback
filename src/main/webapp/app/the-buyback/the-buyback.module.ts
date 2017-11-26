@@ -11,7 +11,7 @@ import { TheBuyback_ROUTE, TheBuybackComponent } from './';
         RouterModule.forRoot([ TheBuyback_ROUTE ], { useHash: true })
     ],
     declarations: [
-        TheBuybackComponent,
+        TheBuybackComponent
     ],
     entryComponents: [
     ],

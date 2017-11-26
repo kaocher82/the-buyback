@@ -79,37 +79,8 @@
 
     </div>
     <div class="col-md-5">
-        <p>Questions? Ask Avend Avalhar, Algorthan Gaterau or Rihan Shazih on Slack.</p>
-        <p>Paste your loot in this box:</p>
-        <div class="form-group">
-            <textarea class="form-control"
-                      name="message"
-                      rows="10"
-                      id="field_message"
-                      [(ngModel)]="appraisal.additionalRaw"></textarea>
-        </div>
-        <button class="btn btn-primary" (click)="executeAppraisal()">Evaluate Loot</button>
-        <span *ngIf="isLoadingAppraisal">Loading ...</span>
-        <div *ngIf="appraisal.link">
-            <br/>
-            <table class="table table-striped" *ngIf="appraisal && appraisal.items" style="background-color: #eee">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Quantity</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr *ngFor="let item of appraisal.items">
-                    <td><img src="https://image.eveonline.com/Type/{{item['typeID']}}_32.png" /> {{item['typeName']}}</td>
-                    <td>{{item['quantity'] | number:'1.0-0'}}</td>
-                </tr>
-                </tbody>
-            </table>
-            <br/>
-            <span>Buyback Price: {{appraisal.totalBuy * 0.9 | number:'1.0-0'}} ISK (90% Jita Buy)</span>
-            <br />
-            <span>Link: <a href="{{appraisal.link}}" target="_blank">{{appraisal.link}}</a></span>
-        </div>
+        <jhi-appraisal></jhi-appraisal>
+        <br/>
+        <jhi-caps-on-contract></jhi-caps-on-contract>
     </div>
 </div>

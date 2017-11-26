@@ -14,14 +14,20 @@ import {
     HasAnyAuthorityDirective,
     ConfigService
 } from './';
+import {CapsOnContractComponent} from "./caps-on-contract/capsoncontract.component";
+import {AppraisalComponent} from "./appraisal/appraisal.component";
+import {RouterModule} from "@angular/router";
 
 @NgModule({
     imports: [
         TheBuybackSharedLibsModule,
-        TheBuybackSharedCommonModule
+        TheBuybackSharedCommonModule,
+        RouterModule
     ],
     declarations: [
-        HasAnyAuthorityDirective
+        HasAnyAuthorityDirective,
+        CapsOnContractComponent,
+        AppraisalComponent
     ],
     providers: [
         LoginService,
@@ -34,11 +40,14 @@ import {
         DatePipe,
         ConfigService
     ],
-    entryComponents: [],
+    entryComponents: [
+    ],
     exports: [
         TheBuybackSharedCommonModule,
         HasAnyAuthorityDirective,
-        DatePipe
+        DatePipe,
+        CapsOnContractComponent,
+        AppraisalComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 

@@ -1,0 +1,109 @@
+<div class="row" *ngIf="!orderComplete && !orderFailed">
+    <div class="col-md-8">
+        <div *ngIf="!pickedHull">
+            <h1>Pick a Hull - Dreads, Carriers, Faxes and Supers</h1>
+            <div class="alert alert-danger" *ngIf="initFailed">Failed to load available caps.</div>
+            <div class="row" *ngIf="capConfigs">
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Moros')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Phoenix')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Naglfar')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Revelation')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+            </div>
+            <br/>
+            <div class="row" *ngIf="capConfigs">
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Thanatos')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Chimera')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Nidhoggur')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Archon')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+            </div>
+            <br/>
+            <div class="row" *ngIf="capConfigs">
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Ninazu')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Minokawa')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Lif')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Apostle')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+            </div>
+            <br/>
+            <div class="row" *ngIf="capConfigs">
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Wyvern')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Hel')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+                <div class="col-md-3">
+                </div>
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Rorqual')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="pickedHull && !deliveryLocation">
+            <h1>Pick a Delivery Location</h1>
+            <table class="table table-striped">
+                <tbody>
+                <tr *ngIf="pickedHull.deliveryLocation1">
+                    <td style="width: 40%">{{pickedHull.deliveryLocation1}}</td>
+                    <td style="width: 40%" *ngIf="pickedHull.deliveryPrice1">+ {{pickedHull.deliveryPrice1  | number:'1.0-0'}} ISK</td>
+                    <td style="width: 40%" *ngIf="!pickedHull.deliveryPrice1">free</td>
+                    <td><button class="btn btn-primary pull-right" (click)="selectLocation(pickedHull.deliveryLocation1, pickedHull.deliveryPrice1)">Select</button></td>
+                </tr>
+                <tr *ngIf="pickedHull.deliveryLocation2">
+                    <td style="width: 40%">{{pickedHull.deliveryLocation2}}</td>
+                    <td style="width: 40%" *ngIf="pickedHull.deliveryPrice2">+ {{pickedHull.deliveryPrice2 | number:'1.0-0'}} ISK</td>
+                    <td style="width: 40%" *ngIf="!pickedHull.deliveryPrice2">free</td>
+                    <td><button class="btn btn-primary pull-right" (click)="selectLocation(pickedHull.deliveryLocation2, pickedHull.deliveryPrice2)">Select</button></td>
+                </tr>
+                <tr *ngIf="pickedHull.deliveryLocation3">
+                    <td style="width: 40%">{{pickedHull.deliveryLocation3}}</td>
+                    <td style="width: 40%" *ngIf="pickedHull.deliveryPrice3">+ {{pickedHull.deliveryPrice3 | number:'1.0-0'}} ISK</td>
+                    <td style="width: 40%" *ngIf="!pickedHull.deliveryPrice3">free</td>
+                    <td><button class="btn btn-primary pull-right" (click)="selectLocation(pickedHull.deliveryLocation3, pickedHull.deliveryPrice3)">Select</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="pickedHull && deliveryLocation">
+            <h1>All done. Please click on Buy Now.</h1>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <h2>Shopping List</h2>
+        <p *ngIf="pickedHull">{{pickedHull.typeName}} <span class="pull-right">{{pickedHull.price  | number:'1.0-0'}} ISK</span></p>
+        <p *ngIf="deliveryLocation">Delivery to {{deliveryLocation}} <span class="pull-right">{{deliveryPrice | number:'1.0-0'}} ISK</span></p>
+        <p *ngIf="pickedHull" style="color: green">Fully Fueled <span class="pull-right">free</span></p>
+        <hr/>
+        <p *ngIf="pickedHull">Total <span class="pull-right">{{pickedHull.price + deliveryPrice | number:'1.0-0'}} ISK</span> </p>
+        <p *ngIf="pickedHull" style="color: grey">Deposit <span class="pull-right">0 ISK</span> </p>
+        <p><button *ngIf="pickedHull && deliveryLocation" class="btn btn-success pull-right" (click)="buy()">Buy now</button></p>
+
+        <p *ngIf="!pickedHull">Please select a hull to continue.</p>
+        <p *ngIf="pickedHull && !deliveryLocation">Please select a delivery location to continue.</p>
+    </div>
+</div>
+<div *ngIf="orderComplete" class="alert alert-success">Order complete. You will soon get a contract with your capital ship.</div>
+<div *ngIf="orderFailed" class="alert alert-success">Order failed. Please get in touch with Rihan Shazih.</div>
