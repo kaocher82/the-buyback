@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Http} from "@angular/http";
 import {CapConfig} from "../entities/cap-config/cap-config.model";
+import {CapOrder} from "../entities/cap-order/cap-order.model";
 
 @Component({
     selector: 'jhi-order-caps',
@@ -10,10 +11,13 @@ export class OrderCapsComponent implements OnInit {
     initFailed: boolean;
     capConfigs: CapConfig[];
 
-    pickedHull: any;
+    pickedHull: CapConfig;
 
     deliveryLocation: string;
     deliveryPrice: number = 0;
+
+    orderComplete: boolean;
+    orderFailed: boolean;
 
     fittingInProgress: boolean;
     pickedBaseFitting: any;
@@ -51,7 +55,21 @@ export class OrderCapsComponent implements OnInit {
     }
 
     buy() {
-
+        let order = new CapOrder(
+            null,
+            null,
+            this.pickedHull.typeId,
+            this.pickedHull.typeName,
+            this.pickedHull.price,
+            null,
+            this.deliveryLocation,
+            this.deliveryPrice,
+            null
+        );
+        this.http.post("/api/cap-orders", order).subscribe(
+            (data) => this.orderComplete,
+            (err) => this.orderFailed
+        )
     }
 
     highlightIfSelected(fitting) {

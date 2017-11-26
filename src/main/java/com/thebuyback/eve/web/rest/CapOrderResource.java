@@ -3,7 +3,10 @@ package com.thebuyback.eve.web.rest;
 import com.codahale.metrics.annotation.Timed;
 import com.thebuyback.eve.domain.CapOrder;
 
+import com.thebuyback.eve.domain.enumeration.CapOrderStatus;
 import com.thebuyback.eve.repository.CapOrderRepository;
+import com.thebuyback.eve.security.AuthoritiesConstants;
+import com.thebuyback.eve.security.SecurityUtils;
 import com.thebuyback.eve.web.rest.util.HeaderUtil;
 import com.thebuyback.eve.web.rest.util.PaginationUtil;
 import io.swagger.annotations.ApiParam;
@@ -15,11 +18,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,11 +53,17 @@ public class CapOrderResource {
      */
     @PostMapping("/cap-orders")
     @Timed
+    @Secured(AuthoritiesConstants.USER)
     public ResponseEntity<CapOrder> createCapOrder(@RequestBody CapOrder capOrder) throws URISyntaxException {
         log.debug("REST request to save CapOrder : {}", capOrder);
         if (capOrder.getId() != null) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new capOrder cannot already have an ID")).body(null);
         }
+
+        capOrder.setRecipient(SecurityUtils.getCurrentUserLogin());
+        capOrder.setCreated(Instant.now());
+        capOrder.setStatus(CapOrderStatus.REQUESTED);
+
         CapOrder result = capOrderRepository.save(capOrder);
         return ResponseEntity.created(new URI("/api/cap-orders/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
@@ -69,7 +80,7 @@ public class CapOrderResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/cap-orders")
-    @Timed
+    @Secured(AuthoritiesConstants.MANAGER)
     public ResponseEntity<CapOrder> updateCapOrder(@RequestBody CapOrder capOrder) throws URISyntaxException {
         log.debug("REST request to update CapOrder : {}", capOrder);
         if (capOrder.getId() == null) {
@@ -88,7 +99,7 @@ public class CapOrderResource {
      * @return the ResponseEntity with status 200 (OK) and the list of capOrders in body
      */
     @GetMapping("/cap-orders")
-    @Timed
+    @Secured(AuthoritiesConstants.MANAGER)
     public ResponseEntity<List<CapOrder>> getAllCapOrders(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of CapOrders");
         Page<CapOrder> page = capOrderRepository.findAll(pageable);
@@ -103,7 +114,7 @@ public class CapOrderResource {
      * @return the ResponseEntity with status 200 (OK) and with body the capOrder, or with status 404 (Not Found)
      */
     @GetMapping("/cap-orders/{id}")
-    @Timed
+    @Secured(AuthoritiesConstants.MANAGER)
     public ResponseEntity<CapOrder> getCapOrder(@PathVariable String id) {
         log.debug("REST request to get CapOrder : {}", id);
         CapOrder capOrder = capOrderRepository.findOne(id);
@@ -117,7 +128,7 @@ public class CapOrderResource {
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/cap-orders/{id}")
-    @Timed
+    @Secured(AuthoritiesConstants.MANAGER)
     public ResponseEntity<Void> deleteCapOrder(@PathVariable String id) {
         log.debug("REST request to delete CapOrder : {}", id);
         capOrderRepository.delete(id);
