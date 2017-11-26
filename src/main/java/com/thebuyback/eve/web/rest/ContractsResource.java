@@ -23,12 +23,14 @@ import com.thebuyback.eve.repository.ContractRepository;
 import com.thebuyback.eve.repository.TokenRepository;
 import com.thebuyback.eve.service.JsonRequestService;
 
+import static com.thebuyback.eve.security.AuthoritiesConstants.MANAGER;
 import static com.thebuyback.eve.service.ContractParser.PARSER_CLIENT;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,7 +70,7 @@ public class ContractsResource {
         this.capitalShipRepository = capitalShipRepository;
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @Secured(MANAGER)
     @PostMapping("/buyback/{contractId}/approve/")
     public ResponseEntity approve(@PathVariable Long contractId) {
         Optional<Contract> optional = contractRepository.findById(contractId);
@@ -82,7 +84,7 @@ public class ContractsResource {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @Secured(MANAGER)
     @PostMapping("/buyback/{contractId}/decline/")
     public ResponseEntity sendDeclineMail(@PathVariable Long contractId) {
         Optional<Contract> optional = contractRepository.findById(contractId);
