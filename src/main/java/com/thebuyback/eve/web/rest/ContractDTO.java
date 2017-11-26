@@ -15,18 +15,28 @@ public class ContractDTO {
     private double price;
     private double jitaBuy;
     private boolean declineMailSent;
+    private boolean approved;
 
     public ContractDTO() {
     }
 
     public ContractDTO(final long id, final String client, final Instant created, final double price,
-                       final double jitaBuy, final boolean declineMailSent) {
+                       final double jitaBuy, final boolean declineMailSent, final boolean approved) {
         this.id = id;
         this.client = client;
         this.created = created;
         this.price = price;
         this.jitaBuy = jitaBuy;
         this.declineMailSent = declineMailSent;
+        this.approved = approved;
+    }
+
+    public void setApproved(final boolean approved) {
+        this.approved = approved;
+    }
+
+    public boolean isApproved() {
+        return approved;
     }
 
     public boolean isDeclineMailSent() {

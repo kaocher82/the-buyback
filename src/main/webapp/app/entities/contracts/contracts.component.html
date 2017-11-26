@@ -21,7 +21,16 @@
             <td>{{contract.jitaBuy | number:'1.0-0'}} ISK</td>
             <td>{{(contract.price / contract.jitaBuy) * 100  | number:'1.0-0'}} %</td>
             <td>{{contract.jitaBuy * 0.9  | number:'1.0-0'}} ISK</td>
-            <td><button *ngIf="!contract.declineMailSent && (contract.price / contract.jitaBuy) * 100 >= 93" class="btn btn-danger" (click)="sendDeclineMail(contract.id)">Decline</button></td>
+            <td>
+                <button *ngIf="!contract.declineMailSent && !contract.approved && (contract.price / contract.jitaBuy) * 100 >= 93 && contract.jitaBuy > 0" class="btn btn-danger" (click)="sendDeclineMail(contract.id)">Decline</button>
+                <button *ngIf="!contract.declineMailSent && !contract.approved && (contract.price / contract.jitaBuy) * 100 >= 93 && contract.jitaBuy > 0" class="btn btn-success" (click)="approveContract(contract.id)">Approve</button>
+                <div *ngIf="contract.declineMailSent" class="alert alert-danger">
+                    This contract was declined.<br/>Please reject it ingame.
+                </div>
+                <div *ngIf="contract.approved" class="alert alert-info">
+                    This contract was approved.<br/>Please accept it ingame.
+                </div>
+            </td>
         </tr>
         </tbody>
     </table>

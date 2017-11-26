@@ -19,7 +19,6 @@ import com.thebuyback.eve.domain.Token;
 import com.thebuyback.eve.repository.CapitalShipRepository;
 import com.thebuyback.eve.repository.ContractRepository;
 import com.thebuyback.eve.repository.TokenRepository;
-
 import static com.thebuyback.eve.web.rest.ContractsResource.THE_BUYBACK;
 
 import org.json.JSONArray;
@@ -34,8 +33,6 @@ import org.springframework.stereotype.Service;
  * ContractParser
  *
  * Created on 08.11.2017
- *
- *
  */
 @Service
 public class ContractParser {
@@ -112,29 +109,32 @@ public class ContractParser {
             return;
         }
 
-        if (isAssignedToBraveCollective(assigneeId)  && !isFromTheBuyback(issuerCorporationId)) {
+        if (isAssignedToBraveCollective(assigneeId) && !isFromTheBuyback(issuerCorporationId)) {
             return;
         }
 
-        final Optional<Contract> optional = contractRepository.findById(contractId);
-        String appraisalLink;
-        double buyValue = 0.0;
-        double sellValue = 0.0;
-        final String[] client = {null};
-        Map<Integer, Integer> items;
-        if (optional.isPresent()) {
-            Contract contract = optional.get();
-            if (asList("finished", "rejected", "deleted").contains(contract.getStatus())) {
-                // skip contracts that are done and already in the db
-                log.debug("Skipping {} as it already exists.", contractId);
-                return;
-            }
-            items = contract.getItems();
+                final Optional<Contract> optional = contractRepository.findById(contractId);
+                String appraisalLink;
+                double buyValue = 0.0;
+                double sellValue = 0.0;
+                final String[] client = {null};
+                Map<Integer, Integer> items;
+                boolean declineMailSent;
+                boolean approved;if (optional.isPresent()) {
+                    Contract contract = optional.get();
+                    if (asList("finished", "rejected", "deleted").contains(contract.getStatus())) {
+                        // skip contracts that are done and already in the db
+                        log.debug("Skipping {} as it already exists.", contractId);
+                        return;
+                    }
+                    items = contract.getItems();
 
             appraisalLink = contract.getAppraisalLink();
             buyValue = contract.getBuyValue();
             sellValue = contract.getSellValue();
             client[0] = contract.getClient();
+                    declineMailSent = contract.isDeclineMailSent();
+                    approved = contract.isApproved();
 
             // delete existing contract as we'll overwrite it in a second
             contractRepository.delete(contract);
@@ -147,10 +147,11 @@ public class ContractParser {
                 sellValue = AppraisalUtil.getSell(appraisalLink);
             }
 
-            Optional<JsonNode> characterName = requestService.getCharacterName(issuerId);
-            characterName.ifPresent(jsonNode -> client[0] = jsonNode.getArray().getJSONObject(0)
-                                                                    .getString("character_name"));
-        }
+                    Optional<JsonNode> characterName = requestService.getCharacterName(issuerId);
+                    characterName.ifPresent(jsonNode -> client[0] = jsonNode.getArray().getJSONObject(0)
+                                                                            .getString("character_name"));
+                declineMailSent = false;
+                    approved = false;}
 
         String status = jsonContract.getString("status");
         long startLocationId = jsonContract.getLong("start_location_id");
@@ -165,11 +166,12 @@ public class ContractParser {
             dateCompleted = Instant.parse(jsonContract.getString("date_completed"));
         }
 
-        final Contract contract = new Contract(contractId, issuerId, issuerCorporationId, assigneeId, status,
-                                               startLocationId, price, items, appraisalLink, buyValue,
-                                               sellValue, title, dateIssued, dateCompleted, client[0]);
-        contractRepository.save(contract);
-        log.debug("Saved contract {}.", contractId);
+                final Contract contract = new Contract(contractId, issuerId, issuerCorporationId, assigneeId, status,
+                                                       startLocationId, price, items, appraisalLink, buyValue,
+                                                       sellValue, title, dateIssued, dateCompleted, client[0],
+                declineMailSent, approved);contractRepository.save(contract);
+                log.debug("Saved contract {}.", contractId);
+
     }
 
     private boolean isFromTheBuyback(final long assigneeId) {
@@ -182,9 +184,9 @@ public class ContractParser {
 
     private String getRaw(final Map<Integer, Integer> items) {
         return items.entrySet().stream().map(entry -> {
-                            String typeName = typeNameService.getTypeName(entry.getKey());
-                            return typeName + " x" + entry.getValue();
-                        }).collect(Collectors.joining("\n"));
+            String typeName = typeNameService.getTypeName(entry.getKey());
+            return typeName + " x" + entry.getValue();
+        }).collect(Collectors.joining("\n"));
     }
 
     private Map<Integer, Integer> getItemsForContract(final long contractId, final String accessToken) {
