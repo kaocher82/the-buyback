@@ -29,7 +29,7 @@ public class JsonRequestService {
     private static final long MAIL_CHAR = 93475128L;
     private static final String ESI_BASE_URL = "https://esi.tech.ccp.is";
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private Map<String, String> defaultHeaders;
+    private final Map<String, String> defaultHeaders;
 
     public JsonRequestService() {
         defaultHeaders = new HashMap<>();

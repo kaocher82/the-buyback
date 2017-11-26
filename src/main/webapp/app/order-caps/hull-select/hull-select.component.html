@@ -1,0 +1,8 @@
+<div *ngIf="capConfig" class="card">
+    <img class="card-img-top" src="https://image.eveonline.com/Render/{{capConfig.typeId}}_512.png" alt="{{capConfig.typeName}}">
+    <div class="card-body">
+        <p>{{capConfig.price  | number:'1.0-0'}} ISK</p>
+        <button class="btn btn-primary" (click)="pickHull(capConfig)">{{capConfig.typeName}}</button>
+    </div>
+</div>
+

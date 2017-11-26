@@ -1,18 +1,58 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {Http} from "@angular/http";
+import {CapConfig} from "../entities/cap-config/cap-config.model";
 
 @Component({
     selector: 'jhi-order-caps',
     templateUrl: './order-caps.component.html'
 })
-export class OrderCapsComponent {
+export class OrderCapsComponent implements OnInit {
+    initFailed: boolean;
+    capConfigs: CapConfig[];
 
-    pickedHull: any = 1;
+    pickedHull: any;
 
-    fittingSelectionComplete: boolean;
+    deliveryLocation: string;
+    deliveryPrice: number = 0;
+
     fittingInProgress: boolean;
     pickedBaseFitting: any;
     pickedRefits = [];
     rawFitting = '';
+
+    constructor(private http: Http) {
+
+    }
+
+    ngOnInit(): void {
+        this.http.get("/api/cap-configs").subscribe(
+            (data) => this.capConfigs = data.json(),
+            (err) => this.initFailed = true
+        )
+    }
+
+    selectConf(name: string) {
+        let result = null;
+        this.capConfigs.forEach((value) => {
+            if (value.typeName === name) {
+                result = value;
+            }
+        });
+        return result;
+    }
+
+    handleCapSelected(cap: CapConfig) {
+        this.pickedHull = cap;
+    }
+
+    selectLocation(location: string, price: number) {
+        this.deliveryLocation = location;
+        this.deliveryPrice = price;
+    }
+
+    buy() {
+
+    }
 
     highlightIfSelected(fitting) {
         if (fitting === this.pickedBaseFitting) {
@@ -60,21 +100,6 @@ export class OrderCapsComponent {
     pickHull(hull: any) {
         this.pickedHull = hull;
     }
-
-    deliveryLocations = [
-        {
-            'name': '3GD-OA (Factory)',
-            'price': 0
-        },
-        {
-            'name': 'GE-8JV (Fortizar)',
-            'price': 10000000
-        },
-        {
-            'name': '86FTH (Keepstar)',
-            'price': 50000000
-        }
-    ]
 
     baseFittings = [
         {

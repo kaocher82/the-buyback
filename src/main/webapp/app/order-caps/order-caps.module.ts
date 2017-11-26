@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { TheBuybackSharedModule } from '../shared';
 
 import { OrderCaps_ROUTE, OrderCapsComponent } from './';
+import {HullSelectComponent} from "./hull-select/hull-select.component";
 
 @NgModule({
     imports: [
@@ -11,7 +12,8 @@ import { OrderCaps_ROUTE, OrderCapsComponent } from './';
         RouterModule.forRoot([ OrderCaps_ROUTE ], { useHash: true })
     ],
     declarations: [
-        OrderCapsComponent
+        OrderCapsComponent,
+        HullSelectComponent
     ],
     entryComponents: [
     ],
