@@ -1,6 +1,6 @@
 import { BaseEntity } from './../../shared';
 
-const enum MarketOfferType {
+export const enum MarketOfferType {
     'SELL',
     'BUY'
 }

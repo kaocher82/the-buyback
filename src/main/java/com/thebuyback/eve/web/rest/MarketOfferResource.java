@@ -93,6 +93,12 @@ public class MarketOfferResource {
         if (marketOffer.getId() == null) {
             return createMarketOffer(marketOffer);
         }
+        MarketOffer offer = marketOfferRepository.findOne(marketOffer.getId());
+        if (!offer.getIssuer().equalsIgnoreCase(SecurityUtils.getCurrentUserLogin())) {
+            return ResponseEntity.status(403).build();
+        }
+        marketOffer.setExpiry(LocalDate.now().plusDays(7).atStartOfDay().toInstant(ZoneOffset.UTC));
+        marketOffer.setExpiryUpdated(Instant.now());
         MarketOffer result = marketOfferRepository.save(marketOffer);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, marketOffer.getId().toString()))
@@ -105,6 +111,14 @@ public class MarketOfferResource {
         List<MarketOffer> collect = marketOfferRepository.findAllByType(type).stream()
                                                          .filter(o -> o.getExpiry().isAfter(Instant.now()))
                                                          .collect(Collectors.toList());
+        return new ResponseEntity<>(collect, HttpStatus.OK);
+    }
+
+    @GetMapping("/market-offers/private/{type}")
+    @Secured(AuthoritiesConstants.USER)
+    public ResponseEntity<List<MarketOffer>> getPrivateMarketOffers(@PathVariable("type") final MarketOfferType type) {
+        List<MarketOffer> collect = marketOfferRepository.findAllByTypeAndIssuer(type, SecurityUtils.getCurrentUserLogin())
+                                                         .stream().collect(Collectors.toList());
         return new ResponseEntity<>(collect, HttpStatus.OK);
     }
 

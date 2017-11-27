@@ -16,4 +16,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 @Repository
 public interface MarketOfferRepository extends MongoRepository<MarketOffer, String> {
     List<MarketOffer> findAllByType(MarketOfferType marketOfferType);
+
+    List<MarketOffer> findAllByTypeAndIssuer(MarketOfferType type, String issuer);
 }

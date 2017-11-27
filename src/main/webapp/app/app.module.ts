@@ -29,6 +29,7 @@ import {TheBuybackTheBuybackModule} from "./the-buyback/the-buyback.module";
 import {LoginComponent} from "./layouts/login/login.component";
 import {TheBuybackOrderCapsModule} from "./order-caps/order-caps.module";
 import {TheBuybackMarketPlaceModule} from "./marketplace/marketplace.module";
+import {TheBuybackMarketplacePrivateModule} from "./marketplace-private/marketplace-private.module";
 
 @NgModule({
     imports: [
@@ -42,7 +43,8 @@ import {TheBuybackMarketPlaceModule} from "./marketplace/marketplace.module";
         TheBuybackEntityModule,
         TheBuybackTheBuybackModule,
         TheBuybackOrderCapsModule,
-        TheBuybackMarketPlaceModule
+        TheBuybackMarketPlaceModule,
+        TheBuybackMarketplacePrivateModule
         // jhipster-needle-angular-add-module JHipster will add new module here
     ],
     declarations: [
