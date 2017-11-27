@@ -94,16 +94,16 @@
     <div class="col-md-4">
         <h2>Shopping List</h2>
         <p *ngIf="pickedHull">{{pickedHull.typeName}} <span class="pull-right">{{pickedHull.price  | number:'1.0-0'}} ISK</span></p>
-        <p *ngIf="deliveryLocation">Delivery to {{deliveryLocation}} <span class="pull-right">{{deliveryPrice | number:'1.0-0'}} ISK</span></p>
+        <p *ngIf="deliveryLocation">Delivery to {{deliveryLocation}} <span class="pull-right" *ngIf="deliveryPrice">{{deliveryPrice | number:'1.0-0'}} ISK</span><span class="pull-right" *ngIf="!deliveryPrice">free</span></p>
         <p *ngIf="pickedHull" style="color: green">Fully Fueled <span class="pull-right">free</span></p>
         <hr/>
         <p *ngIf="pickedHull">Total <span class="pull-right">{{pickedHull.price + deliveryPrice | number:'1.0-0'}} ISK</span> </p>
-        <p *ngIf="pickedHull" style="color: grey">Deposit <span class="pull-right">0 ISK</span> </p>
+        <p *ngIf="pickedHull" style="color: grey">Deposit <span class="pull-right" *ngIf="pickedHull.typeName !== 'Hel' && pickedHull.typeName !== 'Wyvern'">0 ISK</span><span class="pull-right" *ngIf="pickedHull.typeName === 'Hel' || pickedHull.typeName === 'Wyvern'">5,000,000,000 ISK</span></p>
         <p><button *ngIf="pickedHull && deliveryLocation" class="btn btn-success pull-right" (click)="buy()">Buy now</button></p>
 
         <p *ngIf="!pickedHull">Please select a hull to continue.</p>
         <p *ngIf="pickedHull && !deliveryLocation">Please select a delivery location to continue.</p>
     </div>
 </div>
-<div *ngIf="orderComplete" class="alert alert-success">Order complete. You will soon get a contract with your capital ship.</div>
+<div *ngIf="orderComplete" class="alert alert-success">Order complete. <span *ngIf="pickedHull.typeName === 'Hel' || pickedHull.typeName === 'Wyvern'">Please send the deposit of 5,000,000,000 ISK to The Buyback. </span>You will soon get a contract with your capital ship.</div>
 <div *ngIf="orderFailed" class="alert alert-success">Order failed. Please get in touch with Rihan Shazih.</div>
