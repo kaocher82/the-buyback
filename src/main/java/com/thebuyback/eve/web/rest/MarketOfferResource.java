@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.thebuyback.eve.domain.MarketOffer;
 
 import com.thebuyback.eve.domain.enumeration.MarketOfferCategory;
+import com.thebuyback.eve.domain.enumeration.MarketOfferType;
 import com.thebuyback.eve.repository.MarketOfferRepository;
 import com.thebuyback.eve.security.AuthoritiesConstants;
 import com.thebuyback.eve.security.SecurityUtils;
@@ -29,6 +30,7 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing MarketOffer.
@@ -97,6 +99,15 @@ public class MarketOfferResource {
             .body(result);
     }
 
+    @GetMapping("/market-offers/active/{type}")
+    @Secured(AuthoritiesConstants.USER)
+    public ResponseEntity<List<MarketOffer>> getActiveMarketOffers(@PathVariable("type") final MarketOfferType type) {
+        List<MarketOffer> collect = marketOfferRepository.findAllByType(type).stream()
+                                                         .filter(o -> o.getExpiry().isAfter(Instant.now()))
+                                                         .collect(Collectors.toList());
+        return new ResponseEntity<>(collect, HttpStatus.OK);
+    }
+
     /**
      * GET  /market-offers : get all the marketOffers.
      *
@@ -104,8 +115,7 @@ public class MarketOfferResource {
      * @return the ResponseEntity with status 200 (OK) and the list of marketOffers in body
      */
     @GetMapping("/market-offers")
-    @Timed
-    @Secured(AuthoritiesConstants.USER)
+    @Secured(AuthoritiesConstants.ADMIN)
     public ResponseEntity<List<MarketOffer>> getAllMarketOffers(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of MarketOffers");
         Page<MarketOffer> page = marketOfferRepository.findAll(pageable);
@@ -120,7 +130,6 @@ public class MarketOfferResource {
      * @return the ResponseEntity with status 200 (OK) and with body the marketOffer, or with status 404 (Not Found)
      */
     @GetMapping("/market-offers/{id}")
-    @Timed
     @Secured(AuthoritiesConstants.ADMIN)
     public ResponseEntity<MarketOffer> getMarketOffer(@PathVariable String id) {
         log.debug("REST request to get MarketOffer : {}", id);
