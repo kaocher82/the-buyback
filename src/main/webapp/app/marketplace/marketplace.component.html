@@ -1,0 +1,12 @@
+<div class="row">
+    <div class="col-md-6">
+        <h2>Want to Sell</h2>
+        <div class="alert alert-danger" *ngIf="loadSellFailed">Sell offers failed to load. Please try again later.</div>
+        <jhi-marketplace-section *ngIf="sellOffers" [offers]="sellOffers"></jhi-marketplace-section>
+    </div>
+    <div class="col-md-6">
+        <h2>Want to Buy</h2>
+        <div class="alert alert-danger" *ngIf="loadBuyFailed">Buy requests failed to load. Please try again later.</div>
+        <jhi-marketplace-section *ngIf="buyOffers" [offers]="buyOffers"></jhi-marketplace-section>
+    </div>
+</div>
