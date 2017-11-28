@@ -39,6 +39,10 @@
         {
             "fieldName": "text",
             "fieldType": "String"
+        },
+        {
+            "fieldName": "appraisalLink",
+            "fieldType": "String"
         }
     ],
     "dto": "no",

@@ -38,13 +38,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * ContractsResource
- *
- * Created on 08.11.2017
- *
- * Copyright (C) 2017 Volkswagen AG, All rights reserved.
- */
 @RestController
 @RequestMapping("/api/contracts")
 public class ContractsResource {

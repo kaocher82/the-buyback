@@ -1,12 +1,5 @@
 package com.thebuyback.eve.domain;
 
-/**
- * CapitalShip
- *
- * Created on 10.11.2017
- *
- * Copyright (C) 2017 Volkswagen AG, All rights reserved.
- */
 public class CapitalShip {
     private CapitalShipStatus status;
     private double price;

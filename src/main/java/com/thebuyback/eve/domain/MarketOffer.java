@@ -48,6 +48,9 @@ public class MarketOffer implements Serializable {
     @Field("text")
     private String text;
 
+    @Field("appraisal_link")
+    private String appraisalLink;
+
     // jhipster-needle-entity-add-field - Jhipster will add fields here, do not remove
     public String getId() {
         return id;
@@ -173,6 +176,19 @@ public class MarketOffer implements Serializable {
     public void setText(String text) {
         this.text = text;
     }
+
+    public String getAppraisalLink() {
+        return appraisalLink;
+    }
+
+    public MarketOffer appraisalLink(String appraisalLink) {
+        this.appraisalLink = appraisalLink;
+        return this;
+    }
+
+    public void setAppraisalLink(String appraisalLink) {
+        this.appraisalLink = appraisalLink;
+    }
     // jhipster-needle-entity-add-getters-setters - Jhipster will add getters and setters here, do not remove
 
     @Override
@@ -208,6 +224,7 @@ public class MarketOffer implements Serializable {
             ", location='" + getLocation() + "'" +
             ", isRecurring='" + isIsRecurring() + "'" +
             ", text='" + getText() + "'" +
+            ", appraisalLink='" + getAppraisalLink() + "'" +
             "}";
     }
 }

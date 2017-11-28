@@ -21,6 +21,7 @@ export class MarketOffer implements BaseEntity {
         public location?: string,
         public isRecurring?: boolean,
         public text?: string,
+        public appraisalLink?: string,
     ) {
         this.isRecurring = false;
     }
