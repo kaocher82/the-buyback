@@ -95,7 +95,6 @@
         <h2>Shopping List</h2>
         <p *ngIf="pickedHull">{{pickedHull.typeName}} <span class="pull-right">{{pickedHull.price  | number:'1.0-0'}} ISK</span></p>
         <p *ngIf="deliveryLocation">Delivery to {{deliveryLocation}} <span class="pull-right" *ngIf="deliveryPrice">{{deliveryPrice | number:'1.0-0'}} ISK</span><span class="pull-right" *ngIf="!deliveryPrice">free</span></p>
-        <p *ngIf="pickedHull && !(pickedHull.typeName === 'Hel' || pickedHull.typeName === 'Wyvern')" style="color: green">Fully Fueled <span class="pull-right">free</span></p>
         <hr/>
         <p *ngIf="pickedHull">Total <span class="pull-right">{{pickedHull.price + deliveryPrice | number:'1.0-0'}} ISK</span> </p>
         <p *ngIf="pickedHull" style="color: grey">Deposit <span class="pull-right" *ngIf="pickedHull.typeName !== 'Hel' && pickedHull.typeName !== 'Wyvern'">0 ISK</span><span class="pull-right" *ngIf="pickedHull.typeName === 'Hel' || pickedHull.typeName === 'Wyvern'">5,000,000,000 ISK</span></p>
