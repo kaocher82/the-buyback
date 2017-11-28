@@ -7,7 +7,7 @@
                     <button class="btn btn-primary" *ngIf="editActive" (click)="setEdit(false)">Save</button>
                 </td>
                 <td>
-                    <span *ngIf="!editActive">Location: {{offer.location}}</span>
+                    <span *ngIf="!editActive && offer.location">Location: {{offer.location}}</span>
                     <div class="input-group" *ngIf="editActive">
                         <span class="input-group-addon" id="basic-addon1">Location</span>
                         <input class="form-control" [(ngModel)]="offer.location" #ctrl="ngModel" aria-describedby="basic-addon1" >

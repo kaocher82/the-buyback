@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header">
-        <span>{{offer.issuer}}</span><span class="pull-right">Location: {{offer.location}}</span>
+        <span>{{offer.issuer}}</span><span class="pull-right" *ngIf="offer.location">Location: {{offer.location}}</span>
     </div>
     <div class="card-body">
         <p class="card-text">{{offer.text}}</p>
