@@ -1,12 +1,17 @@
 <div class="row" *ngIf="capsOnContract">
     <div class="col-md-12">
         <h2>Sexy Caps - on contract and demand</h2>
-        <p>Grab one from the public contracts in GE! No waiting, no deposits, just caps.</p>
+        <p>We sell all the caps and provide delivery to GE and 68FT. Normal caps are deposit free!</p>
+        <p *ngIf="!account"><a routerLink="login">Sign in</a> to order capitals and supers!</p>
+        <button *ngIf="account" class="btn btn-primary" [routerLink]="['/order-caps']">Place an Order</button>
+        <br/>
+        <br/>
+        <p>Or grab one from the public contracts in GE! <b>No waiting, just fun.</b></p>
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>Hull</th>
-                <th>Price</th>
+                <th>Hulls on Public Contract</th>
+                <th>Public Contract Prices</th>
             </tr>
             </thead>
             <tbody>
@@ -16,8 +21,6 @@
             </tr>
             </tbody>
         </table>
-        <p>Want more?</p>
-        <p *ngIf="!account"><a href="#/login">Sign in</a> to order capitals and supers!</p>
-        <button *ngIf="account" class="btn btn-primary" [routerLink]="['/order-caps']">Place an Order</button>
+        <p>Want more? <a routerLink="order-caps">Place an order</a>.</p>
     </div>
 </div>
