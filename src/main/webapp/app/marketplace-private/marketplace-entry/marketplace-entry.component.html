@@ -14,7 +14,9 @@
                     </div>
                 </td>
                 <td style="width: 40%">
-                    <div class="pull-right" *ngIf="offer.expiry">Expires: {{offer.expiry | date:'dd.MM.yy'}} <button class="btn btn-success" [disabled]="!canExtend() || !offer.id" (click)="extend()">Extend</button></div>
+                    <div class="pull-right">
+                        <button class="btn btn-danger pull-right" (click)="delete()">Delete</button>
+                    </div>
                 </td>
             </tr>
         </table>
@@ -36,9 +38,7 @@
                     <!--</div>-->
                 </td>
                 <td>
-                    <div class="pull-right">
-                        <button class="btn btn-danger pull-right" (click)="delete()">Delete</button>
-                    </div>
+                    <div class="pull-right" *ngIf="offer.expiry">Expires: {{offer.expiry | date:'dd.MM.yy'}} <button class="btn btn-success" [disabled]="!canExtend() || !offer.id" (click)="extend()">Extend</button></div>
                 </td>
             </tr>
         </table>
