@@ -3,6 +3,7 @@ import {Http} from "@angular/http";
 import {CapConfig} from "../entities/cap-config/cap-config.model";
 import {CapOrder} from "../entities/cap-order/cap-order.model";
 import {MarketOffer} from "../entities/market-offer/market-offer.model";
+import {Principal} from "../shared/auth/principal.service";
 
 @Component({
     selector: 'jhi-marketplace',
@@ -15,8 +16,12 @@ export class MarketPlaceComponent implements OnInit {
     buyOffers: MarketOffer[];
     sellOffers: MarketOffer[];
 
-    constructor(private http: Http) {
+    constructor(private http: Http, private principal: Principal) {
 
+    }
+
+    isAuthenticated() {
+        return this.principal.isAuthenticated();
     }
 
     ngOnInit(): void {
