@@ -12,7 +12,6 @@ export class MarketplacePrivateEntryComponent implements OnInit {
     @Input() offer: MarketOffer;
     editActive: boolean;
     deleted: boolean;
-    recurring: any;
 
     constructor(private http: Http) {
         this.editActive = false;
@@ -25,19 +24,18 @@ export class MarketplacePrivateEntryComponent implements OnInit {
     }
 
     setEdit(editActive: boolean): void {
-        console.log(this.recurring);
-        console.log(this.offer);
         if (!editActive) {
             this.http.put("/api/market-offers", this.offer).subscribe(
                 (data) => {
-                    this.editActive = editActive;
+                    this.offer = data.json();
+                    this.editActive = false;
                     this.offer.expiry = new Date().toISOString();
                     this.extendUI();
                 },
                 (err) => alert("Save failed. Your changes were not persisted.")
             );
         } else {
-            this.editActive = editActive;
+            this.editActive = true;
         }
     }
 
