@@ -22,9 +22,15 @@
         </table>
     </div>
     <div class="card-body">
-        <p class="card-text" *ngIf="!editActive">{{offer.text}}</p>
+        <p class="card-text" *ngIf="!editActive && offer.text">{{offer.text}}</p>
         <textarea class="form-control" *ngIf="editActive" [(ngModel)]="offer.text" rows="5" #ctrl="ngModel"></textarea>
         <p class="card-text" *ngIf="editActive">Keep it short and simple.</p>
+        <a href="{{offer.appraisalLink}}" target="_blank" *ngIf="!editActive && offer.appraisalLink">{{offer.appraisalLink}}</a>
+        <div class="input-group" *ngIf="editActive">
+            <span class="input-group-addon" id="appraisal-link">Appraisal Link</span>
+            <input class="form-control" [(ngModel)]="offer.appraisalLink" #ctrl="ngModel" aria-describedby="appraisal-link" pattern="https\:\/\/evepraisal\.com\/a\/.+">
+        </div>
+        <p *ngIf="editActive"><small>To guarantee neutrality only evepraisal links (with https) are allowed.</small></p>
     </div>
     <div class="card-footer">
         <table style="width: 100%">
