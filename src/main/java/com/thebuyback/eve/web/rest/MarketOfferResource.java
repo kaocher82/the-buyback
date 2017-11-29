@@ -64,6 +64,10 @@ public class MarketOfferResource {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new marketOffer cannot already have an ID")).body(null);
         }
 
+        if (!isValidLink(marketOffer)) {
+            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "badlink", "The link is not accepted.")).body(null);
+        }
+
         marketOffer.setIssuer(SecurityUtils.getCurrentUserLogin());
         marketOffer.setCreated(Instant.now());
         marketOffer.setExpiry(LocalDate.now().plusDays(14).atStartOfDay().toInstant(ZoneOffset.UTC));
@@ -74,6 +78,15 @@ public class MarketOfferResource {
         return ResponseEntity.created(new URI("/api/market-offers/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
+    }
+
+    public boolean isValidLink(final MarketOffer marketOffer) {
+        String appraisalLink = marketOffer.getAppraisalLink();
+        if (null == appraisalLink || appraisalLink.isEmpty()) {
+            return true;
+        } else {
+            return appraisalLink.contains("evepraisal.com");
+        }
     }
 
     /**
@@ -92,6 +105,9 @@ public class MarketOfferResource {
         log.debug("REST request to update MarketOffer : {}", marketOffer);
         if (marketOffer.getId() == null) {
             return createMarketOffer(marketOffer);
+        }
+        if (!isValidLink(marketOffer)) {
+            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "badlink", "The link is not accepted.")).body(null);
         }
         MarketOffer offer = marketOfferRepository.findOne(marketOffer.getId());
         if (!offer.getIssuer().equalsIgnoreCase(SecurityUtils.getCurrentUserLogin())) {

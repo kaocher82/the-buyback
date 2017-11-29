@@ -1,10 +1,10 @@
 <div class="card" *ngIf="!deleted">
     <div class="card-header">
-        <table style="width: 100%">
+        <table style="width: 100%;">
             <tr>
                 <td>
-                    <button class="btn btn-outline-dark" *ngIf="!editActive" (click)="setEdit(true)">Edit</button>
-                    <button class="btn btn-primary" *ngIf="editActive" (click)="setEdit(false)">Save</button>
+                    <button class="btn btn-outline-dark" type="button" *ngIf="!editActive" (click)="setEdit(true)">Edit</button>
+                    <button class="btn btn-primary" type="button" *ngIf="editActive" (click)="setEdit(false)">Save</button>
                 </td>
                 <td>
                     <span *ngIf="!editActive && offer.location">Location: {{offer.location}}</span>
@@ -13,7 +13,7 @@
                         <input class="form-control" [(ngModel)]="offer.location" #ctrl="ngModel" aria-describedby="basic-addon1" >
                     </div>
                 </td>
-                <td style="width: 40%">
+                <td style="width: 40%;">
                     <div class="pull-right">
                         <button class="btn btn-danger pull-right" (click)="delete()">Delete</button>
                     </div>
@@ -28,7 +28,7 @@
         <a href="{{offer.appraisalLink}}" target="_blank" *ngIf="!editActive && offer.appraisalLink">{{offer.appraisalLink}}</a>
         <div class="input-group" *ngIf="editActive">
             <span class="input-group-addon" id="appraisal-link">Appraisal Link</span>
-            <input class="form-control" [(ngModel)]="offer.appraisalLink" #ctrl="ngModel" aria-describedby="appraisal-link" pattern="https\:\/\/evepraisal\.com\/a\/.+">
+            <input class="form-control" type="text" aria-describedby="appraisal-link" [(ngModel)]="offer.appraisalLink">
         </div>
         <p *ngIf="editActive"><small>To guarantee neutrality only evepraisal links (with https) are allowed.</small></p>
     </div>

@@ -32,7 +32,7 @@ export class MarketplacePrivateEntryComponent implements OnInit {
                     this.offer.expiry = new Date().toISOString();
                     this.extendUI();
                 },
-                (err) => alert("Save failed. Your changes were not persisted.")
+                (err) => alert("Save failed, make sure the link is valid. Your changes were not persisted.")
             );
         } else {
             this.editActive = true;
