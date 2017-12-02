@@ -26,4 +26,4 @@
         <jhi-marketplace-section *ngIf="buyOffers" [offers]="buyOffers"></jhi-marketplace-section>
     </div>
 </div>
-<div class="alert alert-warning" *ngIf="!isAuthenticated()">You need to <a href="#/login">sign in with EVE</a> to access the marketplace.</div>
+<div class="alert alert-warning" *ngIf="!isAuthenticated()">You need to <a routerLink="/login/marketplace">sign in with EVE</a> to access the marketplace.</div>
