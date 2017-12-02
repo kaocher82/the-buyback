@@ -34,7 +34,10 @@ export class SsoComponent implements OnInit {
                                // login modal. // since login is succesful, go to stored previousState and clear
                                // previousState
                                const redirect = this.stateStorageService.getUrl();
-                               if (redirect) {
+                               if (state !== 'uniquestate123') {
+                                   this.stateStorageService.storeUrl(null);
+                                   this.router.navigate([state]);
+                               } else if (redirect) {
                                    this.stateStorageService.storeUrl(null);
                                    this.router.navigate([redirect]);
                                } else {

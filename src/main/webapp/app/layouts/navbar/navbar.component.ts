@@ -39,7 +39,9 @@ export class NavbarComponent implements OnInit {
             this.swaggerEnabled = profileInfo.swaggerEnabled;
         });
         this.principal.identity().then((account) => {
-            this.userName = account.login;
+            if (account) {
+                this.userName = account.login;
+            }
         });
         this.configService.getSsoUrl().subscribe((data) => this.ssoUrl = data);
     }
