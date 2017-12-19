@@ -2,7 +2,7 @@
     <div class="col-md-8">
         <div *ngIf="!pickedHull">
             <h1>Pick a Hull - Dreads, Carriers, Faxes and Supers</h1>
-            <div class="alert alert-danger" *ngIf="initFailed">Failed to load available caps.</div>
+            <div class="alert alert-danger" *ngIf="initFailed">Failed to load available caps. Did you sign in?</div>
             <div class="row" *ngIf="capConfigs">
                 <div class="col-md-3">
                     <jhi-hull-select [capConfig]="selectConf('Moros')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
