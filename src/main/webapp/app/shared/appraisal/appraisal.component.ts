@@ -31,4 +31,8 @@ export class AppraisalComponent implements OnInit {
             this.isLoadingAppraisal = false;
         });
     }
+
+    clearAppraisal() {
+        this.appraisal = new Appraisal();
+    }
 }

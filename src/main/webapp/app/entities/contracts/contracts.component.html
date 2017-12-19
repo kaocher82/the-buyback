@@ -8,8 +8,8 @@
             <th>Created</th>
             <th>Price</th>
             <th>Jita Buy</th>
-            <th>Ratio</th>
-            <th>Jita Buy 90%</th>
+            <th>Buyback Price</th>
+            <th>Deviation</th>
             <th></th>
         </tr>
         </thead>
@@ -19,8 +19,8 @@
             <td>{{contract.created | date:'medium'}}</td>
             <td>{{contract.price | number:'1.0-0'}} ISK</td>
             <td>{{contract.jitaBuy | number:'1.0-0'}} ISK</td>
-            <td>{{(contract.price / contract.jitaBuy) * 100  | number:'1.0-0'}} %</td>
-            <td>{{contract.jitaBuy * 0.9  | number:'1.0-0'}} ISK</td>
+            <td>{{contract.buybackPrice  | number:'1.0-0'}} ISK</td>
+            <td>{{(1 - (contract.price / contract.buybackPrice)) * 100  | number:'1.0-0'}} %</td>
             <td>
                 <button *ngIf="!contract.declineMailSent && !contract.approved && (contract.price / contract.jitaBuy) * 100 >= 93 && contract.jitaBuy > 0" class="btn btn-danger" (click)="sendDeclineMail(contract.id)">Decline</button>
                 <button *ngIf="!contract.declineMailSent && !contract.approved && (contract.price / contract.jitaBuy) * 100 >= 93 && contract.jitaBuy > 0" class="btn btn-success" (click)="approveContract(contract.id)">Approve</button>

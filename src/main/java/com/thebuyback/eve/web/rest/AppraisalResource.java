@@ -1,9 +1,15 @@
 package com.thebuyback.eve.web.rest;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.thebuyback.eve.domain.Appraisal;
 import com.codahale.metrics.annotation.Timed;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.thebuyback.eve.domain.ItemBuybackRate;
+import com.thebuyback.eve.domain.ItemWithQuantity;
 import com.thebuyback.eve.service.AppraisalUtil;
+import com.thebuyback.eve.service.ItemBuybackRateService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AppraisalResource {
 
     private final Logger log = LoggerFactory.getLogger(AppraisalResource.class);
+    private final ItemBuybackRateService itemRateService;
+
+    public AppraisalResource(final ItemBuybackRateService itemRateService) {
+        this.itemRateService = itemRateService;
+    }
 
     /**
      * POST  / : Execute an appraisal request.
@@ -51,7 +62,24 @@ public class AppraisalResource {
     private void executeRequestAndUpdateAppraisal(final Appraisal appraisal) throws UnirestException {
         appraisal.updateRaw();
         appraisal.setLink(AppraisalUtil.getLinkFromRaw(appraisal.getRaw()));
-        appraisal.setTotalBuy(AppraisalUtil.getBuy(appraisal.getLink()));
+        appraisal.setJitaBuy(AppraisalUtil.getBuy(appraisal.getLink()));
         appraisal.setItems(AppraisalUtil.getItems(appraisal.getLink()));
+        final List<Long> typeIds = appraisal.getItems().stream().map(ItemWithQuantity::getTypeID)
+                                               .collect(Collectors.toList());
+        final List<ItemBuybackRate> rates = itemRateService.getRates(typeIds);
+        double buybackPrice = 0;
+        for (ItemWithQuantity item : appraisal.getItems()) {
+            for (ItemBuybackRate rate : rates) {
+                if (item.getTypeID() == rate.getTypeId()) {
+                    item.setRate(rate.getRate());
+                    break;
+                }
+            }
+            if (0 == item.getRate()) {
+                item.setRate(0.9);
+            }
+            buybackPrice += item.getQuantity() * item.getJitaBuyPerUnit() * item.getRate();
+        }
+        appraisal.setBuybackPrice(buybackPrice);
     }
 }

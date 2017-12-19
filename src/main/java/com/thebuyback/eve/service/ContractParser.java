@@ -12,12 +12,16 @@ import static java.util.Arrays.asList;
 import com.codahale.metrics.annotation.Timed;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.thebuyback.eve.domain.Appraisal;
 import com.thebuyback.eve.domain.CapitalShip;
 import com.thebuyback.eve.domain.CapitalShipStatus;
 import com.thebuyback.eve.domain.Contract;
+import com.thebuyback.eve.domain.ItemBuybackRate;
+import com.thebuyback.eve.domain.ItemWithQuantity;
 import com.thebuyback.eve.domain.Token;
 import com.thebuyback.eve.repository.CapitalShipRepository;
 import com.thebuyback.eve.repository.ContractRepository;
+import com.thebuyback.eve.repository.ItemBuybackRateRepository;
 import com.thebuyback.eve.repository.TokenRepository;
 import static com.thebuyback.eve.web.rest.ContractsResource.THE_BUYBACK;
 
@@ -46,17 +50,20 @@ public class ContractParser {
     private final ContractRepository contractRepository;
     private final TypeNameService typeNameService;
     private final CapitalShipRepository capitalShipRepository;
+    private final ItemBuybackRateRepository buybackRateRepository;
 
     public ContractParser(final JsonRequestService requestService,
                           final TokenRepository tokenRepository,
                           final ContractRepository contractRepository,
                           final TypeNameService typeNameService,
-                          final CapitalShipRepository capitalShipRepository) {
+                          final CapitalShipRepository capitalShipRepository,
+                          final ItemBuybackRateRepository buybackRateRepository) {
         this.requestService = requestService;
         this.tokenRepository = tokenRepository;
         this.contractRepository = contractRepository;
         this.typeNameService = typeNameService;
         this.capitalShipRepository = capitalShipRepository;
+        this.buybackRateRepository = buybackRateRepository;
     }
 
     @Scheduled(cron = "0 1/10 * * * *")
@@ -113,28 +120,29 @@ public class ContractParser {
             return;
         }
 
-                final Optional<Contract> optional = contractRepository.findById(contractId);
-                String appraisalLink;
-                double buyValue = 0.0;
-                double sellValue = 0.0;
-                final String[] client = {null};
-                Map<Integer, Integer> items;
-                boolean declineMailSent;
-                boolean approved;if (optional.isPresent()) {
-                    Contract contract = optional.get();
-                    if (asList("finished", "rejected", "deleted").contains(contract.getStatus())) {
-                        // skip contracts that are done and already in the db
-                        log.debug("Skipping {} as it already exists.", contractId);
-                        return;
-                    }
-                    items = contract.getItems();
+        final Optional<Contract> optional = contractRepository.findById(contractId);
+        String appraisalLink;
+        double buyValue = 0.0;
+        double sellValue = 0.0;
+        final String[] client = {null};
+        Map<Integer, Integer> items;
+        boolean declineMailSent;
+        boolean approved;
+        if (optional.isPresent()) {
+            Contract contract = optional.get();
+            if (asList("finished", "rejected", "deleted").contains(contract.getStatus())) {
+                // skip contracts that are done and already in the db
+                log.debug("Skipping {} as it already exists.", contractId);
+                return;
+            }
+            items = contract.getItems();
 
             appraisalLink = contract.getAppraisalLink();
             buyValue = contract.getBuyValue();
             sellValue = contract.getSellValue();
             client[0] = contract.getClient();
-                    declineMailSent = contract.isDeclineMailSent();
-                    approved = contract.isApproved();
+            declineMailSent = contract.isDeclineMailSent();
+            approved = contract.isApproved();
 
             // delete existing contract as we'll overwrite it in a second
             contractRepository.delete(contract);
@@ -147,11 +155,12 @@ public class ContractParser {
                 sellValue = AppraisalUtil.getSell(appraisalLink);
             }
 
-                    Optional<JsonNode> characterName = requestService.getCharacterName(issuerId);
-                    characterName.ifPresent(jsonNode -> client[0] = jsonNode.getArray().getJSONObject(0)
-                                                                            .getString("character_name"));
-                declineMailSent = false;
-                    approved = false;}
+            Optional<JsonNode> characterName = requestService.getCharacterName(issuerId);
+            characterName.ifPresent(jsonNode -> client[0] = jsonNode.getArray().getJSONObject(0)
+                                                                    .getString("character_name"));
+            declineMailSent = false;
+            approved = false;
+        }
 
         String status = jsonContract.getString("status");
         long startLocationId = jsonContract.getLong("start_location_id");
@@ -166,12 +175,57 @@ public class ContractParser {
             dateCompleted = Instant.parse(jsonContract.getString("date_completed"));
         }
 
-                final Contract contract = new Contract(contractId, issuerId, issuerCorporationId, assigneeId, status,
-                                                       startLocationId, price, items, appraisalLink, buyValue,
-                                                       sellValue, title, dateIssued, dateCompleted, client[0],
-                declineMailSent, approved);contractRepository.save(contract);
-                log.debug("Saved contract {}.", contractId);
+        final Contract contract = new Contract(contractId, issuerId, issuerCorporationId, assigneeId, status,
+                                               startLocationId, price, items, appraisalLink, buyValue,
+                                               sellValue, title, dateIssued, dateCompleted, client[0],
+                                               declineMailSent, approved);
 
+        if (!isAssignedToBraveCollective(assigneeId)) {
+            contract.setBuybackPrice(calcBuybackRate(contractId, accessToken));
+        }
+
+        contractRepository.save(contract);
+        log.debug("Saved contract {}.", contractId);
+
+    }
+
+    private double calcBuybackRate(final long contractId, final String accessToken) {
+        StringBuilder raw = new StringBuilder();
+        Optional<JsonNode> optional = requestService.getCorpContractItems(contractId, accessToken);
+        if (optional.isPresent()) {
+            JSONArray array = optional.get().getArray();
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject item = array.getJSONObject(i);
+                long typeId = item.getLong("type_id");
+                long quantity = item.getLong("quantity");
+                String typeName = typeNameService.getTypeName(typeId);
+                raw.append(typeName).append(" x").append(quantity).append('\n');
+            }
+        } else {
+            return 0;
+        }
+        final List<ItemWithQuantity> items;
+        try {
+            String linkFromRaw = AppraisalUtil.getLinkFromRaw(raw.toString());
+            items = AppraisalUtil.getItems(linkFromRaw);
+        } catch (UnirestException e) {
+            log.error("Failed to get appraisal.", e);
+            return 0;
+        }
+
+        double total = 0;
+        for (ItemWithQuantity item : items) {
+            final long typeId = item.getTypeID();
+            final long quantity = item.getQuantity();
+            double buy = item.getJitaBuyPerUnit();
+            ItemBuybackRate itemRate = buybackRateRepository.findOneByTypeId(typeId);
+            if (null == itemRate) {
+                total += buy * 0.9 * quantity;
+            } else {
+                total += buy * itemRate.getRate() * quantity;
+            }
+        }
+        return total;
     }
 
     private boolean isFromTheBuyback(final long assigneeId) {

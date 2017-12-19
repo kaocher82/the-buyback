@@ -12,10 +12,12 @@ public class Appraisal {
     private String link;
     @Field("additionalRaw")
     private String additionalRaw;
-    @Field("totalBuy")
-    private Double totalBuy;
+    @Field("jitaBuy")
+    private Double jitaBuy;
     @Field("items")
     private List<ItemWithQuantity> items;
+    @Field("buybackPrice")
+    private double buybackPrice;
 
     public Appraisal() {
     }
@@ -59,12 +61,12 @@ public class Appraisal {
         return additionalRaw;
     }
 
-    public Double getTotalBuy() {
-        return totalBuy;
+    public Double getJitaBuy() {
+        return jitaBuy;
     }
 
-    public void setTotalBuy(final Double totalBuy) {
-        this.totalBuy = totalBuy;
+    public void setJitaBuy(final Double jitaBuy) {
+        this.jitaBuy = jitaBuy;
     }
 
     public List<ItemWithQuantity> getItems() {
@@ -81,7 +83,15 @@ public class Appraisal {
                "raw='" + raw + '\'' +
                ", link='" + link + '\'' +
                ", additionalRaw='" + additionalRaw + '\'' +
-               ", totalBuy='" + totalBuy + '\'' +
+               ", jitaBuy='" + jitaBuy + '\'' +
                '}';
+    }
+
+    public void setBuybackPrice(final double buybackPrice) {
+        this.buybackPrice = buybackPrice;
+    }
+
+    public double getBuybackPrice() {
+        return buybackPrice;
     }
 }

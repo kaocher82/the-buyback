@@ -29,8 +29,10 @@ public class Contract {
     private Instant dateIssued;
     private Instant dateCompleted;
     private String client;
+
     private boolean declineMailSent;
     private boolean approved;
+    private Double buybackPrice;
 
     public Contract() {
     }
@@ -58,6 +60,14 @@ public class Contract {
         this.client = client;
         this.declineMailSent = declineMailSent;
         this.approved = approved;
+    }
+
+    public double getBuybackPrice() {
+        return buybackPrice;
+    }
+
+    public void setBuybackPrice(final double buybackPrice) {
+        this.buybackPrice = buybackPrice;
     }
 
     public boolean isApproved() {
