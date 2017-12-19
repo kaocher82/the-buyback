@@ -10,25 +10,32 @@
                           [(ngModel)]="appraisal.additionalRaw"></textarea>
         </div>
         <p>
-            <button class="btn btn-primary" (click)="executeAppraisal()">Evaluate</button>
+            <button class="btn btn-primary" (click)="executeAppraisal()">
+                Evaluate <span *ngIf="appraisal.link">and Add</span>
+            </button>
+            <button class="btn btn-danger" (click)="clearAppraisal()" *ngIf="appraisal.link">Clear</button>
             <a href="#/the-buyback" class="pull-right">How to create a buyback contract</a>
         </p>
         <p>Questions? Ask Avend Avalhar, Algorthan Gaterau or Rihan Shazih on Slack.</p>
-        <span *ngIf="isLoadingAppraisal">Loading ...</span>
+        <div class="alert alert-info" *ngIf="isLoadingAppraisal">Loading ...</div>
         <div *ngIf="appraisal.link">
-            <p>Buyback Price: {{appraisal.totalBuy * 0.9 | number:'1.0-0'}} ISK (90% Jita Buy)</p>
-            <p>Link: <a href="{{appraisal.link}}" target="_blank">{{appraisal.link}}</a></p>
-            <table class="table table-striped" *ngIf="appraisal && appraisal.items" style="background-color: #eee">
+            <p style="font-size: x-large;">Buyback Price: <b>{{appraisal.buybackPrice | number:'1.0-0'}}</b> ISK</p>
+            <p>Evepraisal: <a href="{{appraisal.link}}" target="_blank">{{appraisal.link}}</a></p>
+            <table class="table table-striped" *ngIf="appraisal && appraisal.items" style="background-color: #eee; font-size:small;">
                 <thead>
                 <tr>
                     <th>Name</th>
                     <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Rate</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr *ngFor="let item of appraisal.items">
-                    <td><img src="https://image.eveonline.com/Type/{{item['typeID']}}_32.png" /> {{item['typeName']}}</td>
+                    <td><img style="height: 20px; width: 20px;" src="https://image.eveonline.com/Type/{{item['typeID']}}_32.png" /> {{item['typeName']}}</td>
                     <td>{{item['quantity'] | number:'1.0-0'}}</td>
+                    <td>{{item['jitaBuyPerUnit'] * item['rate'] | number:'1.0-0'}}</td>
+                    <td>{{item['rate'] * 100 | number:'1.0-0'}}%</td>
                 </tr>
                 </tbody>
             </table>

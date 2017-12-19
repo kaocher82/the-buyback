@@ -149,6 +149,7 @@ public class ContractsResource {
                                            contract.getPrice(),
                                            contract.getBuyValue(),
                                            contract.isDeclineMailSent(),
-                                           contract.isApproved());
+                                           contract.isApproved(),
+                                           contract.getBuybackPrice());
     }
 }

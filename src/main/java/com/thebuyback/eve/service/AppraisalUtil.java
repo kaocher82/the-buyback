@@ -60,11 +60,21 @@ public class AppraisalUtil {
             int typeID = jsonObject.getInt("typeID");
             String typeName = jsonObject.getString("typeName");
             int quantity = jsonObject.getInt("quantity");
-            result.add(new ItemWithQuantity(typeName, typeID, quantity));
+            final double jitaBuyPerUnit = getJitaBuyPrice(jsonObject);
+            result.add(new ItemWithQuantity(typeName, typeID, quantity, jitaBuyPerUnit));
         }
         return result.stream()
             .sorted(Comparator.comparing(ItemWithQuantity::getTypeName))
             .collect(Collectors.toList());
+    }
+
+    private static double getJitaBuyPrice(final JSONObject jsonObject) {
+        final JSONObject prices = jsonObject.getJSONObject("prices");
+        if (!prices.has("buy")) {
+            return 0;
+        }
+        final JSONObject buyPrices = prices.getJSONObject("buy");
+        return buyPrices.has("max") ? buyPrices.getDouble("max") : 0;
     }
 
     static double getSell(final String appraisalLink) throws UnirestException {
