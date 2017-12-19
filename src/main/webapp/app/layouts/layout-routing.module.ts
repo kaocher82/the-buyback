@@ -4,12 +4,12 @@ import { RouterModule } from '@angular/router';
 import {navbarRoute} from '../app.route';
 import {errorRoute} from './';
 import {ssoRoute} from "./";
-import {loginRoute} from "./login/login.route";
+import {loginRoutes} from "./login/login.route";
 
 const LAYOUT_ROUTES = [
     navbarRoute,
     ssoRoute,
-    loginRoute,
+    ...loginRoutes,
     ...errorRoute
 ];
 
