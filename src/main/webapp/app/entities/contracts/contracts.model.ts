@@ -10,6 +10,7 @@ export class Contracts implements BaseEntity {
         public declineMailSent?: boolean,
         public approved?: boolean,
         public buybackPrice?: number,
+        public appraisalLink?: string
     ) {
     }
 }

@@ -46,7 +46,7 @@ public class ContractsResource {
 
     public static final long THE_BUYBACK = 98503372L;
     private static final double BUYBACK_PERCENTAGE = 0.9;
-    private static final String MAIL_TEMPLATE = "Hi %s,\\n\\nYour contract from %s does not have the correct price (90%% Jita buy).\\n\\nThe contract price should be %s ISK (%s). Please withdraw the contract (if we haven't rejected it yet) and create a new one with the correct price.\\n\\nThe Buyback\\n\\nPLEASE DO NOT REPLY TO THIS MAIL\\nContact Avend Avalhar, Algorthan Gaterau or Rihan Shazih on Slack";
+    private static final String MAIL_TEMPLATE = "Hi %s,\\n\\nYour contract from %s does not have the correct price.\\n\\nThe contract price should be %s ISK (%s). Please withdraw the contract (if we haven't rejected it yet) and create a new one with the correct price.\\n\\nThe Buyback\\n\\nPLEASE DO NOT REPLY TO THIS MAIL\\nContact Avend Avalhar, Algorthan Gaterau or Rihan Shazih on Slack";
 
     private final ContractRepository contractRepository;
     private final JsonRequestService requestService;
@@ -150,6 +150,7 @@ public class ContractsResource {
                                            contract.getBuyValue(),
                                            contract.isDeclineMailSent(),
                                            contract.isApproved(),
-                                           contract.getBuybackPrice());
+                                           contract.getBuybackPrice(),
+                                           contract.getAppraisalLink());
     }
 }
