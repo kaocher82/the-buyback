@@ -19,16 +19,24 @@
             <td>{{contract.created | date:'short'}}</td>
             <td>{{contract.price | number:'1.0-0'}} ISK</td>
             <td>{{contract.jitaBuy | number:'1.0-0'}} ISK</td>
-            <td>{{contract.buybackPrice  | number:'1.0-0'}} ISK</td>
-            <td>{{(1 - (contract.buybackPrice / contract.price)) * 100  | number:'1.0-0'}} %</td>
+            <td>{{contract.buybackPrice | number:'1.0-0'}} ISK</td>
+            <td>{{(1 - (contract.buybackPrice / contract.price)) * 100 | number:'1.0-0'}} %</td>
             <td>
-                <button *ngIf="!contract.declineMailSent && !contract.approved && (1 - (contract.price / contract.buybackPrice)) >= 0.3 && contract.buybackPrice > 0" class="btn btn-danger" (click)="sendDeclineMail(contract.id)">Decline</button>
-                <button *ngIf="!contract.declineMailSent && !contract.approved && (1 - (contract.price / contract.buybackPrice)) >= 0.3 && contract.buybackPrice > 0" class="btn btn-success" (click)="approveContract(contract.id)">Approve</button>
+                <button *ngIf="!contract.declineMailSent && !contract.approved && (1 - (contract.buybackPrice / contract.price)) >= 0.3 && contract.buybackPrice > 0"
+                        class="btn btn-danger" (click)="sendDeclineMail(contract.id)">Decline
+                </button>
+                <button *ngIf="!contract.declineMailSent && !contract.approved && (1 - (contract.buybackPrice / contract.price)) >= 0.3 && contract.buybackPrice > 0"
+                        class="btn btn-success" (click)="approveContract(contract.id)">Approve
+                </button>
                 <div *ngIf="contract.declineMailSent" class="alert alert-danger">
-                    This contract was declined.<br/>Please reject it ingame.
+                    This contract was declined.
+                    <br />
+                    Please reject it ingame.
                 </div>
                 <div *ngIf="contract.approved" class="alert alert-info">
-                    This contract was approved.<br/>Please accept it ingame.
+                    This contract was approved.
+                    <br />
+                    Please accept it ingame.
                 </div>
             </td>
         </tr>
