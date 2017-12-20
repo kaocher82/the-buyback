@@ -34,7 +34,7 @@
                 <tr *ngFor="let item of appraisal.items">
                     <td><img style="height: 20px; width: 20px;" src="https://image.eveonline.com/Type/{{item['typeID']}}_32.png" /> {{item['typeName']}}</td>
                     <td>{{item['quantity'] | number:'1.0-0'}}</td>
-                    <td>{{item['jitaBuyPerUnit'] * item['rate'] | number:'1.0-0'}}</td>
+                    <td>{{item['quantity'] * item['jitaBuyPerUnit'] * item['rate'] | number:'1.0-0'}}</td>
                     <td>{{item['rate'] * 100 | number:'1.0-0'}}%</td>
                 </tr>
                 </tbody>
