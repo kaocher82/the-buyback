@@ -8,7 +8,7 @@
             <th>Created</th>
             <th>Price</th>
             <th>Jita Buy</th>
-            <th>Buyback Price</th>
+            <th>Buyback</th>
             <th>Deviation</th>
             <th></th>
         </tr>
@@ -16,11 +16,11 @@
         <tbody>
         <tr *ngFor="let contract of contracts">
             <td>{{contract.client}}</td>
-            <td>{{contract.created | date:'medium'}}</td>
+            <td>{{contract.created | date:'short'}}</td>
             <td>{{contract.price | number:'1.0-0'}} ISK</td>
             <td>{{contract.jitaBuy | number:'1.0-0'}} ISK</td>
             <td>{{contract.buybackPrice  | number:'1.0-0'}} ISK</td>
-            <td>{{(1 - (contract.price / contract.buybackPrice)) * 100  | number:'1.0-0'}} %</td>
+            <td>{{(1 - (contract.buybackPrice / contract.price)) * 100  | number:'1.0-0'}} %</td>
             <td>
                 <button *ngIf="!contract.declineMailSent && !contract.approved && (1 - (contract.price / contract.buybackPrice)) >= 0.3 && contract.buybackPrice > 0" class="btn btn-danger" (click)="sendDeclineMail(contract.id)">Decline</button>
                 <button *ngIf="!contract.declineMailSent && !contract.approved && (1 - (contract.price / contract.buybackPrice)) >= 0.3 && contract.buybackPrice > 0" class="btn btn-success" (click)="approveContract(contract.id)">Approve</button>

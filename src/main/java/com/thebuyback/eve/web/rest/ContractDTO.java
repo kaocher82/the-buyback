@@ -23,7 +23,7 @@ public class ContractDTO {
 
     public ContractDTO(final long id, final String client, final Instant created, final double price,
                        final double jitaBuy, final boolean declineMailSent, final boolean approved,
-                       final double buybackPrice) {
+                       final Double buybackPrice) {
         this.id = id;
         this.client = client;
         this.created = created;
@@ -31,6 +31,7 @@ public class ContractDTO {
         this.jitaBuy = jitaBuy;
         this.declineMailSent = declineMailSent;
         this.approved = approved;
+        this.buybackPrice = buybackPrice;
     }
 
     public Double getBuybackPrice() {

@@ -62,7 +62,7 @@ public class Contract {
         this.approved = approved;
     }
 
-    public double getBuybackPrice() {
+    public Double getBuybackPrice() {
         return buybackPrice;
     }
 
