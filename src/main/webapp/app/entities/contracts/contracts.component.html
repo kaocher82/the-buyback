@@ -20,7 +20,7 @@
             <td>{{contract.price | number:'1.0-0'}} ISK</td>
             <td>{{contract.jitaBuy | number:'1.0-0'}} ISK <a *ngIf="contract.appraisalLink" href="{{contract.appraisalLink}}" target="_blank"><i class="fa fa-external-link"></i></a></td>
             <td>{{contract.buybackPrice | number:'1.0-0'}} ISK</td>
-            <td *ngIf="contract.price > 0">{{(1 - (contract.buybackPrice / contract.price)) * 100 | number:'1.0-0'}} %</td>
+            <td *ngIf="contract.price">{{(1 - (contract.buybackPrice / contract.price)) * 100 | number:'1.0-0'}} %</td>
             <td>
                 <button *ngIf="!contract.declineMailSent && !contract.approved && (1 - (contract.buybackPrice / contract.price)) >= 0.03 && contract.buybackPrice > 0"
                         class="btn btn-danger" (click)="sendDeclineMail(contract.id)">Decline
