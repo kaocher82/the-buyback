@@ -14,6 +14,8 @@ public class Appraisal {
     private String additionalRaw;
     @Field("jitaBuy")
     private Double jitaBuy;
+    @Field("jitaSell")
+    private Double jitaSell;
     @Field("items")
     private List<ItemWithQuantity> items;
     @Field("buybackPrice")
@@ -75,6 +77,14 @@ public class Appraisal {
 
     public void setItems(final List<ItemWithQuantity> items) {
         this.items = items;
+    }
+
+    public Double getJitaSell() {
+        return jitaSell;
+    }
+
+    public void setJitaSell(final Double jitaSell) {
+        this.jitaSell = jitaSell;
     }
 
     @Override

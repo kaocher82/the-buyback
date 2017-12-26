@@ -17,6 +17,7 @@ import {
 import {CapsOnContractComponent} from "./caps-on-contract/capsoncontract.component";
 import {AppraisalComponent} from "./appraisal/appraisal.component";
 import {RouterModule} from "@angular/router";
+import {ClipboardService} from "./appraisal/clipboard.service";
 
 @NgModule({
     imports: [
@@ -38,7 +39,8 @@ import {RouterModule} from "@angular/router";
         AuthServerProvider,
         UserService,
         DatePipe,
-        ConfigService
+        ConfigService,
+        ClipboardService
     ],
     entryComponents: [
     ],

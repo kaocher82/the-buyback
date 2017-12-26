@@ -77,7 +77,7 @@ public class AppraisalUtil {
         return buyPrices.has("max") ? buyPrices.getDouble("max") : 0;
     }
 
-    static double getSell(final String appraisalLink) throws UnirestException {
+    public static double getSell(final String appraisalLink) throws UnirestException {
         String url = appraisalLink + ".json";
         HttpResponse<JsonNode> jsonResponse = Unirest.get(url).asJson();
         double sell = 0;

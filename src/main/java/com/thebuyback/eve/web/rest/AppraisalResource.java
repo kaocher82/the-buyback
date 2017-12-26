@@ -63,6 +63,7 @@ public class AppraisalResource {
         appraisal.updateRaw();
         appraisal.setLink(AppraisalUtil.getLinkFromRaw(appraisal.getRaw()));
         appraisal.setJitaBuy(AppraisalUtil.getBuy(appraisal.getLink()));
+        appraisal.setJitaSell(AppraisalUtil.getSell(appraisal.getLink()));
         appraisal.setItems(AppraisalUtil.getItems(appraisal.getLink()));
         final List<Long> typeIds = appraisal.getItems().stream().map(ItemWithQuantity::getTypeID)
                                                .collect(Collectors.toList());

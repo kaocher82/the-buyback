@@ -7,14 +7,16 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.thebuyback.eve.domain.CapitalShip;
+import com.thebuyback.eve.domain.CapitalShipOnContract;
 import com.thebuyback.eve.domain.CapitalShipStatus;
 import com.thebuyback.eve.domain.Contract;
 import com.thebuyback.eve.domain.Token;
@@ -22,6 +24,7 @@ import com.thebuyback.eve.repository.CapitalShipRepository;
 import com.thebuyback.eve.repository.ContractRepository;
 import com.thebuyback.eve.repository.TokenRepository;
 import com.thebuyback.eve.service.JsonRequestService;
+import com.thebuyback.eve.web.dto.CapitalShipOnContractDTO;
 
 import static com.thebuyback.eve.security.AuthoritiesConstants.MANAGER;
 import static com.thebuyback.eve.service.ContractParser.PARSER_CLIENT;
@@ -138,8 +141,31 @@ public class ContractsResource {
     }
 
     @GetMapping("/caps")
-    public ResponseEntity<List<CapitalShip>> getPublicCapitals() {
-        return ResponseEntity.ok(capitalShipRepository.findAllByStatus(CapitalShipStatus.PUBLIC_CONTRACT));
+    public ResponseEntity<List<CapitalShipOnContractDTO>> getPublicCapitals() {
+        List<CapitalShipOnContract> publicHulls = capitalShipRepository.findAllByStatus(CapitalShipStatus.PUBLIC_CONTRACT);
+        List<CapitalShipOnContractDTO> result = aggregatePublicHulls(publicHulls);
+        return ResponseEntity.ok(result);
+    }
+
+    private List<CapitalShipOnContractDTO> aggregatePublicHulls(final List<CapitalShipOnContract> publicHulls) {
+        Map<String, Integer> map = new HashMap<>();
+        for (CapitalShipOnContract publicHull : publicHulls) {
+            final String typeName = publicHull.getTypeName();
+            if (!map.containsKey(typeName)) {
+                map.put(typeName, 1);
+            } else {
+                map.put(typeName, map.get(typeName) + 1);
+            }
+        }
+        return map.entrySet().stream().map(entry -> {
+            int typeId = 0;
+            for (final CapitalShipOnContract hull : publicHulls) {
+                if (hull.getTypeName().equals(entry.getKey())) {
+                    typeId = hull.getTypeId();
+                }
+            }
+            return new CapitalShipOnContractDTO(entry.getValue(), entry.getKey(), typeId);
+        }).collect(Collectors.toList());
     }
 
     private static Function<Contract, ContractDTO> mapToDTO() {

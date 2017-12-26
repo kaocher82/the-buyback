@@ -1,15 +1,15 @@
 package com.thebuyback.eve.domain;
 
-public class CapitalShip {
+public class CapitalShipOnContract {
     private CapitalShipStatus status;
     private double price;
     private int typeId;
     private String typeName;
 
-    public CapitalShip() {
+    public CapitalShipOnContract() {
     }
 
-    public CapitalShip(final CapitalShipStatus status, final double price, final int typeId, final String typeName) {
+    public CapitalShipOnContract(final CapitalShipStatus status, final double price, final int typeId, final String typeName) {
         this.status = status;
         this.price = price;
         this.typeId = typeId;

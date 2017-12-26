@@ -12,8 +12,7 @@ import static java.util.Arrays.asList;
 import com.codahale.metrics.annotation.Timed;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.thebuyback.eve.domain.Appraisal;
-import com.thebuyback.eve.domain.CapitalShip;
+import com.thebuyback.eve.domain.CapitalShipOnContract;
 import com.thebuyback.eve.domain.CapitalShipStatus;
 import com.thebuyback.eve.domain.Contract;
 import com.thebuyback.eve.domain.ItemBuybackRate;
@@ -88,7 +87,7 @@ public class ContractParser {
     @Async
     @Timed
     public void loadOutstandingCaps() {
-        List<CapitalShip> outstandingCaps = contractRepository
+        List<CapitalShipOnContract> outstandingCaps = contractRepository
             .findAllByStatusAndAssigneeIdAndIssuerCorporationId("outstanding", 0L, THE_BUYBACK)
             .stream().map(this::mapToCapitalShip).collect(Collectors.toList());
 
@@ -96,11 +95,11 @@ public class ContractParser {
         capitalShipRepository.save(outstandingCaps);
     }
 
-    private CapitalShip mapToCapitalShip(final Contract contract) {
+    private CapitalShipOnContract mapToCapitalShip(final Contract contract) {
         Entry<Integer, Integer> first = contract.getItems().entrySet().iterator().next();
         int typeId = first.getKey();
         final String typeName = typeNameService.getTypeName(typeId);
-        return new CapitalShip(CapitalShipStatus.PUBLIC_CONTRACT, contract.getPrice(), typeId, typeName);
+        return new CapitalShipOnContract(CapitalShipStatus.PUBLIC_CONTRACT, contract.getPrice(), typeId, typeName);
     }
 
     private void parseContract(final String accessToken, final JSONArray contractArray, final int i)

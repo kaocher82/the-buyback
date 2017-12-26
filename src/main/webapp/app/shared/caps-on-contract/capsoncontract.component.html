@@ -1,26 +1,21 @@
 <div class="row" *ngIf="capsOnContract">
     <div class="col-md-12">
         <h2>Sexy Caps - on contract and demand</h2>
-        <p>We sell all the caps and provide delivery to GE and 68FT. Normal caps are deposit free!</p>
-        <p *ngIf="!account"><a routerLink="login">Sign in</a> to order capitals and supers!</p>
-        <button *ngIf="account" class="btn btn-primary" [routerLink]="['/order-caps']">Place an Order</button>
-        <br/>
-        <br/>
-        <p>Or grab one from the public contracts in GE! <b>No waiting, just fun.</b></p>
+        <p>We sell all the caps. <span *ngIf="!account"><a routerLink="login">Sign in</a> to order supers and titans.</span> Normal capitals are available from the public contracts in GE. <br/><b>No waiting, just fun!</b></p>
+        <p *ngIf="account"><button class="btn btn-primary" [routerLink]="['/order-caps']">Order a Super or Titan</button></p>
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>Hulls on Public Contract</th>
-                <th>Public Contract Prices</th>
+                <th>Capital Hull</th>
+                <th>Quantity listed in GE</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngFor="let item of capsOnContract">
                 <td><img src="https://image.eveonline.com/Type/{{item['typeId']}}_32.png" /> {{item['typeName']}}</td>
-                <td>{{item['price'] | number:'1.0-0'}} ISK</td>
+                <td>{{item['quantity'] | number:'1.0-0'}}</td>
             </tr>
             </tbody>
         </table>
-        <p>Want more? <a routerLink="order-caps">Place an order</a>.</p>
     </div>
 </div>

@@ -1,3 +1,12 @@
+<style>
+    .show{
+        opacity: 1 !important;
+    }
+    .step{
+        opacity: 0;
+        transition: .5s ease-in-out all;
+    }
+</style>
 <div class="row">
     <div class="col-md-12">
         <h2>The Buyback Appraisal - 90% Jita Buy</h2>
@@ -19,8 +28,20 @@
         <p>Questions? Ask Avend Avalhar, Algorthan Gaterau or Rihan Shazih on Slack.</p>
         <div class="alert alert-info" *ngIf="isLoadingAppraisal">Loading ...</div>
         <div *ngIf="appraisal.link">
-            <p style="font-size: x-large;">Buyback Price: <b>{{appraisal.buybackPrice | number:'1.0-0'}}</b> ISK</p>
-            <p>Evepraisal: <a href="{{appraisal.link}}" target="_blank">{{appraisal.link}}</a></p>
+            <p style="font-size: x-large;">Buyback Price: <b id="buybackPrice" #buybackPrice>{{appraisal.buybackPrice | number:'1.0-0'}}</b> ISK
+                <a (click)="copyPrice()">
+                    <i style="color: grey" class="fa fa-clipboard"></i>
+                </a>
+                <span [class.show]="showCopiedPrice" class="step" style="color: green; font-size: small;"><b>Copied!</b></span>
+            </p>
+            <p>Jita Sell: {{appraisal.jitaSell | number:'1.0-0'}} ISK | Jita Buy: {{appraisal.jitaBuy | number:'1.0-0'}} ISK</p>
+            <p>Evepraisal:
+                <a href="{{appraisal.link}}" target="_blank" id="appraisalLink" #appraisalLink>{{appraisal.link}}</a>
+                <a (click)="copyLink()">
+                    <i style="color: grey" class="fa fa-clipboard"></i>
+                </a>
+                <span [class.show]="showCopiedLink" class="step" style="color: green; font-size: small;"><b>Copied!</b></span>
+            </p>
             <table class="table table-striped" *ngIf="appraisal && appraisal.items" style="background-color: #eee; font-size:small;">
                 <thead>
                 <tr>

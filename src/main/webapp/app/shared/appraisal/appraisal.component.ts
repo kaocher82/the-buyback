@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Http} from "@angular/http";
 import {Appraisal} from "./appraisal.model";
+import {ClipboardService} from "./clipboard.service";
 
 @Component({
     selector: 'jhi-appraisal',
@@ -12,8 +13,12 @@ export class AppraisalComponent implements OnInit {
     submitDone: boolean;
     appraisal: Appraisal;
 
+    showCopiedPrice: boolean;
+    showCopiedLink: boolean;
+
     constructor(
-        private http: Http
+        private http: Http,
+        private clipboard: ClipboardService
     ) {
     }
 
@@ -34,5 +39,23 @@ export class AppraisalComponent implements OnInit {
 
     clearAppraisal() {
         this.appraisal = new Appraisal();
+    }
+
+    copyPrice() {
+        this.clipboard.copy(this.appraisal.buybackPrice + '');
+
+        this.showCopiedPrice = true;
+        setTimeout(function() {
+            this.showCopiedPrice = false;
+        }.bind(this), 4000);
+    }
+
+    copyLink() {
+        this.clipboard.copy(this.appraisal.link);
+
+        this.showCopiedLink = true;
+        setTimeout(function() {
+            this.showCopiedLink = false;
+        }.bind(this), 4000);
     }
 }
