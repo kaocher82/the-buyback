@@ -18,7 +18,7 @@
             <td>{{contract.client}}</td>
             <td>{{contract.created | date:'short'}}</td>
             <td>{{contract.price | number:'1.0-0'}} ISK</td>
-            <td>{{contract.jitaBuy | number:'1.0-0'}} ISK<a *ngIf="contract.appraisalLink" href="{{contract.appraisalLink}}"> <i class="fa fa-external-link"></i></a></td>
+            <td>{{contract.jitaBuy | number:'1.0-0'}} ISK <a *ngIf="contract.appraisalLink" href="{{contract.appraisalLink}}" target="_blank"><i class="fa fa-external-link"></i></a></td>
             <td>{{contract.buybackPrice | number:'1.0-0'}} ISK</td>
             <td *ngIf="contract.price">{{(1 - (contract.buybackPrice / contract.price)) * 100 | number:'1.0-0'}} %</td>
             <td>

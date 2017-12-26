@@ -31,7 +31,7 @@ export class ClipboardService {
         var promise = new Promise(
             ( resolve, reject ) : void => {
 
-                var textarea = null;
+                let textarea = null;
 
                 try {
 
