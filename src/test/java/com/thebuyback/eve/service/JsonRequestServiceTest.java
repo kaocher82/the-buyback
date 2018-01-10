@@ -28,24 +28,24 @@ public class JsonRequestServiceTest {
 
     @Test
     public void getAccessToken() throws Exception {
-        doReturn(null).when(sut).executeRequest(any(MultipartBody.class), eq("accessToken"));
+        doReturn(null).when(sut).executeRequest(any(MultipartBody.class));
 
         Optional<JsonNode> response = sut.getAccessToken("clientId", "clientSecret", "code");
         assertNull(response);
 
         verify(sut).post(eq("https://login.eveonline.com/oauth/token"), eq("clientId"), eq("clientSecret"), anyMap(), anyMap());
-        verify(sut).executeRequest(any(MultipartBody.class), eq("accessToken"));
+        verify(sut).executeRequest(any(MultipartBody.class));
     }
 
     @Test
     public void getUserDetails() throws Exception {
-        doReturn(null).when(sut).executeRequest(any(GetRequest.class), eq("oauthVerify"));
+        doReturn(null).when(sut).executeRequest(any(GetRequest.class));
 
         Optional<JsonNode> response = sut.getUserDetails("token");
         assertNull(response);
 
         verify(sut).get(eq("https://login.eveonline.com/oauth/verify"), anyMap());
-        verify(sut).executeRequest(any(GetRequest.class), eq("oauthVerify"));
+        verify(sut).executeRequest(any(GetRequest.class));
     }
 
     @Test

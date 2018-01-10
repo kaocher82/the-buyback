@@ -72,7 +72,7 @@ public class JsonRequestService {
 
         MultipartBody postRequest = post(url, clientId, clientSecret, headers, fields);
 
-        return executeRequest(postRequest, "accessToken");
+        return executeRequest(postRequest);
     }
 
     public Optional<JsonNode> getUserDetails(final String accessToken) {
@@ -82,7 +82,7 @@ public class JsonRequestService {
 
         GetRequest getRequest = get(url, headers);
 
-        return executeRequest(getRequest, "oauthVerify");
+        return executeRequest(getRequest);
     }
 
     private Optional<JsonNode> justGet(final String url, final String useCase) {
