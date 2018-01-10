@@ -27,47 +27,25 @@ public class JsonRequestServiceTest {
     private JsonRequestService sut = spy(new JsonRequestService());
 
     @Test
-    public void getKillmails() throws Exception {
-        doReturn(null).when(sut).executeRequest(any(GetRequest.class));
-
-        Optional<JsonNode> killmails = sut.getKillmails(1L, 2L);
-        assertNull(killmails);
-
-        verify(sut).get("https://zkillboard.com/api/kills/characterID/1/pastSeconds/2/no-items/", null);
-        verify(sut).executeRequest(any(GetRequest.class));
-    }
-
-    @Test
-    public void getKillmail() throws Exception {
-        doReturn(null).when(sut).executeRequest(any(GetRequest.class));
-
-        Optional<JsonNode> killmail = sut.getKillmail(1L);
-        assertNull(killmail);
-
-        verify(sut).get("https://zkillboard.com/api/killID/1/no-items/", null);
-        verify(sut).executeRequest(any(GetRequest.class));
-    }
-
-    @Test
     public void getAccessToken() throws Exception {
-        doReturn(null).when(sut).executeRequest(any(MultipartBody.class));
+        doReturn(null).when(sut).executeRequest(any(MultipartBody.class), eq("accessToken"));
 
         Optional<JsonNode> response = sut.getAccessToken("clientId", "clientSecret", "code");
         assertNull(response);
 
         verify(sut).post(eq("https://login.eveonline.com/oauth/token"), eq("clientId"), eq("clientSecret"), anyMap(), anyMap());
-        verify(sut).executeRequest(any(MultipartBody.class));
+        verify(sut).executeRequest(any(MultipartBody.class), eq("accessToken"));
     }
 
     @Test
     public void getUserDetails() throws Exception {
-        doReturn(null).when(sut).executeRequest(any(GetRequest.class));
+        doReturn(null).when(sut).executeRequest(any(GetRequest.class), eq("oauthVerify"));
 
         Optional<JsonNode> response = sut.getUserDetails("token");
         assertNull(response);
 
         verify(sut).get(eq("https://login.eveonline.com/oauth/verify"), anyMap());
-        verify(sut).executeRequest(any(GetRequest.class));
+        verify(sut).executeRequest(any(GetRequest.class), eq("oauthVerify"));
     }
 
     @Test

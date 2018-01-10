@@ -1,5 +1,9 @@
 package com.thebuyback.eve.service;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +34,12 @@ public class JsonRequestService {
     private static final String ESI_BASE_URL = "https://esi.tech.ccp.is";
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Map<String, String> defaultHeaders;
+    private final Map<String, Instant> esiCacheExpiries = new HashMap<>();
+
+    private static final DateTimeFormatter EXPIRY_FORMATTER = new DateTimeFormatterBuilder()
+        .appendPattern("EEE, dd MMM yyyy HH:mm:ss zzz")
+        .toFormatter()
+        .withZone(ZoneOffset.UTC);
 
     public JsonRequestService() {
         defaultHeaders = new HashMap<>();
@@ -37,16 +47,8 @@ public class JsonRequestService {
         defaultHeaders.put("Accept-Encoding", "gzip");
     }
 
-    Optional<JsonNode> getKillmails(final Long characterId, final long duration) {
-        String url = "https://zkillboard.com/api/kills/characterID/" + characterId + "/pastSeconds/" + duration
-                     + "/no-items/";
-        return justGet(url);
-    }
-
-    public Optional<JsonNode> getKillmail(final Long killId) {
-        String url = "https://zkillboard.com/api/killID/" + killId + "/no-items/";
-        GetRequest getRequest = get(url, null);
-        return executeRequest(getRequest);
+    public Instant getNextExecutionTime(final String useCase) {
+        return esiCacheExpiries.containsKey(useCase) ? esiCacheExpiries.get(useCase) : Instant.now().plusSeconds(60);
     }
 
     public String getAccessToken(final Token token) throws UnirestException {
@@ -70,7 +72,7 @@ public class JsonRequestService {
 
         MultipartBody postRequest = post(url, clientId, clientSecret, headers, fields);
 
-        return executeRequest(postRequest);
+        return executeRequest(postRequest, "accessToken");
     }
 
     public Optional<JsonNode> getUserDetails(final String accessToken) {
@@ -80,25 +82,37 @@ public class JsonRequestService {
 
         GetRequest getRequest = get(url, headers);
 
-        return executeRequest(getRequest);
+        return executeRequest(getRequest, "oauthVerify");
     }
 
-    private Optional<JsonNode> justGet(final String url) {
-        return executeRequest(get(url, null));
+    private Optional<JsonNode> justGet(final String url, final String useCase) {
+        return executeRequest(get(url, null), useCase);
     }
 
     Optional<JsonNode> executeRequest(final BaseRequest request) {
+        return executeRequest(request, null);
+    }
+
+    Optional<JsonNode> executeRequest(final BaseRequest request, final String useCase) {
         try {
             HttpResponse<JsonNode> response = request.asJson();
             if (response.getStatus() != 200) {
                 log.warn(WRONG_STATUS_CODE, request.getHttpRequest().getUrl(), response.getStatus());
                 return Optional.empty();
             }
+            if (null != useCase) {
+                final String expires = response.getHeaders().getFirst("Expires");
+                esiCacheExpiries.put(useCase, parseInstant(expires));
+            }
             return Optional.of(response.getBody());
         } catch (UnirestException e) {
             log.error(UNIREST_EXCEPTION, request.getHttpRequest().getUrl(), e);
             return Optional.empty();
         }
+    }
+
+    private Instant parseInstant(final CharSequence dateString) {
+        return EXPIRY_FORMATTER.parse(dateString, Instant::from);
     }
 
     GetRequest get(String url, Map<String, String> headers) {
@@ -114,15 +128,15 @@ public class JsonRequestService {
     }
 
     Optional<JsonNode> getCorpContracts(final String accessToken) {
-        return justGet(String.format("%s/v1/corporations/%d/contracts/?token=%s", ESI_BASE_URL, CORPORATION, accessToken));
+        return justGet(String.format("%s/v1/corporations/%d/contracts/?token=%s", ESI_BASE_URL, CORPORATION, accessToken), "corpContracts");
     }
 
     Optional<JsonNode> getCorpContractItems(final long contractId, final String accessToken) {
-        return justGet(String.format("%s/v1/corporations/%d/contracts/%d/items/?token=%s", ESI_BASE_URL, CORPORATION, contractId, accessToken));
+        return justGet(String.format("%s/v1/corporations/%d/contracts/%d/items/?token=%s", ESI_BASE_URL, CORPORATION, contractId, accessToken), "corpContractItems");
     }
 
     Optional<JsonNode> getCharacterName(final long characterId) {
-        return justGet(String.format("%s/v1/characters/names/?character_ids=%d", ESI_BASE_URL, characterId));
+        return justGet(String.format("%s/v1/characters/names/?character_ids=%d", ESI_BASE_URL, characterId), "characterName");
     }
 
     public Optional<String> sendMail(final long issuerId, final String mail, final String accessToken) {

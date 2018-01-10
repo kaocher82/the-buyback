@@ -1,6 +1,7 @@
 package com.thebuyback.eve.service;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +29,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.stereotype.Service;
 
 /**
@@ -38,7 +42,7 @@ import org.springframework.stereotype.Service;
  * Created on 08.11.2017
  */
 @Service
-public class ContractParser {
+public class ContractParser implements SchedulingConfigurer {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -65,28 +69,36 @@ public class ContractParser {
         this.buybackRateRepository = buybackRateRepository;
     }
 
-    @Scheduled(cron = "0 1/10 * * * *")
     @Async
     @Timed
-    public void loadNonCompletedContracts() throws UnirestException {
+    public void loadNonCompletedContracts() {
         final Token token = tokenRepository.findByClientId(PARSER_CLIENT).get(0);
-        final String accessToken = requestService.getAccessToken(token);
+        final String accessToken;
+        try {
+            accessToken = requestService.getAccessToken(token);
+        } catch (UnirestException e) {
+            log.error("Failed to get access token.", e);
+            return;
+        }
         final Optional<JsonNode> corpContracts = requestService.getCorpContracts(accessToken);
         if (corpContracts.isPresent()) {
             JSONArray contractArray = corpContracts.get().getArray();
             for (int i = 0; i < contractArray.length(); i++) {
-                parseContract(accessToken, contractArray, i);
+                try {
+                    parseContract(accessToken, contractArray, i);
+                } catch (UnirestException e) {
+                    log.error("Failed to parse contract.", e);
+                }
             }
             log.info("Contract parsing complete.");
         } else {
             log.warn("ESI did not return any contracts.");
         }
+
+        loadOutstandingCaps();
     }
 
-    @Scheduled(cron = "0 5/10 * * * *")
-    @Async
-    @Timed
-    public void loadOutstandingCaps() {
+    void loadOutstandingCaps() {
         List<CapitalShipOnContract> outstandingCaps = contractRepository
             .findAllByStatusAndAssigneeIdAndIssuerCorporationId("outstanding", 0L, THE_BUYBACK)
             .stream().map(this::mapToCapitalShip).collect(Collectors.toList());
@@ -179,7 +191,7 @@ public class ContractParser {
                                                sellValue, title, dateIssued, dateCompleted, client[0],
                                                declineMailSent, approved);
 
-        if (!isAssignedToBraveCollective(assigneeId)) {
+        if (!isAssignedToBraveCollective(assigneeId) && !isFromTheBuyback(issuerCorporationId)) {
             contract.setBuybackPrice(calcBuybackRate(contractId, accessToken));
         }
 
@@ -193,6 +205,10 @@ public class ContractParser {
         Optional<JsonNode> optional = requestService.getCorpContractItems(contractId, accessToken);
         if (optional.isPresent()) {
             JSONArray array = optional.get().getArray();
+            // contracts with 0 items are worth 0 isk
+            if (array.length() == 0) {
+                return 0;
+            }
             for (int i = 0; i < array.length(); i++) {
                 JSONObject item = array.getJSONObject(i);
                 long typeId = item.getLong("type_id");
@@ -227,8 +243,8 @@ public class ContractParser {
         return total;
     }
 
-    private boolean isFromTheBuyback(final long assigneeId) {
-        return assigneeId == THE_BUYBACK;
+    private boolean isFromTheBuyback(final long issuerCorporationId) {
+        return issuerCorporationId == THE_BUYBACK;
     }
 
     private boolean isAssignedToBraveCollective(final long assigneeId) {
@@ -260,5 +276,20 @@ public class ContractParser {
             }
         });
         return result;
+    }
+
+    @Bean()
+    public ThreadPoolTaskScheduler taskExecutor() {
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        scheduler.initialize();
+        return scheduler;
+    }
+
+    @Override
+    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.setScheduler(taskExecutor());
+        taskRegistrar.addTriggerTask(
+            this::loadNonCompletedContracts,
+            triggerContext -> Date.from(requestService.getNextExecutionTime("corpContracts")));
     }
 }
