@@ -115,6 +115,8 @@
 
         <p *ngIf="!pickedHull">Please select a hull to continue.</p>
         <p *ngIf="pickedHull && !deliveryLocation">Please select a delivery location to continue.</p>
+        <hr/>
+        <p>Fittings can be supplied at Jita Sell + 10%. Contact Rihan Shazih for more information.</p>
     </div>
 </div>
 <div *ngIf="orderComplete" class="alert alert-success">Order complete. <span *ngIf="pickedHull.typeName === 'Hel' || pickedHull.typeName === 'Wyvern'">Please send the deposit of 5,000,000,000 ISK to The Buyback. </span>You will soon get a contract with your capital ship.</div>
