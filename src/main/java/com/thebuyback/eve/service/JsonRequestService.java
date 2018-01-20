@@ -1,5 +1,7 @@
 package com.thebuyback.eve.service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -85,24 +87,29 @@ public class JsonRequestService {
         return executeRequest(getRequest);
     }
 
-    private Optional<JsonNode> justGet(final String url, final String useCase) {
-        return executeRequest(get(url, null), useCase);
+    private Optional<JsonNode> justGet(final String url, final String cachingUseCase) {
+        return executeRequest(get(url, null), cachingUseCase);
     }
 
     Optional<JsonNode> executeRequest(final BaseRequest request) {
         return executeRequest(request, null);
     }
 
-    Optional<JsonNode> executeRequest(final BaseRequest request, final String useCase) {
+    Optional<JsonNode> executeRequest(final BaseRequest request, final String cachingUserCase) {
         try {
             HttpResponse<JsonNode> response = request.asJson();
+            // warn if deprecated
+            if (response.getHeaders().containsKey("warning")) {
+                final String warning = response.getHeaders().getFirst("warning");
+                log.warn("Deprecation: {}, {}", warning, request.getHttpRequest().getUrl());
+            }
             if (response.getStatus() != 200) {
                 log.warn(WRONG_STATUS_CODE, request.getHttpRequest().getUrl(), response.getStatus());
                 return Optional.empty();
             }
-            if (null != useCase) {
+            if (null != cachingUserCase) {
                 final String expires = response.getHeaders().getFirst("Expires");
-                esiCacheExpiries.put(useCase, parseInstant(expires));
+                esiCacheExpiries.put(cachingUserCase, parseInstant(expires));
             }
             return Optional.of(response.getBody());
         } catch (UnirestException e) {
@@ -139,12 +146,40 @@ public class JsonRequestService {
         return justGet(String.format("%s/v1/characters/names/?character_ids=%d", ESI_BASE_URL, characterId), "characterName");
     }
 
+    Optional<JsonNode> getTypeInfo(final long typeId) {
+        return justGet(String.format("%s/v2/universe/types/%d", ESI_BASE_URL, typeId), null);
+    }
+
+    Optional<JsonNode> searchType(final String typeName) {
+        final String encodedTYpeName;
+        try {
+            encodedTYpeName = URLEncoder.encode(typeName, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        return justGet(String.format("%s/v2/search/?categories=inventory_type&search=%s&strict=true", ESI_BASE_URL,
+                                     encodedTYpeName), null);
+    }
+
+    Optional<JsonNode> getGroupInfo(final long groupId) {
+        return justGet(String.format("%s/v1/universe/groups/%d", ESI_BASE_URL, groupId), null);
+    }
+
+    Optional<JsonNode> getCategoryInfo(final long categoryId) {
+        return justGet(String.format("%s/v1/universe/categories/%d", ESI_BASE_URL, categoryId), null);
+    }
+
     public Optional<String> sendMail(final long issuerId, final String mail, final String accessToken) {
         final String body = String.format(BODY_TEMPLATE, issuerId, mail);
-        RequestBodyEntity request = post(ESI_BASE_URL + String.format("/v1/characters/%d/mail/?token=%s", MAIL_CHAR, accessToken), body);
+        RequestBodyEntity request = post(String.format("%s/v1/characters/%d/mail/?token=%s", ESI_BASE_URL, MAIL_CHAR, accessToken), body);
 
         try {
             HttpResponse<String> response = request.asString();
+            // warn if deprecated
+            if (response.getHeaders().containsKey("warning")) {
+                final String warning = response.getHeaders().getFirst("warning");
+                log.warn("Deprecation: {}, {}", warning, request.getHttpRequest().getUrl());
+            }
             if (response.getStatus() != 201) {
                 log.warn(WRONG_STATUS_CODE, request.getHttpRequest().getUrl(), response.getStatus());
                 return Optional.empty();
@@ -155,4 +190,5 @@ public class JsonRequestService {
             return Optional.empty();
         }
     }
+
 }

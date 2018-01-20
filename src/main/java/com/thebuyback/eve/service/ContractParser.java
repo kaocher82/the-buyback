@@ -41,7 +41,7 @@ import org.springframework.stereotype.Service;
  *
  * Created on 08.11.2017
  */
-@Service
+//@Service
 public class ContractParser implements SchedulingConfigurer {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -51,20 +51,20 @@ public class ContractParser implements SchedulingConfigurer {
     private final JsonRequestService requestService;
     private final TokenRepository tokenRepository;
     private final ContractRepository contractRepository;
-    private final TypeNameService typeNameService;
+    private final TypeService typeService;
     private final CapitalShipRepository capitalShipRepository;
     private final ItemBuybackRateRepository buybackRateRepository;
 
     public ContractParser(final JsonRequestService requestService,
                           final TokenRepository tokenRepository,
                           final ContractRepository contractRepository,
-                          final TypeNameService typeNameService,
+                          final TypeService typeService,
                           final CapitalShipRepository capitalShipRepository,
                           final ItemBuybackRateRepository buybackRateRepository) {
         this.requestService = requestService;
         this.tokenRepository = tokenRepository;
         this.contractRepository = contractRepository;
-        this.typeNameService = typeNameService;
+        this.typeService = typeService;
         this.capitalShipRepository = capitalShipRepository;
         this.buybackRateRepository = buybackRateRepository;
     }
@@ -110,7 +110,7 @@ public class ContractParser implements SchedulingConfigurer {
     private CapitalShipOnContract mapToCapitalShip(final Contract contract) {
         Entry<Integer, Integer> first = contract.getItems().entrySet().iterator().next();
         int typeId = first.getKey();
-        final String typeName = typeNameService.getTypeName(typeId);
+        final String typeName = typeService.getNameByTypeId(typeId);
         return new CapitalShipOnContract(CapitalShipStatus.PUBLIC_CONTRACT, contract.getPrice(), typeId, typeName);
     }
 
@@ -213,7 +213,7 @@ public class ContractParser implements SchedulingConfigurer {
                 JSONObject item = array.getJSONObject(i);
                 long typeId = item.getLong("type_id");
                 long quantity = item.getLong("quantity");
-                String typeName = typeNameService.getTypeName(typeId);
+                String typeName = typeService.getNameByTypeId(typeId);
                 raw.append(typeName).append(" x").append(quantity).append('\n');
             }
         } else {
@@ -253,7 +253,7 @@ public class ContractParser implements SchedulingConfigurer {
 
     private String getRaw(final Map<Integer, Integer> items) {
         return items.entrySet().stream().map(entry -> {
-            String typeName = typeNameService.getTypeName(entry.getKey());
+            String typeName = typeService.getNameByTypeId(entry.getKey());
             return typeName + " x" + entry.getValue();
         }).collect(Collectors.joining("\n"));
     }
@@ -278,7 +278,7 @@ public class ContractParser implements SchedulingConfigurer {
         return result;
     }
 
-    @Bean()
+    @Bean
     public ThreadPoolTaskScheduler taskExecutor() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.initialize();
