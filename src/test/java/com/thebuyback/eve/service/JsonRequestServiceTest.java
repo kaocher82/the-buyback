@@ -2,6 +2,7 @@ package com.thebuyback.eve.service;
 
 import java.util.Optional;
 
+import com.mashape.unirest.http.Headers;
 import com.mashape.unirest.http.HttpMethod;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -55,6 +56,7 @@ public class JsonRequestServiceTest {
         when(requestMock.asJson()).thenReturn(responseMock);
         when(requestMock.getHttpRequest()).thenReturn(new HttpRequest(HttpMethod.GET, "test"));
         when(responseMock.getStatus()).thenReturn(0);
+        when(responseMock.getHeaders()).thenReturn(new Headers());
 
         Optional<JsonNode> result = sut.executeRequest(requestMock);
         assertFalse(result.isPresent());
@@ -80,6 +82,7 @@ public class JsonRequestServiceTest {
         when(requestMock.getHttpRequest()).thenReturn(new HttpRequest(HttpMethod.GET, "test"));
         when(responseMock.getStatus()).thenReturn(200);
         when(responseMock.getBody()).thenReturn(expected);
+        when(responseMock.getHeaders()).thenReturn(new Headers());
 
         Optional<JsonNode> result = sut.executeRequest(requestMock);
         assertTrue(result.isPresent());
