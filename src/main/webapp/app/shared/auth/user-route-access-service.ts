@@ -42,7 +42,8 @@ export class UserRouteAccessService implements CanActivate {
             this.router.navigate(['accessdenied']).then(() => {
                 // only show the login dialog, if the user hasn't logged in yet
                 if (!account) {
-                    console.log("to be implemented: log in with eve sso")
+                    // console.log('denied login to ' + url);
+                    // console.log("to be implemented: log in with eve sso")
                     // todo mba: show option to log in with eve sso
                 }
             });

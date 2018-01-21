@@ -55,7 +55,6 @@ export class NavbarComponent implements OnInit {
 
     login() {
         this.router.navigate(['/login']);
-        // window.location.href = this.ssoUrl;
     }
 
     logout() {

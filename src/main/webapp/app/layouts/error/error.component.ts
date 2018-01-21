@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
+import {StateStorageService} from "../../shared/auth/state-storage.service";
 
 @Component({
     selector: 'jhi-error',
@@ -8,9 +9,12 @@ import { ActivatedRoute } from '@angular/router';
 export class ErrorComponent implements OnInit {
     errorMessage: string;
     error403: boolean;
+    url: string;
 
     constructor(
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private router: Router,
+        private stateStorageService: StateStorageService
     ) {
     }
 
@@ -23,5 +27,11 @@ export class ErrorComponent implements OnInit {
                 this.errorMessage = routeData.errorMessage;
             }
         });
+        this.url = this.stateStorageService.getUrl();
+    }
+
+
+    login() {
+        this.router.navigate(['/login/' + this.url]);
     }
 }
