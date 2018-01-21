@@ -3,9 +3,10 @@ before_install:
 - tar xvf secrets.tar
 - mv application-prod.yml src/main/resources/config/application-prod.yml
 - mv deploy_rsa /tmp/deploy_rsa
+- rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
 language: java
-node_js:
-  - "9"
+env:
+  - TRAVIS_NODE_VERSION="9"
 script:
 - mvn clean package -Pprod
 - bash <(curl -s https://codecov.io/bash)
