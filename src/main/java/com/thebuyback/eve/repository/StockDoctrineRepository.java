@@ -9,4 +9,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface StockDoctrineRepository extends MongoRepository<StockDoctrine, String> {
     List<StockDoctrine> findByHub(Hub hub);
+    void deleteByHub(Hub hub);
 }

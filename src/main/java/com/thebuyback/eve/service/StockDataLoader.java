@@ -115,6 +115,7 @@ public class StockDataLoader {
             .findByLocationIdAndTypeIdInAndIsBuyOrderOrderByPriceAsc(hub.getId(), typeIds, false);
         final List<MarketOrder> jitaOrders = marketOrderRepository
             .findByLocationIdAndTypeIdInAndIsBuyOrderOrderByPriceAsc(JITA, typeIds, false);
+        stockDoctrineRepository.deleteByHub(hub);
         doctrines.forEach(doctrine -> {
             Availability lowestAvailability = Availability.WELL_PRICED;
             final Map<Long, Long> itemTargetQuantities = new HashMap<>();

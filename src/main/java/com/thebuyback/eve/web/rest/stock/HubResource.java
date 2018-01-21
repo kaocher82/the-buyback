@@ -26,6 +26,6 @@ public class HubResource {
 
     @GetMapping
     public ResponseEntity<List<Hub>> getHubs() {
-        return ResponseEntity.ok(repository.findAll());
+        return ResponseEntity.ok(repository.findAllByIsPublic(true));
     }
 }

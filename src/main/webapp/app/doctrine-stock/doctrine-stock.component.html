@@ -1,0 +1,102 @@
+<style>
+    .bold {
+        font-weight: bold;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-8">
+        <h2>Doctrine Stock</h2>
+        <p>Items will show up as "Missing" if there are not enough on the selected market to reach the desired stock.
+           This means that we could run out of stock during or before a fleet. If the stock is depleted, "Missing" is bold.
+           Items will show up as "Over priced" if there are enough items on market, but not enough are well priced.<i class="fa fa-fw fa-question" (click)="showPricingExplanation = true" aria-hidden="true"></i>
+           Items will show up as "Stocked" if there are enough well priced<i class="fa fa-fw fa-question" (click)="showPricingExplanation = true" aria-hidden="true"></i> items on market.</p>
+        <p>This data only shows an indication on what should be restocked or is lacking. It is your task to figure out margins, logistics, etc.</p>
+           The markets are updated every 20 minutes.
+        <p *ngIf="potentialProfit">Potential profit<i class="fa fa-fw fa-question" (click)="showProfitExplanation = true" aria-hidden="true"></i> from missing items: {{ potentialProfit | number:'1.0-0'}} ISK</p>
+    </div>
+    <div class="col-md-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="dropdown float-right">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="hubDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{selectedHub['systemName'] + ' - ' + selectedHub['structureType']}}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="hubDropdown">
+                        <a *ngFor="let hub of hubs" class="dropdown-item" (click)="selectHub(hub)">{{hub['systemName'] + ' - ' + hub['structureType']}}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="dropdown float-right">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="doctrineDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Jump to Doctrine
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="doctrineDropdown">
+                        <a *ngFor="let stockedDoctrine of data" class="dropdown-item" href="#{{stockedDoctrine['doctrineName']}}">{{stockedDoctrine['doctrineName']}}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-secondary float-right" *ngIf="!showStocked" (click)="doShowStocked()">Show Stocked Items and Doctrines</button>
+                <button type="button" class="btn btn-secondary float-right" *ngIf="showStocked" (click)="doHideStocked()">Hide Stocked Items and Doctrines</button>
+            </div>
+        </div>
+        <br/>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-secondary float-right" *ngIf="!showMissingOnly" (click)="doShowOnlyMissing()">Limit To Missing</button>
+                <button type="button" class="btn btn-secondary float-right" *ngIf="showMissingOnly" (click)="doShowNotOnlyMissing()">Do Not Limit To Missing</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div *ngIf="showPricingExplanation" style="color: #444"><b>Well priced:</b><br/>Items are well priced if they are within a certain margin of the Jita sell prices. The formula '1 + (8 / (ln(price) + 3))' allows a higher margin on cheap items while limiting more expensive items.
+            <ul>
+                <li>      1,000 ISK: 80%</li>
+                <li>     10,000 ISK: 65%</li>
+                <li>    100,000 ISK: 55%</li>
+                <li>  1,000,000 ISK: 47%</li>
+                <li> 10,000,000 ISK: 41%</li>
+                <li>100,000,000 ISK: 37%</li>
+            </ul>
+        </div>
+        <p *ngIf="showProfitExplanation" style="color: #444"><b>Potential Profit:</b><br/>The calculation of the potential profit takes all items into account that are currently labeled MISSING. The algorithm then "tries to buy" the missing quantities (target quantities minus stocked quantities) from Jita. That means it calculates the cost to buy the missing quantity from Jita sell orders. This leaves us with the total cost of all missing items which is then multiplied with 20% (aiming for Jita sell plus 50% but taking logistics into account).</p>
+    </div>
+</div>
+<div class="alert alert-warning">We're still migrating the doctrine stock page. Feature parity should be reached over the next days.</div>
+<div *ngIf="!data" class="alert alert-info">Loading ...</div>
+<div *ngIf="data">
+    <div class="alert alert-info" *ngIf="data.length == 0">There's nothing here yet.</div>
+    <div *ngFor="let stockedDoctrine of data" id="{{stockedDoctrine['doctrineName']}}">
+        <p class="float-left" [ngClass]="stockedDoctrine['availability'] | statusClassPipe">{{stockedDoctrine['doctrineName']}}</p>
+        <table class="table table-striped" *ngIf="showEntry(stockedDoctrine['availability'])">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Stocked</th>
+                    <th>Target Stock</th>
+                    <th>Percentage Stocked</th>
+                    <th>Availability</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of stockedDoctrine['stockItems'] | doctrineStockPipe: showStocked:showMissingOnly">
+                    <td><img src="https://image.eveonline.com/Type/{{item['typeId']}}_32.png" /> {{item['typeName']}}</td>
+                    <td style="width: 15%">{{item['stocked'] | number:'1.0-0'}}</td>
+                    <td style="width: 15%">{{item['targetStock'] | number:'1.0-0'}}</td>
+                    <td style="width: 15%">{{item['stocked'] / item['targetStock'] * 100 | number:'1.0-0'}}%</td>
+                    <td style="width: 15%" [ngClass]="item['availability'] | statusClassPipe:(item['stocked'])">{{item['availability'] | statusNamePipe}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

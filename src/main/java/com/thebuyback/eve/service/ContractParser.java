@@ -41,7 +41,7 @@ import org.springframework.stereotype.Service;
  *
  * Created on 08.11.2017
  */
-//@Service
+@Service
 public class ContractParser implements SchedulingConfigurer {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -143,7 +143,6 @@ public class ContractParser implements SchedulingConfigurer {
             Contract contract = optional.get();
             if (asList("finished", "rejected", "deleted").contains(contract.getStatus())) {
                 // skip contracts that are done and already in the db
-                log.debug("Skipping {} as it already exists.", contractId);
                 return;
             }
             items = contract.getItems();

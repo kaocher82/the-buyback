@@ -14,6 +14,9 @@ public class StockDoctrine {
     private Hub hub;
     private List<StockItem> stockItems;
 
+    public StockDoctrine() {
+    }
+
     public StockDoctrine(final String id, final Availability availability, final String doctrineName, final Hub hub) {
         this.id = id;
         this.availability = availability;

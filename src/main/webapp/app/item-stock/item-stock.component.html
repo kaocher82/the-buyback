@@ -1,0 +1,109 @@
+<style>
+    /*used for completely missing items*/
+    .bold {
+        font-weight: bold;
+    }
+</style>
+
+<div *ngIf="loading" class="alert alert-info">Loading ...</div>
+<div *ngIf="!loading && (!data || !data.typeId)" class="alert alert-danger">Could not load details. Please try again later (min. 30 minutes) and convo Rihan Shazih on Slack if the error persists.</div>
+<div>
+    <div *ngIf="!loading && data && data.typeId" class="row">
+        <div class="col-md-9">
+            <h1><img src="https://image.eveonline.com/Type/{{data.typeId}}_64.png" /> {{data.typeName}}</h1>
+        </div>
+        <div class="col-md-3">
+            <button style="float: right; margin-left: 10px" class="btn btn-secondary" (click)="backClicked()">Back</button>
+            <div style="float: right;" [ngClass]="data['availability'] | statusClassPipe:(data['wellPriced']+data['overPriced'])">{{data['availability'] | statusNamePipe}}</div>
+        </div>
+    </div>
+    <h2>Stock</h2>
+    <div class="row">
+        <div class="col-md-5">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <tbody *ngIf="!loading && data && data.typeId">
+                    <tr>
+                        <td style="width: 50%"><b>Well priced</b></td>
+                        <td>{{data.wellPriced | number:'1.0-0'}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Over priced</b></td>
+                        <td>{{data.overPriced | number:'1.0-0'}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Target Stock</b></td>
+                        <td>{{data.targetStock | number:'1.0-0'}}</td>
+                    </tr>
+                    <tr *ngIf="data['availability'] === 'MISSING'">
+                        <td><b>Jita Escrow for Missing</b></td>
+                        <td>{{(data.targetStock - data.overPriced - data.wellPriced) * data.jitaSell | number:'1.0-0'}} ISK</td>
+                    </tr>
+                    <tr *ngIf="data['availability'] === 'MISSING'">
+                        <td><b>Possible profit for Missing</b></td>
+                        <td *ngIf="data.targetSell != -1 && data.jitaSell != -1">{{(data.targetStock - data.overPriced - data.wellPriced) * (data.targetSell - data.jitaSell) | number:'1.0-0'}} ISK</td>
+                        <td *ngIf="data.targetSell == -1 || data.jitaSell == -1">{{data.targetStock * data.priceBorder | number:'1.0-0'}} ISK</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <canvas id="stockChart" height="100px"></canvas>
+        </div>
+    </div>
+</div>
+<br/>
+<div>
+    <h2>Prices</h2>
+    <div class="row">
+        <div class="col-md-5">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <tbody *ngIf="!loading && data && data.typeId">
+                    <tr>
+                        <td style="width: 50%"><b>GE Sell</b></td>
+                        <td *ngIf="data.targetSell != -1">{{data.targetSell | number:'1.0-0'}} ISK</td>
+                        <td *ngIf="data.targetSell == -1">N/A</td>
+                        <td><span *ngIf="data.targetSell != -1 && data.jitaSell != -1">{{data.targetSell/data.jitaSell*100 | number:'1.0-0'}}%</span></td>
+                    </tr>
+                    <tr>
+                        <td><b>Jita Sell</b></td>
+                        <td *ngIf="data.jitaSell != -1">{{data.jitaSell | number:'1.0-0'}} ISK</td>
+                        <td *ngIf="data.jitaSell == -1">N/A</td>
+                        <td><span *ngIf="data.jitaSell != -1">100%</span></td>
+                    </tr>
+                    <tr>
+                        <td><b>Jita Buy</b></td>
+                        <td *ngIf="data.jitaBuy != -1">{{data.jitaBuy | number:'1.0-0'}} ISK</td>
+                        <td *ngIf="data.jitaBuy == -1">N/A</td>
+                        <td><span *ngIf="data.jitaBuy != -1 && data.jitaSell != -1">{{data.jitaBuy/data.jitaSell*100 | number:'1.0-0'}}%</span></td>
+                    </tr>
+                    <tr>
+                        <td><b>Over priced border</b></td>
+                        <td>{{data.priceBorder | number:'1.0-0'}} ISK</td>
+                        <td><span *ngIf="data.jitaSell != -1">{{data.priceBorder/data.jitaSell*100 | number:'1.0-0'}}%</span></td>
+                    </tr>
+                    <tr>
+                        <td *ngIf="data.targetSell != -1 && data.jitaSell != -1"><b>Margin Jita Sell - GE Sell</b></td>
+                        <td *ngIf="data.targetSell != -1 && data.jitaSell != -1">{{data.targetSell - data.jitaSell | number:'1.0-0'}} ISK</td>
+                        <td *ngIf="data.targetSell == -1 || data.jitaSell == -1"><b>Margin Jita Sell - Border</b></td>
+                        <td *ngIf="data.targetSell == -1 || data.jitaSell == -1">{{data.priceBorder - data.jitaSell | number:'1.0-0'}} ISK</td>
+                        <td><span *ngIf="data.jitaSell != -1 && data.targetSell != -1">{{((data.targetSell/data.jitaSell)-1)*100 | number:'1.0-0'}}%</span></td>
+                    </tr>
+                    <tr>
+                        <td *ngIf="data.targetSell != -1 && data.jitaBuy != -1"><b>Margin Jita Buy - GE Sell</b></td>
+                        <td *ngIf="data.targetSell != -1 && data.jitaBuy != -1">{{data.targetSell - data.jitaBuy | number:'1.0-0'}} ISK</td>
+                        <td *ngIf="data.targetSell == -1 || data.jitaBuy == -1"><b>Margin Jita Buy - Border</b></td>
+                        <td *ngIf="data.targetSell == -1 || data.jitaBuy == -1">{{data.priceBorder - data.jitaBuy | number:'1.0-0'}} ISK</td>
+                        <td><span *ngIf="data.jitaBuy != -1 && data.targetSell != -1">{{((data.targetSell/data.jitaBuy)-1)*100 | number:'1.0-0'}}%</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <canvas id="priceChart" height="100px"></canvas>
+        </div>
+    </div>
+</div>
