@@ -3,6 +3,7 @@ import {Component, OnInit} from '@angular/core';
 import {Contracts} from './contracts.model';
 import {ContractsService} from './contracts.service';
 import {Http} from "@angular/http";
+import {ClipboardService} from "../../shared/appraisal/clipboard.service";
 
 @Component({
     selector: 'jhi-contracts',
@@ -13,8 +14,9 @@ export class ContractsComponent implements OnInit {
     contracts: Contracts[];
     declineSuccess: boolean;
     errorMessage: string = null;
+    showCopiedPriceFor: string = null;
 
-    constructor(private contractsService: ContractsService, private http: Http) { }
+    constructor(private contractsService: ContractsService, private http: Http, private clipboard: ClipboardService) { }
 
     ngOnInit(): void {
         this.loadContracts();
@@ -22,6 +24,15 @@ export class ContractsComponent implements OnInit {
 
     private loadContracts() {
         this.contractsService.loadBuybackContracts().subscribe((data) => this.contracts = data)
+    }
+
+    copyPrice(price: number, id: string) {
+        this.clipboard.copy(price + '');
+
+        this.showCopiedPriceFor = id;
+        setTimeout(function() {
+            this.showCopiedPriceFor = null;
+        }.bind(this), 4000);
     }
 
     approveContract(contractId: number) {
