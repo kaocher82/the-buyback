@@ -5,7 +5,7 @@ before_install:
 - mv deploy_rsa /tmp/deploy_rsa
 language: java
 env:
-  - TRAVIS_NODE_VERSION="9"
+  - TRAVIS_NODE_VERSION="8"
 script:
 - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
 - mvn clean package -Pprod
