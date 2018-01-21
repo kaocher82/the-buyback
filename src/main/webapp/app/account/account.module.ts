@@ -11,7 +11,7 @@ import {
 @NgModule({
     imports: [
         TheBuybackSharedModule,
-        RouterModule.forRoot(accountState, { useHash: true })
+        RouterModule.forChild(accountState)
     ],
     declarations: [
         SettingsComponent

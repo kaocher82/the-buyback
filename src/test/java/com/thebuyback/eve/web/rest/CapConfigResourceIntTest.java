@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 
+import static com.thebuyback.eve.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -92,6 +93,7 @@ public class CapConfigResourceIntTest {
         this.restCapConfigMockMvc = MockMvcBuilders.standaloneSetup(capConfigResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
+            .setConversionService(createFormattingConversionService())
             .setMessageConverters(jacksonMessageConverter).build();
     }
 
@@ -163,7 +165,7 @@ public class CapConfigResourceIntTest {
             .content(TestUtil.convertObjectToJsonBytes(capConfig)))
             .andExpect(status().isBadRequest());
 
-        // Validate the Alice in the database
+        // Validate the CapConfig in the database
         List<CapConfig> capConfigList = capConfigRepository.findAll();
         assertThat(capConfigList).hasSize(databaseSizeBeforeCreate);
     }

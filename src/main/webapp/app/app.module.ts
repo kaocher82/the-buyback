@@ -2,14 +2,14 @@ import './vendor.ts';
 
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { Ng2Webstorage } from 'ng2-webstorage';
+import { Ng2Webstorage } from 'ngx-webstorage';
 
 import { TheBuybackSharedModule, UserRouteAccessService } from './shared';
+import { TheBuybackAppRoutingModule} from './app-routing.module';
 import { TheBuybackHomeModule } from './home/home.module';
 import { TheBuybackAdminModule } from './admin/admin.module';
 import { TheBuybackAccountModule } from './account/account.module';
 import { TheBuybackEntityModule } from './entities/entity.module';
-
 import { customHttpProvider } from './blocks/interceptor/http.provider';
 import { PaginationConfig } from './blocks/config/uib-pagination.config';
 
@@ -17,7 +17,6 @@ import { PaginationConfig } from './blocks/config/uib-pagination.config';
 
 import {
     JhiMainComponent,
-    LayoutRoutingModule,
     NavbarComponent,
     FooterComponent,
     ProfileService,
@@ -34,7 +33,7 @@ import {TheBuybackMarketplacePrivateModule} from "./marketplace-private/marketpl
 @NgModule({
     imports: [
         BrowserModule,
-        LayoutRoutingModule,
+        TheBuybackAppRoutingModule,
         Ng2Webstorage.forRoot({ prefix: 'jhi', separator: '-'}),
         TheBuybackSharedModule,
         TheBuybackHomeModule,

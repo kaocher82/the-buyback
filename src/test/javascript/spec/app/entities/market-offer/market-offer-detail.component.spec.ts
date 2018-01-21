@@ -1,12 +1,8 @@
 /* tslint:disable max-line-length */
-import { ComponentFixture, TestBed, async, inject } from '@angular/core/testing';
-import { OnInit } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs/Rx';
-import { JhiDateUtils, JhiDataUtils, JhiEventManager } from 'ng-jhipster';
+import { ComponentFixture, TestBed, async } from '@angular/core/testing';
+import { Observable } from 'rxjs/Observable';
+
 import { TheBuybackTestModule } from '../../../test.module';
-import { MockActivatedRoute } from '../../../helpers/mock-route.service';
 import { MarketOfferDetailComponent } from '../../../../../../main/webapp/app/entities/market-offer/market-offer-detail.component';
 import { MarketOfferService } from '../../../../../../main/webapp/app/entities/market-offer/market-offer.service';
 import { MarketOffer } from '../../../../../../main/webapp/app/entities/market-offer/market-offer.model';
@@ -23,17 +19,10 @@ describe('Component Tests', () => {
                 imports: [TheBuybackTestModule],
                 declarations: [MarketOfferDetailComponent],
                 providers: [
-                    JhiDateUtils,
-                    JhiDataUtils,
-                    DatePipe,
-                    {
-                        provide: ActivatedRoute,
-                        useValue: new MockActivatedRoute({id: 123})
-                    },
-                    MarketOfferService,
-                    JhiEventManager
+                    MarketOfferService
                 ]
-            }).overrideTemplate(MarketOfferDetailComponent, '')
+            })
+            .overrideTemplate(MarketOfferDetailComponent, '')
             .compileComponents();
         }));
 
@@ -45,16 +34,16 @@ describe('Component Tests', () => {
 
         describe('OnInit', () => {
             it('Should call load all on init', () => {
-            // GIVEN
+                // GIVEN
 
-            spyOn(service, 'find').and.returnValue(Observable.of(new MarketOffer('aaa')));
+                spyOn(service, 'find').and.returnValue(Observable.of(new MarketOffer('123')));
 
-            // WHEN
-            comp.ngOnInit();
+                // WHEN
+                comp.ngOnInit();
 
-            // THEN
-            expect(service.find).toHaveBeenCalledWith(123);
-            expect(comp.marketOffer).toEqual(jasmine.objectContaining({id: 'aaa'}));
+                // THEN
+                expect(service.find).toHaveBeenCalledWith('123');
+                expect(comp.marketOffer).toEqual(jasmine.objectContaining({id: '123'}));
             });
         });
     });

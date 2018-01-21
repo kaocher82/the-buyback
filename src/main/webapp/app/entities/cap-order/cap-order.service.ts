@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
+import { SERVER_API_URL } from '../../app.constants';
+
 import { JhiDateUtils } from 'ng-jhipster';
 
 import { CapOrder } from './cap-order.model';
@@ -9,7 +11,7 @@ import { ResponseWrapper, createRequestOption } from '../../shared';
 @Injectable()
 export class CapOrderService {
 
-    private resourceUrl = 'api/cap-orders';
+    private resourceUrl =  SERVER_API_URL + 'api/cap-orders';
 
     constructor(private http: Http, private dateUtils: JhiDateUtils) { }
 
@@ -17,8 +19,7 @@ export class CapOrderService {
         const copy = this.convert(capOrder);
         return this.http.post(this.resourceUrl, copy).map((res: Response) => {
             const jsonResponse = res.json();
-            this.convertItemFromServer(jsonResponse);
-            return jsonResponse;
+            return this.convertItemFromServer(jsonResponse);
         });
     }
 
@@ -26,16 +27,14 @@ export class CapOrderService {
         const copy = this.convert(capOrder);
         return this.http.put(this.resourceUrl, copy).map((res: Response) => {
             const jsonResponse = res.json();
-            this.convertItemFromServer(jsonResponse);
-            return jsonResponse;
+            return this.convertItemFromServer(jsonResponse);
         });
     }
 
     find(id: string): Observable<CapOrder> {
         return this.http.get(`${this.resourceUrl}/${id}`).map((res: Response) => {
             const jsonResponse = res.json();
-            this.convertItemFromServer(jsonResponse);
-            return jsonResponse;
+            return this.convertItemFromServer(jsonResponse);
         });
     }
 
@@ -51,17 +50,26 @@ export class CapOrderService {
 
     private convertResponse(res: Response): ResponseWrapper {
         const jsonResponse = res.json();
+        const result = [];
         for (let i = 0; i < jsonResponse.length; i++) {
-            this.convertItemFromServer(jsonResponse[i]);
+            result.push(this.convertItemFromServer(jsonResponse[i]));
         }
-        return new ResponseWrapper(res.headers, jsonResponse, res.status);
+        return new ResponseWrapper(res.headers, result, res.status);
     }
 
-    private convertItemFromServer(entity: any) {
+    /**
+     * Convert a returned JSON object to CapOrder.
+     */
+    private convertItemFromServer(json: any): CapOrder {
+        const entity: CapOrder = Object.assign(new CapOrder(), json);
         entity.created = this.dateUtils
-            .convertDateTimeFromServer(entity.created);
+            .convertDateTimeFromServer(json.created);
+        return entity;
     }
 
+    /**
+     * Convert a CapOrder to a JSON which can be sent to the server.
+     */
     private convert(capOrder: CapOrder): CapOrder {
         const copy: CapOrder = Object.assign({}, capOrder);
 

@@ -1,9 +1,6 @@
-import { Injectable } from '@angular/core';
-import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Routes, CanActivate } from '@angular/router';
+import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from '../../shared';
-import { JhiPaginationUtil } from 'ng-jhipster';
-
 import { CapConfigComponent } from './cap-config.component';
 import { CapConfigDetailComponent } from './cap-config-detail.component';
 import { CapConfigPopupComponent } from './cap-config-dialog.component';

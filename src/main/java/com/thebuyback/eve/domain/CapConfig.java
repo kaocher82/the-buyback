@@ -1,8 +1,9 @@
 package com.thebuyback.eve.domain;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -13,6 +14,7 @@ import java.util.Objects;
 public class CapConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     private String id;
 
@@ -49,7 +51,7 @@ public class CapConfig implements Serializable {
     @Field("delivery_price_4")
     private Double deliveryPrice4;
 
-    // jhipster-needle-entity-add-field - Jhipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
         return id;
     }
@@ -200,7 +202,7 @@ public class CapConfig implements Serializable {
     public void setDeliveryPrice4(Double deliveryPrice4) {
         this.deliveryPrice4 = deliveryPrice4;
     }
-    // jhipster-needle-entity-add-getters-setters - Jhipster will add getters and setters here, do not remove
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override
     public boolean equals(Object o) {
@@ -226,17 +228,17 @@ public class CapConfig implements Serializable {
     public String toString() {
         return "CapConfig{" +
             "id=" + getId() +
-            ", typeId='" + getTypeId() + "'" +
+            ", typeId=" + getTypeId() +
             ", typeName='" + getTypeName() + "'" +
-            ", price='" + getPrice() + "'" +
+            ", price=" + getPrice() +
             ", deliveryLocation1='" + getDeliveryLocation1() + "'" +
-            ", deliveryPrice1='" + getDeliveryPrice1() + "'" +
+            ", deliveryPrice1=" + getDeliveryPrice1() +
             ", deliveryLocation2='" + getDeliveryLocation2() + "'" +
-            ", deliveryPrice2='" + getDeliveryPrice2() + "'" +
+            ", deliveryPrice2=" + getDeliveryPrice2() +
             ", deliveryLocation3='" + getDeliveryLocation3() + "'" +
-            ", deliveryPrice3='" + getDeliveryPrice3() + "'" +
+            ", deliveryPrice3=" + getDeliveryPrice3() +
             ", deliveryLocation4='" + getDeliveryLocation4() + "'" +
-            ", deliveryPrice4='" + getDeliveryPrice4() + "'" +
+            ", deliveryPrice4=" + getDeliveryPrice4() +
             "}";
     }
 }

@@ -1,8 +1,9 @@
 package com.thebuyback.eve.domain;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
@@ -16,6 +17,7 @@ import com.thebuyback.eve.domain.enumeration.CapOrderStatus;
 public class CapOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     private String id;
 
@@ -43,7 +45,7 @@ public class CapOrder implements Serializable {
     @Field("status")
     private CapOrderStatus status;
 
-    // jhipster-needle-entity-add-field - Jhipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
         return id;
     }
@@ -155,7 +157,7 @@ public class CapOrder implements Serializable {
     public void setStatus(CapOrderStatus status) {
         this.status = status;
     }
-    // jhipster-needle-entity-add-getters-setters - Jhipster will add getters and setters here, do not remove
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override
     public boolean equals(Object o) {
@@ -182,12 +184,12 @@ public class CapOrder implements Serializable {
         return "CapOrder{" +
             "id=" + getId() +
             ", recipient='" + getRecipient() + "'" +
-            ", typeId='" + getTypeId() + "'" +
+            ", typeId=" + getTypeId() +
             ", typeName='" + getTypeName() + "'" +
-            ", price='" + getPrice() + "'" +
+            ", price=" + getPrice() +
             ", created='" + getCreated() + "'" +
             ", deliveryLocation='" + getDeliveryLocation() + "'" +
-            ", deliveryPrice='" + getDeliveryPrice() + "'" +
+            ", deliveryPrice=" + getDeliveryPrice() +
             ", status='" + getStatus() + "'" +
             "}";
     }

@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 
-import { UserRouteAccessService } from '../../shared';
 import { ErrorComponent } from './error.component';
 import {SsoComponent} from "../callback/sso.component";
 

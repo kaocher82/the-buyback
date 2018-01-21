@@ -5,7 +5,7 @@ export const enum MarketOfferType {
     'BUY'
 }
 
-const enum MarketOfferCategory {
+export const enum MarketOfferCategory {
     'NONE'
 }
 

@@ -1,6 +1,6 @@
 import { BaseEntity } from './../../shared';
 
-const enum CapOrderStatus {
+export const enum CapOrderStatus {
     'REQUESTED',
     'INBUILD',
     'COMPLETED'
