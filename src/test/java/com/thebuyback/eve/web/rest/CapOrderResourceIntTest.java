@@ -245,6 +245,7 @@ public class CapOrderResourceIntTest {
         assertThat(testCapOrder.getStatus()).isEqualTo(UPDATED_STATUS);
     }
 
+    @Ignore
     @Test
     public void updateNonExistingCapOrder() throws Exception {
         int databaseSizeBeforeUpdate = capOrderRepository.findAll().size();

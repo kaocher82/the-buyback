@@ -5,7 +5,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { Ng2Webstorage } from 'ngx-webstorage';
 
 import { TheBuybackSharedModule, UserRouteAccessService } from './shared';
-import { TheBuybackAppRoutingModule} from './app-routing.module';
 import { TheBuybackHomeModule } from './home/home.module';
 import { TheBuybackAdminModule } from './admin/admin.module';
 import { TheBuybackAccountModule } from './account/account.module';
@@ -29,11 +28,12 @@ import {LoginComponent} from "./layouts/login/login.component";
 import {TheBuybackOrderCapsModule} from "./order-caps/order-caps.module";
 import {TheBuybackMarketPlaceModule} from "./marketplace/marketplace.module";
 import {TheBuybackMarketplacePrivateModule} from "./marketplace-private/marketplace-private.module";
+import {LayoutRoutingModule} from "./app-routing.module";
 
 @NgModule({
     imports: [
         BrowserModule,
-        TheBuybackAppRoutingModule,
+        LayoutRoutingModule,
         Ng2Webstorage.forRoot({ prefix: 'jhi', separator: '-'}),
         TheBuybackSharedModule,
         TheBuybackHomeModule,

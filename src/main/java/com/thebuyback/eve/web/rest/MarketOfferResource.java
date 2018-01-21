@@ -1,8 +1,16 @@
 package com.thebuyback.eve.web.rest;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import com.codahale.metrics.annotation.Timed;
 import com.thebuyback.eve.domain.MarketOffer;
-
 import com.thebuyback.eve.domain.enumeration.MarketOfferCategory;
 import com.thebuyback.eve.domain.enumeration.MarketOfferType;
 import com.thebuyback.eve.repository.MarketOfferRepository;
@@ -10,8 +18,7 @@ import com.thebuyback.eve.security.AuthoritiesConstants;
 import com.thebuyback.eve.security.SecurityUtils;
 import com.thebuyback.eve.web.rest.util.HeaderUtil;
 import com.thebuyback.eve.web.rest.util.PaginationUtil;
-import io.swagger.annotations.ApiParam;
-import io.github.jhipster.web.util.ResponseUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -20,17 +27,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.ApiParam;
 
 /**
  * REST controller for managing MarketOffer.
@@ -68,7 +75,7 @@ public class MarketOfferResource {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "badlink", "The link is not accepted.")).body(null);
         }
 
-        marketOffer.setIssuer(SecurityUtils.getCurrentUserLogin());
+        marketOffer.setIssuer(SecurityUtils.getCurrentUserLoginAsString());
         marketOffer.setCreated(Instant.now());
         marketOffer.setExpiry(LocalDate.now().plusDays(14).atStartOfDay().toInstant(ZoneOffset.UTC));
         marketOffer.setExpiryUpdated(Instant.now());
@@ -110,7 +117,7 @@ public class MarketOfferResource {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "badlink", "The link is not accepted.")).body(null);
         }
         MarketOffer offer = marketOfferRepository.findOne(marketOffer.getId());
-        if (!offer.getIssuer().equalsIgnoreCase(SecurityUtils.getCurrentUserLogin())) {
+        if (!offer.getIssuer().equalsIgnoreCase(SecurityUtils.getCurrentUserLoginAsString())) {
             return ResponseEntity.status(403).build();
         }
         marketOffer.setExpiry(LocalDate.now().plusDays(7).atStartOfDay().toInstant(ZoneOffset.UTC));
@@ -133,7 +140,7 @@ public class MarketOfferResource {
     @GetMapping("/market-offers/private/{type}")
     @Secured(AuthoritiesConstants.USER)
     public ResponseEntity<List<MarketOffer>> getPrivateMarketOffers(@PathVariable("type") final MarketOfferType type) {
-        List<MarketOffer> collect = marketOfferRepository.findAllByTypeAndIssuer(type, SecurityUtils.getCurrentUserLogin())
+        List<MarketOffer> collect = marketOfferRepository.findAllByTypeAndIssuer(type, SecurityUtils.getCurrentUserLoginAsString())
                                                          .stream().collect(Collectors.toList());
         return new ResponseEntity<>(collect, HttpStatus.OK);
     }
@@ -179,7 +186,7 @@ public class MarketOfferResource {
     public ResponseEntity<Void> deleteMarketOffer(@PathVariable String id) {
         log.debug("REST request to delete MarketOffer : {}", id);
         MarketOffer offer = marketOfferRepository.findOne(id);
-        if (!offer.getIssuer().equalsIgnoreCase(SecurityUtils.getCurrentUserLogin())) {
+        if (!offer.getIssuer().equalsIgnoreCase(SecurityUtils.getCurrentUserLoginAsString())) {
             return ResponseEntity.status(403).build();
         }
         marketOfferRepository.delete(id);

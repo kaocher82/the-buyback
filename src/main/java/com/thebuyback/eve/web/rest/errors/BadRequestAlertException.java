@@ -1,11 +1,19 @@
-package com.thebuyback.eve.web.rest.errors;
+/*
+ * BadRequestAlertException.java
+ *
+ * Created on 2018-01-21
+ *
+ * Copyright (C) 2018 Volkswagen AG, All rights reserved.
+ */
 
-import org.zalando.problem.AbstractThrowableProblem;
-import org.zalando.problem.Status;
+package com.thebuyback.eve.web.rest.errors;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.zalando.problem.AbstractThrowableProblem;
+import org.zalando.problem.Status;
 
 public class BadRequestAlertException extends AbstractThrowableProblem {
 

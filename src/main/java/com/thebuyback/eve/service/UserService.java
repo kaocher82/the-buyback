@@ -99,7 +99,7 @@ public class UserService {
     }
 
     public User getUserWithAuthorities() {
-        return userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).orElse(null);
+        return userRepository.findOneByLogin(SecurityUtils.getCurrentUserLoginAsString()).orElse(null);
     }
 
     /**

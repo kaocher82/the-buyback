@@ -1,10 +1,10 @@
 package com.thebuyback.eve.security;
 
+import java.util.Optional;
+
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Optional;
 
 /**
  * Utility class for Spring Security.
@@ -31,6 +31,10 @@ public final class SecurityUtils {
                 }
                 return null;
             });
+    }
+
+    public static String getCurrentUserLoginAsString() {
+        return getCurrentUserLogin().orElseThrow(() -> new RuntimeException("Current user not found"));
     }
 
     /**

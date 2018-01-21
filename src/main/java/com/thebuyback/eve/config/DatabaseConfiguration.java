@@ -1,10 +1,11 @@
 package com.thebuyback.eve.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.mongobee.Mongobee;
 import com.mongodb.MongoClient;
-import io.github.jhipster.config.JHipsterConstants;
-import io.github.jhipster.domain.util.JSR310DateConverters.DateToZonedDateTimeConverter;
-import io.github.jhipster.domain.util.JSR310DateConverters.ZonedDateTimeToDateConverter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
@@ -19,8 +20,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.github.jhipster.config.JHipsterConstants;
+import io.github.jhipster.domain.util.JSR310DateConverters.DateToZonedDateTimeConverter;
+import io.github.jhipster.domain.util.JSR310DateConverters.ZonedDateTimeToDateConverter;
 
 @Configuration
 @Profile("!" + JHipsterConstants.SPRING_PROFILE_CLOUD)
@@ -58,6 +60,7 @@ public class DatabaseConfiguration {
         // package to scan for migrations
         mongobee.setChangeLogsScanPackage("com.thebuyback.eve.config.dbmigrations");
         mongobee.setEnabled(true);
+        mongobee.setDbName("the-buyback");
         return mongobee;
     }
 }

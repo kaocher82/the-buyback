@@ -4,7 +4,7 @@ import {Http} from "@angular/http";
 import {Principal} from "../../shared/auth/principal.service";
 import {StateStorageService} from "../../shared/auth/state-storage.service";
 import {JhiEventManager} from "ng-jhipster";
-import {LocalStorageService, SessionStorageService} from "ng2-webstorage";
+import {LocalStorageService, SessionStorageService} from "ngx-webstorage";
 
 @Component({
                selector: 'jhi-sso', templateUrl: './sso.component.html'
