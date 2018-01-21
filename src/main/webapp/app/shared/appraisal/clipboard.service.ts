@@ -28,7 +28,7 @@ export class ClipboardService {
     // resolves to the given value on success or rejects with the raised Error.
     public copy( value: string ) : Promise<any> {
 
-        var promise = new Promise(
+        let promise = new Promise(
             ( resolve, reject ) : void => {
 
                 let textarea = null;

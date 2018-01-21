@@ -62,18 +62,17 @@
                     <jhi-hull-select [capConfig]="selectConf('Leviathan')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
                 </div>
             </div>
-            <!--<div class="row" *ngIf="capConfigs">-->
-                <!--<div class="col-md-3">-->
-                    <!--<jhi-hull-select [capConfig]="selectConf('Ragnarok')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>-->
-                <!--</div>-->
-                <!--<div class="col-md-3">-->
-                    <!--<jhi-hull-select [capConfig]="selectConf('Leviathan')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>-->
-                <!--</div>-->
-                <!--<div class="col-md-3">-->
-                <!--</div>-->
-                <!--<div class="col-md-3">-->
-                <!--</div>-->
-            <!--</div>-->
+            <div class="row" *ngIf="capConfigs">
+                <div class="col-md-3">
+                    <jhi-hull-select [capConfig]="selectConf('Orca')" (selectedCap)="handleCapSelected($event)"></jhi-hull-select>
+                </div>
+                <div class="col-md-3">
+                </div>
+                <div class="col-md-3">
+                </div>
+                <div class="col-md-3">
+                </div>
+            </div>
         </div>
         <div *ngIf="pickedHull && !deliveryLocation">
             <h1>Pick a Delivery Location</h1>

@@ -11,12 +11,20 @@ body {
 }
 
 a {
-    color: #533f03;
+    color: #919191;
     font-weight: bold;
 }
 
+.nav-link {
+    color: #E7E7E7;
+}
+
+.navbar-brand {
+    color: #F1F1F1;
+}
+
 a:hover {
-    color: #533f03;
+    color: #818181;
     font-weight: bold;
 }
 

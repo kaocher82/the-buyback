@@ -87,7 +87,7 @@ public class StockDataLoader {
     }
 
     @Async
-    @Scheduled(fixedDelay = 360_000L)
+    @Scheduled(fixedDelay = 1_200_000L) // 20 minutes
     public void loadAllData() {
         log.info("Loading data for all hubs.");
         Stream.concat(hubRepository.findAll().stream().map(Hub::getId), Stream.of(JITA)).collect(Collectors.toList()).forEach(id -> {
