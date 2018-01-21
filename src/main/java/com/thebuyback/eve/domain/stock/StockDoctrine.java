@@ -30,7 +30,7 @@ public class StockDoctrine {
         this.doctrineName = doctrineName;
         this.hub = hub;
         this.stockItems = stockItems;
-        id = hub + doctrineName;
+        id = hub.getId() + doctrineName;
     }
 
     public List<StockItem> getStockItems() {
