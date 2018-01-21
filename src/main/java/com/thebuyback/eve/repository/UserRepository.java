@@ -1,6 +1,7 @@
 package com.thebuyback.eve.repository;
 
 import com.thebuyback.eve.domain.User;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -21,7 +22,7 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     Optional<User> findOneByResetKey(String resetKey);
 
-    Optional<User> findOneByEmail(String email);
+    Optional<User> findOneByEmailIgnoreCase(String email);
 
     Optional<User> findOneByLogin(String login);
 

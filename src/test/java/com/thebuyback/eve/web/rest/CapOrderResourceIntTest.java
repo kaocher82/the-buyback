@@ -23,6 +23,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import static com.thebuyback.eve.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -85,6 +86,7 @@ public class CapOrderResourceIntTest {
         this.restCapOrderMockMvc = MockMvcBuilders.standaloneSetup(capOrderResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
+            .setConversionService(createFormattingConversionService())
             .setMessageConverters(jacksonMessageConverter).build();
     }
 
@@ -150,7 +152,7 @@ public class CapOrderResourceIntTest {
             .content(TestUtil.convertObjectToJsonBytes(capOrder)))
             .andExpect(status().isBadRequest());
 
-        // Validate the Alice in the database
+        // Validate the CapOrder in the database
         List<CapOrder> capOrderList = capOrderRepository.findAll();
         assertThat(capOrderList).hasSize(databaseSizeBeforeCreate);
     }

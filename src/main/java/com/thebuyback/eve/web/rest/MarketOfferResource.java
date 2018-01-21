@@ -4,9 +4,9 @@ import com.codahale.metrics.annotation.Timed;
 import com.thebuyback.eve.domain.MarketOffer;
 
 import com.thebuyback.eve.repository.MarketOfferRepository;
+import com.thebuyback.eve.web.rest.errors.BadRequestAlertException;
 import com.thebuyback.eve.web.rest.util.HeaderUtil;
 import com.thebuyback.eve.web.rest.util.PaginationUtil;
-import io.swagger.annotations.ApiParam;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +35,7 @@ public class MarketOfferResource {
     private static final String ENTITY_NAME = "marketOffer";
 
     private final MarketOfferRepository marketOfferRepository;
+
     public MarketOfferResource(MarketOfferRepository marketOfferRepository) {
         this.marketOfferRepository = marketOfferRepository;
     }
@@ -51,7 +52,7 @@ public class MarketOfferResource {
     public ResponseEntity<MarketOffer> createMarketOffer(@RequestBody MarketOffer marketOffer) throws URISyntaxException {
         log.debug("REST request to save MarketOffer : {}", marketOffer);
         if (marketOffer.getId() != null) {
-            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new marketOffer cannot already have an ID")).body(null);
+            throw new BadRequestAlertException("A new marketOffer cannot already have an ID", ENTITY_NAME, "idexists");
         }
         MarketOffer result = marketOfferRepository.save(marketOffer);
         return ResponseEntity.created(new URI("/api/market-offers/" + result.getId()))
@@ -89,7 +90,7 @@ public class MarketOfferResource {
      */
     @GetMapping("/market-offers")
     @Timed
-    public ResponseEntity<List<MarketOffer>> getAllMarketOffers(@ApiParam Pageable pageable) {
+    public ResponseEntity<List<MarketOffer>> getAllMarketOffers(Pageable pageable) {
         log.debug("REST request to get a page of MarketOffers");
         Page<MarketOffer> page = marketOfferRepository.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/market-offers");

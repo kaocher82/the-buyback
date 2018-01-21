@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.thebuyback.eve.domain.CapConfig;
 
 import com.thebuyback.eve.repository.CapConfigRepository;
+import com.thebuyback.eve.web.rest.errors.BadRequestAlertException;
 import com.thebuyback.eve.web.rest.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ public class CapConfigResource {
     private static final String ENTITY_NAME = "capConfig";
 
     private final CapConfigRepository capConfigRepository;
+
     public CapConfigResource(CapConfigRepository capConfigRepository) {
         this.capConfigRepository = capConfigRepository;
     }
@@ -45,7 +47,7 @@ public class CapConfigResource {
     public ResponseEntity<CapConfig> createCapConfig(@RequestBody CapConfig capConfig) throws URISyntaxException {
         log.debug("REST request to save CapConfig : {}", capConfig);
         if (capConfig.getId() != null) {
-            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new capConfig cannot already have an ID")).body(null);
+            throw new BadRequestAlertException("A new capConfig cannot already have an ID", ENTITY_NAME, "idexists");
         }
         CapConfig result = capConfigRepository.save(capConfig);
         return ResponseEntity.created(new URI("/api/cap-configs/" + result.getId()))

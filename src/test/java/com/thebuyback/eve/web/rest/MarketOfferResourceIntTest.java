@@ -23,6 +23,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import static com.thebuyback.eve.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -92,6 +93,7 @@ public class MarketOfferResourceIntTest {
         this.restMarketOfferMockMvc = MockMvcBuilders.standaloneSetup(marketOfferResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
+            .setConversionService(createFormattingConversionService())
             .setMessageConverters(jacksonMessageConverter).build();
     }
 
@@ -161,7 +163,7 @@ public class MarketOfferResourceIntTest {
             .content(TestUtil.convertObjectToJsonBytes(marketOffer)))
             .andExpect(status().isBadRequest());
 
-        // Validate the Alice in the database
+        // Validate the MarketOffer in the database
         List<MarketOffer> marketOfferList = marketOfferRepository.findAll();
         assertThat(marketOfferList).hasSize(databaseSizeBeforeCreate);
     }

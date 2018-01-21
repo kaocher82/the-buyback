@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Email;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import javax.validation.constraints.NotNull;
@@ -24,10 +23,11 @@ import java.time.Instant;
  * A user.
  */
 
-@Document(collection = "jhi_user")
+@org.springframework.data.mongodb.core.mapping.Document(collection = "jhi_user")
 public class User extends AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
 
     @Id
     private String id;
@@ -58,7 +58,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     private boolean activated = false;
 
-    @Size(min = 2, max = 5)
+    @Size(min = 2, max = 6)
     @Field("lang_key")
     private String langKey;
 
@@ -94,7 +94,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
         return login;
     }
 
-    //Lowercase the login before saving it in database
+    // Lowercase the login before saving it in database
     public void setLogin(String login) {
         this.login = StringUtils.lowerCase(login, Locale.ENGLISH);
     }
@@ -164,12 +164,13 @@ public class User extends AbstractAuditingEntity implements Serializable {
     }
 
     public Instant getResetDate() {
-       return resetDate;
+        return resetDate;
     }
 
     public void setResetDate(Instant resetDate) {
-       this.resetDate = resetDate;
+        this.resetDate = resetDate;
     }
+
     public String getLangKey() {
         return langKey;
     }

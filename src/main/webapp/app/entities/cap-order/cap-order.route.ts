@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Routes, CanActivate } from '@angular/router';
-
-import { UserRouteAccessService } from '../../shared';
+import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Routes } from '@angular/router';
 import { JhiPaginationUtil } from 'ng-jhipster';
 
+import { UserRouteAccessService } from '../../shared';
 import { CapOrderComponent } from './cap-order.component';
 import { CapOrderDetailComponent } from './cap-order-detail.component';
 import { CapOrderPopupComponent } from './cap-order-dialog.component';

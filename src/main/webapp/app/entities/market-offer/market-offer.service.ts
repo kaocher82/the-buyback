@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
+import { SERVER_API_URL } from '../../app.constants';
+
 import { JhiDateUtils } from 'ng-jhipster';
 
 import { MarketOffer } from './market-offer.model';
@@ -9,7 +11,7 @@ import { ResponseWrapper, createRequestOption } from '../../shared';
 @Injectable()
 export class MarketOfferService {
 
-    private resourceUrl = 'api/market-offers';
+    private resourceUrl =  SERVER_API_URL + 'api/market-offers';
 
     constructor(private http: Http, private dateUtils: JhiDateUtils) { }
 
@@ -17,8 +19,7 @@ export class MarketOfferService {
         const copy = this.convert(marketOffer);
         return this.http.post(this.resourceUrl, copy).map((res: Response) => {
             const jsonResponse = res.json();
-            this.convertItemFromServer(jsonResponse);
-            return jsonResponse;
+            return this.convertItemFromServer(jsonResponse);
         });
     }
 
@@ -26,16 +27,14 @@ export class MarketOfferService {
         const copy = this.convert(marketOffer);
         return this.http.put(this.resourceUrl, copy).map((res: Response) => {
             const jsonResponse = res.json();
-            this.convertItemFromServer(jsonResponse);
-            return jsonResponse;
+            return this.convertItemFromServer(jsonResponse);
         });
     }
 
     find(id: string): Observable<MarketOffer> {
         return this.http.get(`${this.resourceUrl}/${id}`).map((res: Response) => {
             const jsonResponse = res.json();
-            this.convertItemFromServer(jsonResponse);
-            return jsonResponse;
+            return this.convertItemFromServer(jsonResponse);
         });
     }
 
@@ -51,21 +50,30 @@ export class MarketOfferService {
 
     private convertResponse(res: Response): ResponseWrapper {
         const jsonResponse = res.json();
+        const result = [];
         for (let i = 0; i < jsonResponse.length; i++) {
-            this.convertItemFromServer(jsonResponse[i]);
+            result.push(this.convertItemFromServer(jsonResponse[i]));
         }
-        return new ResponseWrapper(res.headers, jsonResponse, res.status);
+        return new ResponseWrapper(res.headers, result, res.status);
     }
 
-    private convertItemFromServer(entity: any) {
+    /**
+     * Convert a returned JSON object to MarketOffer.
+     */
+    private convertItemFromServer(json: any): MarketOffer {
+        const entity: MarketOffer = Object.assign(new MarketOffer(), json);
         entity.created = this.dateUtils
-            .convertDateTimeFromServer(entity.created);
+            .convertDateTimeFromServer(json.created);
         entity.expiry = this.dateUtils
-            .convertDateTimeFromServer(entity.expiry);
+            .convertDateTimeFromServer(json.expiry);
         entity.expiryUpdated = this.dateUtils
-            .convertDateTimeFromServer(entity.expiryUpdated);
+            .convertDateTimeFromServer(json.expiryUpdated);
+        return entity;
     }
 
+    /**
+     * Convert a MarketOffer to a JSON which can be sent to the server.
+     */
     private convert(marketOffer: MarketOffer): MarketOffer {
         const copy: MarketOffer = Object.assign({}, marketOffer);
 

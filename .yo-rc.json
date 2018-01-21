@@ -3,7 +3,7 @@
     "promptValues": {
       "packageName": "com.thebuyback.eve"
     },
-    "jhipsterVersion": "4.7.0",
+    "jhipsterVersion": "4.13.3",
     "baseName": "theBuyback",
     "packageName": "com.thebuyback.eve",
     "packageFolder": "com/thebuyback/eve",
@@ -28,6 +28,8 @@
     "applicationType": "monolith",
     "testFrameworks": [],
     "jhiPrefix": "jhi",
-    "enableTranslation": false
+    "enableTranslation": false,
+    "cacheProvider": "no",
+    "enableHibernateCache": false
   }
 }

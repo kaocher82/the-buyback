@@ -4,9 +4,9 @@ import com.codahale.metrics.annotation.Timed;
 import com.thebuyback.eve.domain.CapOrder;
 
 import com.thebuyback.eve.repository.CapOrderRepository;
+import com.thebuyback.eve.web.rest.errors.BadRequestAlertException;
 import com.thebuyback.eve.web.rest.util.HeaderUtil;
 import com.thebuyback.eve.web.rest.util.PaginationUtil;
-import io.swagger.annotations.ApiParam;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +35,7 @@ public class CapOrderResource {
     private static final String ENTITY_NAME = "capOrder";
 
     private final CapOrderRepository capOrderRepository;
+
     public CapOrderResource(CapOrderRepository capOrderRepository) {
         this.capOrderRepository = capOrderRepository;
     }
@@ -51,7 +52,7 @@ public class CapOrderResource {
     public ResponseEntity<CapOrder> createCapOrder(@RequestBody CapOrder capOrder) throws URISyntaxException {
         log.debug("REST request to save CapOrder : {}", capOrder);
         if (capOrder.getId() != null) {
-            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new capOrder cannot already have an ID")).body(null);
+            throw new BadRequestAlertException("A new capOrder cannot already have an ID", ENTITY_NAME, "idexists");
         }
         CapOrder result = capOrderRepository.save(capOrder);
         return ResponseEntity.created(new URI("/api/cap-orders/" + result.getId()))
@@ -89,7 +90,7 @@ public class CapOrderResource {
      */
     @GetMapping("/cap-orders")
     @Timed
-    public ResponseEntity<List<CapOrder>> getAllCapOrders(@ApiParam Pageable pageable) {
+    public ResponseEntity<List<CapOrder>> getAllCapOrders(Pageable pageable) {
         log.debug("REST request to get a page of CapOrders");
         Page<CapOrder> page = capOrderRepository.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/cap-orders");
