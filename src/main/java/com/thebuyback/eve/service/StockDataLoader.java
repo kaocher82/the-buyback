@@ -23,13 +23,13 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.thebuyback.eve.domain.MarketOrder;
+import com.thebuyback.eve.domain.Token;
 import com.thebuyback.eve.domain.enumeration.Availability;
 import com.thebuyback.eve.domain.stock.Doctrine;
 import com.thebuyback.eve.domain.stock.Fitting;
 import com.thebuyback.eve.domain.stock.FittingItem;
 import com.thebuyback.eve.domain.stock.Hub;
-import com.thebuyback.eve.domain.MarketOrder;
-import com.thebuyback.eve.domain.Token;
 import com.thebuyback.eve.domain.stock.StockDoctrine;
 import com.thebuyback.eve.domain.stock.StockItem;
 import com.thebuyback.eve.domain.stock.TypeStockHistory;
@@ -40,7 +40,6 @@ import com.thebuyback.eve.repository.MarketOrderRepository;
 import com.thebuyback.eve.repository.StockDoctrineRepository;
 import com.thebuyback.eve.repository.TokenRepository;
 import com.thebuyback.eve.repository.TypeStockHistoryRepository;
-import static com.thebuyback.eve.service.ContractParser.PARSER_CLIENT;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -55,6 +54,7 @@ public class StockDataLoader {
 
     private final Logger log = LoggerFactory.getLogger(StockDataLoader.class);
     public static final long JITA = 60003760L;
+    private static final String BRAVE_MARKET_HUB_CLIENT = "295ff85e960548d080f4ca29f8ba3f87";
 
     private final TokenRepository tokenRepository;
     private final HubRepository hubRepository;
@@ -264,7 +264,7 @@ public class StockDataLoader {
     }
 
     private void loadData(final Long locationId) throws UnirestException {
-        final Token token = tokenRepository.findByClientId(PARSER_CLIENT).get(0);
+        final Token token = tokenRepository.findByClientId(BRAVE_MARKET_HUB_CLIENT).get(0);
         String authToken = requestService.getAccessToken(token);
         final List<MarketOrder> orders = getOrders(authToken, locationId);
         if (!orders.isEmpty()) {

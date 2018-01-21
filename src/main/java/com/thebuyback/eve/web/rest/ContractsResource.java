@@ -27,7 +27,7 @@ import com.thebuyback.eve.service.JsonRequestService;
 import com.thebuyback.eve.web.dto.CapitalShipOnContractDTO;
 
 import static com.thebuyback.eve.security.AuthoritiesConstants.MANAGER;
-import static com.thebuyback.eve.service.ContractParser.PARSER_CLIENT;
+import static com.thebuyback.eve.service.ContractParser.CONTRACT_PARSER_CLIENT;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +92,7 @@ public class ContractsResource {
 
                 final String mail = formatMail(contract.getClient(), contract.getDateIssued(), contract.getBuyValue() * BUYBACK_PERCENTAGE, contract.getAppraisalLink());
 
-                final Token token = tokenRepository.findByClientId(PARSER_CLIENT).get(0);
+                final Token token = tokenRepository.findByClientId(CONTRACT_PARSER_CLIENT).get(0);
                 final String accessToken;
                 try {
                     accessToken = requestService.getAccessToken(token);

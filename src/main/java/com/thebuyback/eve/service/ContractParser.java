@@ -46,7 +46,7 @@ public class ContractParser implements SchedulingConfigurer {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public static final String PARSER_CLIENT = "e072368e841242288618e4c718dc6c5c";
+    public static final String CONTRACT_PARSER_CLIENT = "e072368e841242288618e4c718dc6c5c";
 
     private final JsonRequestService requestService;
     private final TokenRepository tokenRepository;
@@ -72,7 +72,7 @@ public class ContractParser implements SchedulingConfigurer {
     @Async
     @Timed
     public void loadNonCompletedContracts() {
-        final Token token = tokenRepository.findByClientId(PARSER_CLIENT).get(0);
+        final Token token = tokenRepository.findByClientId(CONTRACT_PARSER_CLIENT).get(0);
         final String accessToken;
         try {
             accessToken = requestService.getAccessToken(token);
