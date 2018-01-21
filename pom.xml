@@ -83,7 +83,7 @@
 
         <!-- Spring properties -->
         <springfox.version>2.7.0</springfox.version>
-        <yarn.version>v1.3.2</yarn.version>
+        <yarn.version>v0.27.5</yarn.version>
     </properties>
 
 
