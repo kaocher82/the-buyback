@@ -4,6 +4,8 @@ before_install:
 - mv application-prod.yml src/main/resources/config/application-prod.yml
 - mv deploy_rsa /tmp/deploy_rsa
 language: java
+node_js:
+  - "9"
 script:
 - mvn clean package -Pprod
 - bash <(curl -s https://codecov.io/bash)
