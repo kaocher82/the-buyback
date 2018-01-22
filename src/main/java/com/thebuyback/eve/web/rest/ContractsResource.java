@@ -7,10 +7,13 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -24,7 +27,9 @@ import com.thebuyback.eve.repository.CapitalShipRepository;
 import com.thebuyback.eve.repository.ContractRepository;
 import com.thebuyback.eve.repository.TokenRepository;
 import com.thebuyback.eve.service.JsonRequestService;
+import com.thebuyback.eve.service.TypeService;
 import com.thebuyback.eve.web.dto.CapitalShipOnContractDTO;
+import com.thebuyback.eve.web.dto.CapitalSoldDTO;
 
 import static com.thebuyback.eve.security.AuthoritiesConstants.MANAGER;
 import static com.thebuyback.eve.service.ContractParser.CONTRACT_PARSER_CLIENT;
@@ -55,15 +60,18 @@ public class ContractsResource {
     private final JsonRequestService requestService;
     private final TokenRepository tokenRepository;
     private final CapitalShipRepository capitalShipRepository;
+    private final TypeService typeService;
 
     public ContractsResource(final ContractRepository contractRepository,
                              final JsonRequestService requestService,
                              final TokenRepository tokenRepository,
-                             final CapitalShipRepository capitalShipRepository) {
+                             final CapitalShipRepository capitalShipRepository,
+                             final TypeService typeService) {
         this.contractRepository = contractRepository;
         this.requestService = requestService;
         this.tokenRepository = tokenRepository;
         this.capitalShipRepository = capitalShipRepository;
+        this.typeService = typeService;
     }
 
     @Secured(MANAGER)
@@ -145,6 +153,21 @@ public class ContractsResource {
         List<CapitalShipOnContract> publicHulls = capitalShipRepository.findAllByStatus(CapitalShipStatus.PUBLIC_CONTRACT);
         List<CapitalShipOnContractDTO> result = aggregatePublicHulls(publicHulls);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/caps-sold")
+    public ResponseEntity<List<CapitalSoldDTO>> getSoldCaps() {
+        final List<Contract> finishedCaps = contractRepository.findAllByStatusAndAssigneeId("finished", 0L);
+        return ResponseEntity.ok(finishedCaps.stream().map(this::toCapSoldDTO).filter(Objects::nonNull).sorted(this::compareSoldCaps).collect(Collectors.toList()));
+    }
+
+    private int compareSoldCaps(final CapitalSoldDTO o1, final CapitalSoldDTO o2) {
+        return Math.toIntExact(o1.getDate().until(o2.getDate(), ChronoUnit.SECONDS));
+    }
+
+    private CapitalSoldDTO toCapSoldDTO(final Contract contract) {
+        final double price = contract.getPrice();
+        return contract.getItems().entrySet().stream().findFirst().map(Entry::getKey).map(integer -> new CapitalSoldDTO(contract.getId(), contract.getDateCompleted(), typeService.getNameByTypeId(integer), price)).orElse(null);
     }
 
     private List<CapitalShipOnContractDTO> aggregatePublicHulls(final List<CapitalShipOnContract> publicHulls) {

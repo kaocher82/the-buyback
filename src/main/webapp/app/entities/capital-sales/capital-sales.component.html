@@ -1,0 +1,16 @@
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Hull</th>
+        <th>Price</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let cap of capsSold">
+        <td>{{cap.date | date:'short'}}</td>
+        <td>{{cap.hullType}}</td>
+        <td>{{cap.price | number:'1.0-0'}} ISK</td>
+    </tr>
+    </tbody>
+</table>
