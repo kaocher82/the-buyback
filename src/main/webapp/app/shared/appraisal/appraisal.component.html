@@ -29,6 +29,7 @@
         </form>
         <p>Questions? Ask Avend Avalhar, Algorthan Gaterau or Rihan Shazih on Slack.</p>
         <div class="alert alert-info" *ngIf="isLoadingAppraisal">Loading ...</div>
+        <div class="alert alert-error" *ngIf="errorMessage">{{errorMessage}}</div>
         <div *ngIf="appraisal.link">
             <p style="font-size: x-large;">Buyback Price: <b id="buybackPrice" #buybackPrice>{{appraisal.buybackPrice | number:'1.0-0'}}</b> ISK
                 <a (click)="copyPrice()">

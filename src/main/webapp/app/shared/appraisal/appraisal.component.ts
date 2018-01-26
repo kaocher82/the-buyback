@@ -16,6 +16,8 @@ export class AppraisalComponent implements OnInit {
     showCopiedPrice: boolean;
     showCopiedLink: boolean;
 
+    errorMessage: string;
+
     constructor(
         private http: Http,
         private clipboard: ClipboardService
@@ -31,8 +33,16 @@ export class AppraisalComponent implements OnInit {
     executeAppraisal() {
         this.isLoadingAppraisal = true;
         this.submitDone = false;
+        this.errorMessage = null;
         return this.http.post('api/appraisal', this.appraisal).subscribe((data) => {
             this.appraisal = data.json();
+            this.isLoadingAppraisal = false;
+        }, (err) => {
+            if (err.status >= 500) {
+                this.errorMessage = "Our hamsters failed to process your appraisal. Please try again later.";
+            } else if (err.status >= 400) {
+                this.errorMessage = "Your appraisal could not be parsed. Please make sure it is a valid evepraisal format. Go to http://evepraisal.com to try it out.";
+            }
             this.isLoadingAppraisal = false;
         });
     }
