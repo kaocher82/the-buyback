@@ -45,7 +45,7 @@ public class AppraisalResource {
     public ResponseEntity<Appraisal> requestAppraisal(@RequestBody Appraisal appraisal) {
         log.debug("REST request to perform an appraisal : {}", appraisal);
 
-        if (appraisal.getAdditionalRaw().isEmpty()) {
+        if (appraisal.getAdditionalRaw() == null || appraisal.getAdditionalRaw().isEmpty()) {
             return ResponseEntity.status(400).build();
         }
 

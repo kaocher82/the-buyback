@@ -34,7 +34,11 @@ public class AppraisalUtil {
                                                          .asString();
 
         String body = stringHttpResponse.getBody();
-        String listingId = body.split("Evepraisal - Appraisal Result ")[1].split(" ")[0];
+        final String[] firstSplit = body.split("Evepraisal - Appraisal Result ");
+        if (firstSplit.length == 0) {
+            LOG.warn("The following text could not be appraised: {}", raw);
+        }
+        String listingId = firstSplit[1].split(" ")[0];
         return "http://evepraisal.com/a/" + listingId;
     }
 

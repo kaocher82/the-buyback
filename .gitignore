@@ -148,3 +148,4 @@ deploy_rsa.pub
 secrets.tar
 copDB.sh
 yarn.lock
+copyDB.sh
