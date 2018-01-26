@@ -11,20 +11,22 @@
     <div class="col-md-12">
         <h2>The Buyback Appraisal - 90% Jita Buy</h2>
         <p>Paste your stuff into this box:</p>
-        <div class="form-group">
-                <textarea class="form-control"
-                          name="message"
-                          rows="10"
-                          id="field_message"
-                          [(ngModel)]="appraisal.additionalRaw"></textarea>
-        </div>
-        <p>
-            <button class="btn btn-primary" (click)="executeAppraisal()">
-                Evaluate <span *ngIf="appraisal.link">and Add</span>
-            </button>
-            <button class="btn btn-danger" (click)="clearAppraisal()" *ngIf="appraisal.link">Clear</button>
-            <a href="#/the-buyback" class="pull-right">How to create a buyback contract</a>
-        </p>
+        <form #formCtrl="ngForm">
+            <div class="form-group">
+                    <textarea class="form-control"
+                              name="message"
+                              rows="10"
+                              id="field_message" formControlName="field_message"
+                              [(ngModel)]="appraisal.additionalRaw" required></textarea>
+            </div>
+            <p>
+                <button class="btn btn-primary" (click)="executeAppraisal()" [disabled]="!formCtrl.form.valid">
+                    Evaluate <span *ngIf="appraisal.link">and Add</span>
+                </button>
+                <button class="btn btn-danger" (click)="clearAppraisal()" *ngIf="appraisal.link">Clear</button>
+                <a href="#/the-buyback" class="pull-right">How to create a buyback contract</a>
+            </p>
+        </form>
         <p>Questions? Ask Avend Avalhar, Algorthan Gaterau or Rihan Shazih on Slack.</p>
         <div class="alert alert-info" *ngIf="isLoadingAppraisal">Loading ...</div>
         <div *ngIf="appraisal.link">
