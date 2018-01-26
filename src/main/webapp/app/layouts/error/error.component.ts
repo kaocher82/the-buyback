@@ -30,7 +30,6 @@ export class ErrorComponent implements OnInit {
         this.url = this.stateStorageService.getUrl();
     }
 
-
     login() {
         this.router.navigate(['/login/' + this.url]);
     }

@@ -1,3 +1,8 @@
+<style>
+    .new-sale {
+        background-color: rgba(86, 214, 89, 0.5);
+    }
+</style>
 <table class="table table-striped">
     <thead>
     <tr>
@@ -10,7 +15,7 @@
     <tr *ngFor="let cap of capsSold">
         <td>{{cap.date | date:'short'}}</td>
         <td>{{cap.hullType}}</td>
-        <td>{{cap.price | number:'1.0-0'}} ISK</td>
+        <td [ngClass]="getNewSaleClass(cap.id)">{{cap.price | number:'1.0-0'}} ISK</td>
     </tr>
     </tbody>
 </table>
