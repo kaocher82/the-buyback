@@ -10,7 +10,8 @@ public class Fitting {
     private String name;
     private List<FittingItem> items;
 
-    public Fitting(final String name, final List<FittingItem> items) {
+    public Fitting(final String id, final String name, final List<FittingItem> items) {
+        this.id = id;
         this.name = name;
         this.items = items;
     }

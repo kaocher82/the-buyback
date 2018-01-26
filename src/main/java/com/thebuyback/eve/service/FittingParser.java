@@ -59,6 +59,6 @@ public class FittingParser {
             throw new RuntimeException("Fitting name was null: " + text);
         }
 
-        return new Fitting(fittingName.get(), items);
+        return new Fitting(fittingName.get(), fittingName.get(), items);
     }
 }

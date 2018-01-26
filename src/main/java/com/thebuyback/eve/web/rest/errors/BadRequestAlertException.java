@@ -1,11 +1,3 @@
-/*
- * BadRequestAlertException.java
- *
- * Created on 2018-01-21
- *
- * Copyright (C) 2018 Volkswagen AG, All rights reserved.
- */
-
 package com.thebuyback.eve.web.rest.errors;
 
 import java.net.URI;
