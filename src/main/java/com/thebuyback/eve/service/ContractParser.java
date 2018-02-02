@@ -77,7 +77,7 @@ public class ContractParser implements SchedulingConfigurer {
         try {
             accessToken = requestService.getAccessToken(token);
         } catch (UnirestException e) {
-            log.error("Failed to get access token.", e);
+            log.error("Failed to get access for loadNonCompletedContracts.", e);
             return;
         }
         final Optional<JsonNode> corpContracts = requestService.getCorpContracts(accessToken);
@@ -175,6 +175,7 @@ public class ContractParser implements SchedulingConfigurer {
         String status = jsonContract.getString("status");
         long startLocationId = jsonContract.getLong("start_location_id");
         double price = jsonContract.getDouble("price");
+        double reward = jsonContract.getDouble("reward");
         String title = null;
         if (jsonContract.has("title")) {
             title = jsonContract.getString("title");
@@ -186,7 +187,7 @@ public class ContractParser implements SchedulingConfigurer {
         }
 
         final Contract contract = new Contract(contractId, issuerId, issuerCorporationId, assigneeId, status,
-                                               startLocationId, price, items, appraisalLink, buyValue,
+                                               startLocationId, price, reward, items, appraisalLink, buyValue,
                                                sellValue, title, dateIssued, dateCompleted, client[0],
                                                declineMailSent, approved);
 

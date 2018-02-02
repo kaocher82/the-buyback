@@ -196,6 +196,7 @@ public class ContractsResource {
                                            contract.getClient(),
                                            contract.getDateIssued(),
                                            contract.getPrice(),
+                                           contract.getReward(),
                                            contract.getBuyValue(),
                                            contract.isDeclineMailSent(),
                                            contract.isApproved(),

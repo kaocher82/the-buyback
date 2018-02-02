@@ -6,7 +6,7 @@ import {Http} from "@angular/http";
     selector: 'jhi-capital-ales',
     templateUrl: './capital-sales.component.html'
 })
-export class CapitalSalesComponent implements OnInit {
+export class CapitalSalesComponent {
 
     capsSold: any;
     newCapSaleIds: number[] = [];
@@ -14,9 +14,9 @@ export class CapitalSalesComponent implements OnInit {
     constructor(private http: Http) {
         this.http.get('/api/contracts/caps-sold').subscribe((data) => {
             const cookie = localStorage.getItem('cap-sale-ids');
-            let oldSales: number[] = [];
+            const oldSales: number[] = [];
             if (cookie) {
-                cookie.split(',').forEach(el => oldSales.push(+el));
+                cookie.split(',').forEach((id) => oldSales.push(+id));
             }
             data.json().forEach((sale) => {
                 if (oldSales.indexOf(sale.id) === -1) {
@@ -27,10 +27,6 @@ export class CapitalSalesComponent implements OnInit {
             });
             this.capsSold = data.json();
         });
-    }
-
-    ngOnInit(): void {
-
     }
 
     getNewSaleClass(id: number) {

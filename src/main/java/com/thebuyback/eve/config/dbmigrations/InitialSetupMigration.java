@@ -10,19 +10,13 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 /**
  * Creates the initial database setup
  */
-@ChangeLog(order = "001")
+@ChangeLog(order = "003")
 public class InitialSetupMigration {
 
-    @ChangeSet(order = "01", author = "initiator", id = "01-addAuthorities")
+    @ChangeSet(order = "03", author = "initiator", id = "03-addAuthorities")
     public void addAuthorities(MongoTemplate mongoTemplate) {
-        Authority adminAuthority = new Authority();
-        adminAuthority.setName(AuthoritiesConstants.ADMIN);
-        Authority userAuthority = new Authority();
-        userAuthority.setName(AuthoritiesConstants.USER);
-        Authority managerAuthority = new Authority();
-        managerAuthority.setName(AuthoritiesConstants.MANAGER);
-        mongoTemplate.save(adminAuthority);
-        mongoTemplate.save(userAuthority);
-        mongoTemplate.save(managerAuthority);
+        Authority assets = new Authority();
+        assets.setName(AuthoritiesConstants.ASSETS);
+        mongoTemplate.save(assets);
     }
 }

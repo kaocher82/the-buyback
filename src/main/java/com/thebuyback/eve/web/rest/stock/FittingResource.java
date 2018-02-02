@@ -46,7 +46,7 @@ public class FittingResource {
     }
 
     @PostMapping
-    @Secured(AuthoritiesConstants.STOCK_MANAGER)
+//    @Secured(AuthoritiesConstants.STOCK_MANAGER)
     public void postFitting(@RequestBody String fittingText, @PathParam("hubId") String hubId) {
         final Fitting fitting = parser.parse(fittingText);
         repository.save(fitting);

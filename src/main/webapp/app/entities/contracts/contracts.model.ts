@@ -6,6 +6,7 @@ export class Contracts implements BaseEntity {
         public client?: string,
         public created?: any,
         public price?: number,
+        public reward?: number,
         public jitaBuy?: number,
         public declineMailSent?: boolean,
         public approved?: boolean,

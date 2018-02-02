@@ -13,6 +13,7 @@ public class ContractDTO {
     private String client;
     private Instant created;
     private double price;
+    private double reward;
     private double jitaBuy;
     private boolean declineMailSent;
     private boolean approved;
@@ -22,13 +23,14 @@ public class ContractDTO {
     public ContractDTO() {
     }
 
-    public ContractDTO(final long id, final String client, final Instant created, final double price,
+    public ContractDTO(final long id, final String client, final Instant created, final double price, final double reward,
                        final double jitaBuy, final boolean declineMailSent, final boolean approved,
                        final Double buybackPrice, final String appraisalLink) {
         this.id = id;
         this.client = client;
         this.created = created;
         this.price = price;
+        this.reward = reward;
         this.jitaBuy = jitaBuy;
         this.declineMailSent = declineMailSent;
         this.approved = approved;
@@ -106,5 +108,13 @@ public class ContractDTO {
 
     public void setJitaBuy(final double jitaBuy) {
         this.jitaBuy = jitaBuy;
+    }
+
+    public double getReward() {
+        return reward;
+    }
+
+    public void setReward(final double reward) {
+        this.reward = reward;
     }
 }

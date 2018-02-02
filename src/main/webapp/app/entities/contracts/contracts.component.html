@@ -15,7 +15,7 @@
         <tr>
             <th>Client</th>
             <th>Created</th>
-            <th>Price</th>
+            <th>Price/Reward</th>
             <th>Jita Buy</th>
             <th>Buyback</th>
             <th>Deviation</th>
@@ -26,7 +26,10 @@
         <tr *ngFor="let contract of contracts">
             <td>{{contract.client}}</td>
             <td>{{contract.created | date:'short'}}</td>
-            <td>{{contract.price | number:'1.0-0'}} ISK</td>
+            <td>
+                <span *ngIf="contract.price">{{contract.price | number:'1.0-0'}} ISK</span>
+                <span *ngIf="!contract.price">{{contract.reward | number:'1.0-0'}} ISK</span>
+            </td>
             <td>{{contract.jitaBuy | number:'1.0-0'}} ISK <a *ngIf="contract.appraisalLink" href="{{contract.appraisalLink}}" target="_blank"><i class="fa fa-external-link"></i></a></td>
             <td>{{contract.buybackPrice | number:'1.0-0'}} ISK
                 <a (click)="copyPrice(contract.buybackPrice, contract.id)">
@@ -34,8 +37,12 @@
                 </a>
                 <span [class.show]="showCopiedPriceFor === contract.id" class="step" style="color: green; font-size: small;"><b>Copied!</b></span>
             </td>
-            <td><span *ngIf="contract.price">{{(1 - (contract.buybackPrice / contract.price)) * 100 | number:'1.0-0'}}%</span></td>
             <td>
+                <span *ngIf="contract.price">{{(1 - (contract.buybackPrice / contract.price)) * 100 | number:'1.0-0'}}%</span>
+                <span *ngIf="contract.reward">{{(1 - (contract.buybackPrice / contract.reward)) * 100 | number:'1.0-0'}}%</span>
+            </td>
+            <td *ngIf="!contract.reward">
+                <div class="alert alert-warning" *ngIf="contract.price === 0">0 ISK contract. Please make sure <br/>that you don't pay out a WTB contract.</div>
                 <button *ngIf="!contract.declineMailSent && !contract.approved && (1 - (contract.buybackPrice / contract.price)) >= 0.03 && contract.buybackPrice > 0"
                         class="btn btn-danger" (click)="sendDeclineMail(contract.id)">Decline
                 </button>
@@ -51,6 +58,14 @@
                     This contract was approved.
                     <br />
                     Please accept it ingame.
+                </div>
+            </td>
+            <td *ngIf="contract.reward">
+                <div *ngIf="(1 - (contract.buybackPrice / contract.reward)) < 0 && contract.buybackPrice > 0" class="alert alert-danger">
+                    WTB. Please reject this contract.
+                </div>
+                <div *ngIf="(1 - (contract.buybackPrice / contract.reward)) >= 0 && contract.buybackPrice > 0" class="alert alert-info">
+                    WTB. Please accept this contract.
                 </div>
             </td>
         </tr>

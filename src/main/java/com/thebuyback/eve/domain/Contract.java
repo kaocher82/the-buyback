@@ -21,6 +21,7 @@ public class Contract {
     private String status;
     private long startLocationId;
     private double price;
+    private double reward;
     private Map<Integer, Integer> items;
     private String appraisalLink;
     private double buyValue;
@@ -39,7 +40,8 @@ public class Contract {
 
     public Contract(final long id, final long issuerId, final long issuerCorporationId,
                     final long assigneeId, final String status, final long startLocationId,
-                    final double price, final Map<Integer, Integer> items, final String appraisalLink,
+                    final double price, final double reward, final Map<Integer, Integer> items,
+                    final String appraisalLink,
                     final double buyValue, final double sellValue, final String title,
                     final Instant dateIssued, final Instant dateCompleted, final String client,
                     final boolean declineMailSent, final boolean approved) {
@@ -50,6 +52,7 @@ public class Contract {
         this.status = status;
         this.startLocationId = startLocationId;
         this.price = price;
+        this.reward = reward;
         this.items = items;
         this.appraisalLink = appraisalLink;
         this.buyValue = buyValue;
@@ -204,5 +207,13 @@ public class Contract {
 
     public void setClient(final String client) {
         this.client = client;
+    }
+
+    public double getReward() {
+        return reward;
+    }
+
+    public void setReward(final double reward) {
+        this.reward = reward;
     }
 }

@@ -15,6 +15,12 @@
                     <span>Doctrine Stock</span>
                 </a>
             </li>
+            <li *jhiHasAnyAuthority="'ROLE_ASSETS'" class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                <a class="nav-link" routerLink="/assets" (click)="collapseNavbar()">
+                    <i class="fa fa-archive" aria-hidden="true"></i>
+                    <span>Assets</span>
+                </a>
+            </li>
             <li ngbDropdown class="nav-item dropdown pointer" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
                 <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="marketplace-menu">
                     <span>

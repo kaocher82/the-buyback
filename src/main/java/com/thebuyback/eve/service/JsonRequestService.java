@@ -20,6 +20,8 @@ import com.mashape.unirest.request.body.MultipartBody;
 import com.mashape.unirest.request.body.RequestBodyEntity;
 import com.thebuyback.eve.domain.Token;
 
+import static com.thebuyback.eve.web.rest.ContractsResource.THE_BUYBACK;
+
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -169,6 +171,18 @@ public class JsonRequestService {
         return justGet(String.format("%s/v1/universe/categories/%d", ESI_BASE_URL, categoryId), null);
     }
 
+    Optional<JsonNode> getAssets(final String accessToken, final int page) {
+        return justGet(String.format("%s/v2/corporations/%d/assets/?token=%s&page=%d", ESI_BASE_URL, THE_BUYBACK, accessToken, page), "corpAssets");
+    }
+
+    Optional<JsonNode> getStructureInfo(final long locationId, final String accessToken) {
+        String url = String.format("%s/v1/universe/structures/%d/", ESI_BASE_URL, locationId);
+        if (locationId > 70_000_000) {
+            url += "?token=" + accessToken;
+        }
+        return justGet(url, null);
+    }
+
     public Optional<String> sendMail(final long issuerId, final String mail, final String accessToken) {
         final String body = String.format(BODY_TEMPLATE, issuerId, mail);
         RequestBodyEntity request = post(String.format("%s/v1/characters/%d/mail/?token=%s", ESI_BASE_URL, MAIL_CHAR, accessToken), body);
@@ -190,5 +204,4 @@ public class JsonRequestService {
             return Optional.empty();
         }
     }
-
 }
