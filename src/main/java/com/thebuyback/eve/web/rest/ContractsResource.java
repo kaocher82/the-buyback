@@ -198,6 +198,7 @@ public class ContractsResource {
                                            contract.getPrice(),
                                            contract.getReward(),
                                            contract.getBuyValue(),
+                                           contract.getSellValue(),
                                            contract.isDeclineMailSent(),
                                            contract.isApproved(),
                                            contract.getBuybackPrice(),
