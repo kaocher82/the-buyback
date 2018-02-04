@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AssetRepository extends MongoRepository<Asset, String> {
-    List<Asset> findAllByTypeNameIn(Set<String> typeNames);
+    List<Asset> findAllByTypeNameInAndLocationIdIn(Set<String> typeNames, List<Long> locationIds);
 }

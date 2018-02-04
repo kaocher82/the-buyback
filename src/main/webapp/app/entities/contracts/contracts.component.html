@@ -39,7 +39,7 @@
             </td>
             <td>
                 <span *ngIf="contract.price">{{(1 - (contract.buybackPrice / contract.price)) * 100 | number:'1.0-0'}}%</span>
-                <span *ngIf="contract.reward">{{(1 - (contract.buybackPrice / contract.reward)) * 100 | number:'1.0-0'}}%</span>
+                <span *ngIf="contract.reward">{{(1 - (contract.jitaSell / contract.reward)) * 100 | number:'1.0-0'}}%</span>
             </td>
             <td *ngIf="!contract.reward">
                 <div class="alert alert-warning" *ngIf="contract.price === 0">0 ISK contract. Please make sure <br/>this is not a WTB contract.</div>
@@ -61,10 +61,10 @@
                 </div>
             </td>
             <td *ngIf="contract.reward">
-                <div *ngIf="(1 - (contract.jitaSell / contract.reward)) < 0 && contract.jitaSell > 0" class="alert alert-danger">
+                <div *ngIf="(1 - (contract.jitaSell / contract.reward)) > 0.03 && contract.jitaSell > 0" class="alert alert-danger">
                     WTB. Please reject this contract.
                 </div>
-                <div *ngIf="(1 - (contract.jitaSell / contract.reward)) >= 0 && contract.jitaSell > 0" class="alert alert-info">
+                <div *ngIf="(1 - (contract.jitaSell / contract.reward)) <= 0.03 && contract.jitaSell > 0" class="alert alert-info">
                     WTB. Please accept this contract.
                 </div>
             </td>
