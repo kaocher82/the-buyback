@@ -42,7 +42,7 @@
                 <span *ngIf="contract.reward">{{(1 - (contract.buybackPrice / contract.reward)) * 100 | number:'1.0-0'}}%</span>
             </td>
             <td *ngIf="!contract.reward">
-                <div class="alert alert-warning" *ngIf="contract.price === 0">0 ISK contract. Please make sure <br/>that you don't pay out a WTB contract.</div>
+                <div class="alert alert-warning" *ngIf="contract.price === 0">0 ISK contract. Please make sure <br/>this is not a WTB contract.</div>
                 <button *ngIf="!contract.declineMailSent && !contract.approved && (1 - (contract.buybackPrice / contract.price)) >= 0.03 && contract.buybackPrice > 0"
                         class="btn btn-danger" (click)="sendDeclineMail(contract.id)">Decline
                 </button>

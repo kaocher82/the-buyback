@@ -183,8 +183,8 @@ public class JsonRequestService {
         return justGet(url, null);
     }
 
-    public Optional<String> sendMail(final long issuerId, final String mail, final String accessToken) {
-        final String body = String.format(BODY_TEMPLATE, issuerId, mail);
+    public Optional<String> sendMail(final long recipientId, final String mail, final String accessToken) {
+        final String body = String.format(BODY_TEMPLATE, recipientId, mail);
         RequestBodyEntity request = post(String.format("%s/v1/characters/%d/mail/?token=%s", ESI_BASE_URL, MAIL_CHAR, accessToken), body);
 
         try {

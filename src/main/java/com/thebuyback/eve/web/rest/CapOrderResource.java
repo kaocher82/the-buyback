@@ -7,13 +7,21 @@ import java.util.List;
 import java.util.Optional;
 
 import com.codahale.metrics.annotation.Timed;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.thebuyback.eve.domain.CapOrder;
+import com.thebuyback.eve.domain.Token;
+import com.thebuyback.eve.domain.User;
 import com.thebuyback.eve.domain.enumeration.CapOrderStatus;
 import com.thebuyback.eve.repository.CapOrderRepository;
+import com.thebuyback.eve.repository.TokenRepository;
+import com.thebuyback.eve.repository.UserRepository;
 import com.thebuyback.eve.security.AuthoritiesConstants;
 import com.thebuyback.eve.security.SecurityUtils;
+import com.thebuyback.eve.service.JsonRequestService;
 import com.thebuyback.eve.web.rest.util.HeaderUtil;
 import com.thebuyback.eve.web.rest.util.PaginationUtil;
+
+import static com.thebuyback.eve.service.ContractParser.CONTRACT_PARSER_CLIENT;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,10 +53,21 @@ public class CapOrderResource {
     private final Logger log = LoggerFactory.getLogger(CapOrderResource.class);
 
     private static final String ENTITY_NAME = "capOrder";
+    private static final String MAIL_TEMPLATE = "Hi %s,\\n\\nWe started to build your %s and will contract it to you once it's complete.\\n\\nThe Buyback\\n\\nPLEASE DO NOT REPLY TO THIS MAIL\\nAsk in #the-buyback on Slack";
 
     private final CapOrderRepository capOrderRepository;
-    public CapOrderResource(CapOrderRepository capOrderRepository) {
+    private final JsonRequestService requestService;
+    private final TokenRepository tokenRepository;
+    private final UserRepository userRepository;
+
+    public CapOrderResource(CapOrderRepository capOrderRepository,
+                            final JsonRequestService requestService,
+                            final TokenRepository tokenRepository,
+                            final UserRepository userRepository) {
         this.capOrderRepository = capOrderRepository;
+        this.requestService = requestService;
+        this.tokenRepository = tokenRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -93,10 +112,35 @@ public class CapOrderResource {
         if (capOrder.getId() == null) {
             return createCapOrder(capOrder);
         }
+        if (capOrder.getStatus() == CapOrderStatus.INBUILD) {
+            sendMail(capOrder);
+        }
         CapOrder result = capOrderRepository.save(capOrder);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, capOrder.getId().toString()))
             .body(result);
+    }
+
+    private void sendMail(final CapOrder capOrder) {
+        final Token token = tokenRepository.findByClientId(CONTRACT_PARSER_CLIENT).get(0);
+        final String accessToken;
+        try {
+            accessToken = requestService.getAccessToken(token);
+        } catch (UnirestException e) {
+            log.error("Failed to get access for sendMail:capitalInBuild.", e);
+            return;
+        }
+
+        final Optional<User> userOptional = userRepository.findOneByLogin(capOrder.getRecipient());
+        final Long characterId;
+        if (userOptional.isPresent()) {
+            characterId = userOptional.get().getCharacterId();
+        } else {
+            log.warn("Failed to load characterId for {}.", capOrder.getRecipient());
+            return;
+        }
+
+        requestService.sendMail(characterId, String.format(MAIL_TEMPLATE, capOrder.getRecipient(), capOrder.getTypeName()), accessToken);
     }
 
     /**

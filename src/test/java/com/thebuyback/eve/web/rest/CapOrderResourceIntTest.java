@@ -8,6 +8,9 @@ import com.thebuyback.eve.App;
 import com.thebuyback.eve.domain.CapOrder;
 import com.thebuyback.eve.domain.enumeration.CapOrderStatus;
 import com.thebuyback.eve.repository.CapOrderRepository;
+import com.thebuyback.eve.repository.TokenRepository;
+import com.thebuyback.eve.repository.UserRepository;
+import com.thebuyback.eve.service.JsonRequestService;
 import com.thebuyback.eve.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
@@ -26,6 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -65,7 +69,7 @@ public class CapOrderResourceIntTest {
     private static final Double UPDATED_DELIVERY_PRICE = 2D;
 
     private static final CapOrderStatus DEFAULT_STATUS = CapOrderStatus.REQUESTED;
-    private static final CapOrderStatus UPDATED_STATUS = CapOrderStatus.INBUILD;
+    private static final CapOrderStatus UPDATED_STATUS = CapOrderStatus.COMPLETED;
 
     @Autowired
     private CapOrderRepository capOrderRepository;
@@ -86,7 +90,8 @@ public class CapOrderResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final CapOrderResource capOrderResource = new CapOrderResource(capOrderRepository);
+        final CapOrderResource capOrderResource = new CapOrderResource(capOrderRepository, mock(JsonRequestService.class),
+                                                                       mock(TokenRepository.class), mock(UserRepository.class));
         this.restCapOrderMockMvc = MockMvcBuilders.standaloneSetup(capOrderResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
