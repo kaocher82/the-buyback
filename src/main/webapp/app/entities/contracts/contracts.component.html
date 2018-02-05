@@ -61,11 +61,11 @@
                 </div>
             </td>
             <td *ngIf="contract.reward">
-                <div *ngIf="(1 - (contract.jitaSell / contract.reward)) > 0.03 && contract.jitaSell > 0" class="alert alert-danger">
-                    WTB. Please reject this contract.
+                <div *ngIf="(1 - (contract.jitaSell / contract.reward)) > 0.03 && contract.reward > 0" class="alert alert-danger">
+                    Underpaid WTB. Please reject this contract.
                 </div>
-                <div *ngIf="(1 - (contract.jitaSell / contract.reward)) <= 0.03 && contract.jitaSell > 0" class="alert alert-info">
-                    WTB. Please accept this contract.
+                <div *ngIf="(1 - (contract.jitaSell / contract.reward)) <= 0.03 && contract.reward > 0" class="alert alert-info">
+                    Well priced WTB. Please accept this contract.
                 </div>
             </td>
         </tr>

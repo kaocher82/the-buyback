@@ -67,19 +67,20 @@ public class AssetParser implements SchedulingConfigurer {
                 final JSONArray assetsArray = jsonNode.get().getArray();
                 for (int i = 0; i < assetsArray.length(); i++) {
                     final JSONObject asset = assetsArray.getJSONObject(i);
-                    final long itemId = asset.getLong("item_id");
-                    final long typeId = asset.getLong("type_id");
-                    final long quantity = asset.getLong("quantity");
                     final long locationId = asset.getLong("location_id");
                     if (locationId < 100_000_000) {
                         continue;
                     }
-                    final String typeName = typeService.getNameByTypeId(typeId);
                     final String locationName = locationService.fetchLocationName(locationId);
                     if (locationName.equals("N/A")) {
                         continue;
                     }
-                    assets.add(new Asset(itemId, typeId, typeName, quantity, locationId, locationName));
+                    final long itemId = asset.getLong("item_id");
+                    final long typeId = asset.getLong("type_id");
+                    final long quantity = asset.getLong("quantity");
+                    final String locationFlag = asset.getString("location_flag");
+                    final String typeName = typeService.getNameByTypeId(typeId);
+                    assets.add(new Asset(itemId, typeId, typeName, quantity, locationId, locationName, locationFlag));
                 }
                 if (assetsArray.length() < 1000) {
                     nextPageAvailable = false;

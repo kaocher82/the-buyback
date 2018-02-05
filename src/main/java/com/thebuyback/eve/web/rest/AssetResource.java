@@ -65,6 +65,6 @@ public class AssetResource {
         = (Comparator<AssetDTO>) (o1, o2) -> o1.getTypeName().compareTo(o2.getTypeName());
 
     private static AssetDTO toDTO(final Asset asset) {
-        return new AssetDTO(asset.getTypeName(), asset.getQuantity(), asset.getLocationName());
+        return new AssetDTO(asset.getTypeName(), asset.getQuantity(), asset.getLocationName(), asset.getLocationFlag());
     }
 }

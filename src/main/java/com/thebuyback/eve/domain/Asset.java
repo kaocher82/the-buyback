@@ -11,15 +11,21 @@ public class Asset {
     private final long quantity;
     private final long locationId;
     private final String locationName;
+    private final String locationFlag;
 
     public Asset(final long itemId, final long typeId, final String typeName, final long quantity,
-                 final long locationId, final String locationName) {
+                 final long locationId, final String locationName, final String locationFlag) {
         this.itemId = itemId;
         this.typeId = typeId;
         this.typeName = typeName;
         this.quantity = quantity;
         this.locationId = locationId;
         this.locationName = locationName;
+        this.locationFlag = locationFlag;
+    }
+
+    public String getLocationFlag() {
+        return locationFlag;
     }
 
     public Long getItemId() {
