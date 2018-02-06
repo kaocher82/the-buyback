@@ -49,7 +49,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class StockDataLoader {
 
     private final Logger log = LoggerFactory.getLogger(StockDataLoader.class);

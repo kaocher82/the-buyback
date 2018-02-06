@@ -58,6 +58,6 @@
     <tr *ngFor="let entry of data">
         <td>{{entry.typeName}}</td>
         <td>{{entry.quantity | number:'1.0-0'}}</td>
-        <td>{{entry.locationName}}<span *jhiHasAnyAuthority="'ROLE_MANAGER'">: {{entry.locationFlag}}}</span></td>
+        <td>{{entry.locationName}}<span *jhiHasAnyAuthority="'ROLE_MANAGER'">: {{entry.locationFlag}}</span></td>
     </tr>
 </table>

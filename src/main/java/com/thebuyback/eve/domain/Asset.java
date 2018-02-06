@@ -7,20 +7,19 @@ public class Asset {
     @Id
     private final long itemId;
     private final long typeId;
-    private final String typeName;
     private final long quantity;
     private final long locationId;
-    private final String locationName;
     private final String locationFlag;
+    private String typeName;
+    private String locationName;
+    private Double price;
 
-    public Asset(final long itemId, final long typeId, final String typeName, final long quantity,
-                 final long locationId, final String locationName, final String locationFlag) {
+    public Asset(final long itemId, final long typeId, final long quantity,
+                 final long locationId, final String locationFlag) {
         this.itemId = itemId;
         this.typeId = typeId;
-        this.typeName = typeName;
         this.quantity = quantity;
         this.locationId = locationId;
-        this.locationName = locationName;
         this.locationFlag = locationFlag;
     }
 
@@ -50,5 +49,21 @@ public class Asset {
 
     public String getLocationName() {
         return locationName;
+    }
+
+    public void setPrice(final Double price) {
+        this.price = price;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setTypeName(final String typeName) {
+        this.typeName = typeName;
+    }
+
+    public void setLocationName(final String locationName) {
+        this.locationName = locationName;
     }
 }

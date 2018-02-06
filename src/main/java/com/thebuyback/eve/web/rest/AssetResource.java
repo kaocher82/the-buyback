@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.codahale.metrics.annotation.Timed;
 import com.thebuyback.eve.domain.Asset;
+import com.thebuyback.eve.domain.AssetOverview;
 import com.thebuyback.eve.security.SecurityUtils;
 import com.thebuyback.eve.service.AssetService;
 import com.thebuyback.eve.web.dto.AssetDTO;
@@ -17,6 +18,8 @@ import com.thebuyback.eve.web.dto.AssetRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +39,7 @@ public class AssetResource {
 
     @PostMapping
     @Timed
-    public ResponseEntity<List<AssetDTO>> requestAppraisal(@RequestBody AssetRequest appraisal) {
+    public ResponseEntity<List<AssetDTO>> requestAssets(@RequestBody AssetRequest appraisal) {
         final Set<String> typeNames = Arrays.stream(appraisal.getText().split("\n"))
                                             .filter(Objects::nonNull)
                                             .map(String::trim)
@@ -46,16 +49,20 @@ public class AssetResource {
         if (typeNames.size() > 50) {
             return ResponseEntity.status(420).build();
         }
+
         final List<AssetDTO> assets = assetService.findAssets(typeNames)
                                                   .stream()
                                                   .map(AssetResource::toDTO)
                                                   .collect(Collectors.toList());
-        assets.sort(COMPARE_BY_LOCATION);
-        assets.sort(COMPARE_BY_NAME);
 
-        log.info("{} searched for {} items.", SecurityUtils.getCurrentUserLoginAsString(), typeNames.size());
+        log.info("{} searched for {} items: {}", SecurityUtils.getCurrentUserLoginAsString(), typeNames.size(), typeNames.toArray());
 
         return ResponseEntity.ok(assets);
+    }
+
+    @GetMapping("/{region}/{isHub}")
+    public ResponseEntity<AssetOverview> getAssetOverview(@PathVariable final String region, @PathVariable final String isHub) {
+        return ResponseEntity.ok(assetService.getAssetsForOverview(region, isHub));
     }
 
     private static final Comparator<AssetDTO> COMPARE_BY_LOCATION

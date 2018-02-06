@@ -1,13 +1,19 @@
 package com.thebuyback.eve.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.thebuyback.eve.domain.Asset;
+import com.thebuyback.eve.domain.ItemWithQuantity;
 import com.thebuyback.eve.domain.Token;
 import com.thebuyback.eve.repository.AssetRepository;
 import com.thebuyback.eve.repository.TokenRepository;
@@ -61,26 +67,19 @@ public class AssetParser implements SchedulingConfigurer {
         final Collection<Asset> assets = new ArrayList<>();
         boolean nextPageAvailable = true;
         int pageCounter = 0;
+
         while (nextPageAvailable) {
             final Optional<JsonNode> jsonNode = requestService.getAssets(accessToken, pageCounter);
             if (jsonNode.isPresent()) {
                 final JSONArray assetsArray = jsonNode.get().getArray();
                 for (int i = 0; i < assetsArray.length(); i++) {
                     final JSONObject asset = assetsArray.getJSONObject(i);
-                    final long locationId = asset.getLong("location_id");
-                    if (locationId < 100_000_000) {
-                        continue;
-                    }
-                    final String locationName = locationService.fetchLocationName(locationId);
-                    if (locationName.equals("N/A")) {
-                        continue;
-                    }
-                    final long itemId = asset.getLong("item_id");
                     final long typeId = asset.getLong("type_id");
-                    final long quantity = asset.getLong("quantity");
+                    final long itemId = asset.getLong("item_id");
                     final String locationFlag = asset.getString("location_flag");
-                    final String typeName = typeService.getNameByTypeId(typeId);
-                    assets.add(new Asset(itemId, typeId, typeName, quantity, locationId, locationName, locationFlag));
+                    final long locationId = asset.getLong("location_id");
+                    final long quantity = asset.getLong("quantity");
+                    assets.add(new Asset(itemId, typeId, quantity, locationId, locationFlag));
                 }
                 if (assetsArray.length() < 1000) {
                     nextPageAvailable = false;
@@ -90,11 +89,90 @@ public class AssetParser implements SchedulingConfigurer {
             } else {
                 nextPageAvailable = false;
             }
-
         }
+
+        final Map<Long, Long> officeMappings = getOfficeMappings(assets);
+
+        final List<Asset> enhancedAssets = assets.stream().peek(asset -> {
+            long locationId = asset.getLocationId();
+            if (officeMappings.containsKey(asset.getLocationId())) {
+                locationId = officeMappings.get(asset.getLocationId());
+            }
+            final String locationName = resolveLocation(locationId);
+            asset.setLocationName(locationName);
+        }).filter(asset -> !asset.getLocationName().equals("N/A")).peek(asset -> {
+            final String typeName = typeService.getNameByTypeId(asset.getTypeId());
+            asset.setTypeName(typeName);
+        }).collect(Collectors.toList());
+
+        final Map<String, Double> prices = new HashMap<>();
+        final List<String> typeNames = assets.stream().map(Asset::getTypeName).distinct().collect(Collectors.toList());
+        String raw = "";
+        for (int i = 0; i < typeNames.size(); i++) {
+            raw += typeNames.get(i) + "\n";
+            if (i+1 % 100 == 0) {
+                try {
+                    setPrices(prices, raw);
+                } catch (UnirestException e) {
+                    log.error("Failed to appraise items for AssetParser.", e);
+                    return;
+                }
+            }
+        }
+        try {
+            setPrices(prices, raw);
+        } catch (UnirestException e) {
+            log.error("Failed to appraise items for AssetParser.", e);
+            return;
+        }
+
+        final List<Asset> pricedAssets = assets.stream().peek(asset -> asset.setPrice(prices.get(asset.getTypeName())))
+                                          .collect(Collectors.toList());
+
         assetRepository.deleteAll();
-        assetRepository.save(assets);
+        assetRepository.save(pricedAssets);
         log.info("Asset parsing complete. {} entries have been added.", assets.size());
+    }
+
+    private Map<Long, Long> getOfficeMappings(final Iterable<Asset> assetsArray) {
+        final Map<Long, Long> result = new HashMap<>();
+        for (final Asset asset : assetsArray) {
+            final String locationFlag = asset.getLocationFlag();
+            if (locationFlag.equals("OfficeFolder")) {
+                result.put(asset.getItemId(), asset.getLocationId());
+            }
+        }
+        return result;
+    }
+
+    private String resolveLocation(long locationId) {
+        if (locationId >= 30000000 && locationId <= 32000000) {
+            // system id, asset is probably in space
+            // ignore for now
+            return "N/A";
+        } else if (locationId >= 60000000 && locationId < 66000000) {
+            // station id
+            // ignore for now
+            return "N/A";
+        } else if (locationId >= 66000000 && locationId <= 68000000) {
+            // station office ids
+            if (locationId < 67000000) {
+                locationId -= 6000001;
+            } else {
+                locationId -= 6000000;
+            }
+            // ignore for now
+            return "N/A";
+        }
+        return locationService.fetchCitadelName(locationId);
+    }
+
+    public void setPrices(final Map<String, Double> prices, final String raw) throws UnirestException {
+        final String link = AppraisalUtil.getLinkFromRaw(raw);
+        final List<ItemWithQuantity> items = AppraisalUtil.getItems(link);
+        for (final ItemWithQuantity item : items) {
+            prices.put(item.getTypeName(), item.getJitaBuyPerUnit());
+        }
     }
 
     @Bean

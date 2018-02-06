@@ -41,7 +41,7 @@ import org.springframework.stereotype.Service;
  *
  * Created on 08.11.2017
  */
-@Service
+//@Service
 public class ContractParser implements SchedulingConfigurer {
 
     private final Logger log = LoggerFactory.getLogger(getClass());

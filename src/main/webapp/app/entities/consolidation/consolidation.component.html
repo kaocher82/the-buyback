@@ -1,0 +1,192 @@
+<div class="row">
+    <div class="col-md-6">
+        <h3>Hub: 442-CS</h3>
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <td>Ore Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Ore Value</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Value</td>
+                <td><span *ngIf="hub442">{{hub442.stuffValue | number:'1.0-2'}} ISK</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h3>Surroundings: 442-CS</h3>
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <td>Ore Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Ore Value</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Value</td>
+                <td><span *ngIf="region442">{{region442.stuffValue - hub442.stuffValue | number:'1.0-2'}} ISK</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Hub: 68FT-6</h3>
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <td>Ore Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Ore Value</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Value</td>
+                <td><span *ngIf="hub68">{{hub68.stuffValue | number:'1.0-2'}} ISK</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h3>Surroundings: 68FT-6</h3>
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <td>Ore Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Ore Value</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Value</td>
+                <td><span *ngIf="region68">{{region68.stuffValue - hub68.stuffValue | number:'1.0-2'}} ISK</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Hub: TM-0P2</h3>
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <td>Ore Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Ore Value</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Value</td>
+                <td><span *ngIf="hubTM">{{hubTM.stuffValue | number:'1.0-2'}} ISK</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h3>Surroundings: TM-0P2</h3>
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <td>Ore Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Ore Value</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Value</td>
+                <td><span *ngIf="regionTM">{{regionTM.stuffValue - hubTM.stuffValue | number:'1.0-2'}} ISK</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Hub: GE-8JV</h3>
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <td>Ore Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Ore Value</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Value</td>
+                <td><span *ngIf="hubGE">{{hubGE.stuffValue | number:'1.0-2'}} ISK</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h3>Surroundings: GE-8JV</h3>
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <td>Ore Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Ore Value</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Volume</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Stuff Value</td>
+                <td><span *ngIf="regionGE">{{regionGE.stuffValue - hubGE.stuffValue | number:'1.0-2'}} ISK</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

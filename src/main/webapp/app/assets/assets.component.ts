@@ -24,7 +24,7 @@ export class AssetsComponent {
             this.data = data.json();
             this.loading = false;
         }, (err) => {
-            this.errorMessage = "Something bad happened. Did you try to sneak in more than 10 items?"
+            this.errorMessage = "Something bad happened. Did you try to sneak in more than 50 items?"
             this.loading = false;
         });
     }

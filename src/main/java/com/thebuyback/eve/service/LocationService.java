@@ -30,7 +30,7 @@ public class LocationService {
         this.tokenRepository = tokenRepository;
     }
 
-    String fetchLocationName(final long locationId) {
+    String fetchCitadelName(final long locationId) {
         if (!cache.containsKey(locationId)) {
             setLocationName(locationId);
         }
@@ -50,9 +50,13 @@ public class LocationService {
                 log.warn("Failed to get location infos for {}.", locationId);
             }
         } catch (UnirestException e) {
-            log.error("Failed to get access token for fetchLocationName.", e);
+            log.error("Failed to get access token for fetchCitadelName.", e);
         }
         cache.put(locationId, locationName);
-        log.info("Added a locationName. Now holding {} locations.", cache.size());
+        log.info("Added a locationName. Now holding {} locations. {} are N/A.", cache.size(), getNAs(cache));
+    }
+
+    private long getNAs(final Map<Long, String> cache) {
+        return cache.entrySet().stream().filter(longStringEntry -> longStringEntry.getValue().equals("N/A")).count();
     }
 }

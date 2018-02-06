@@ -5,6 +5,7 @@ import { TheBuybackCapConfigModule } from './cap-config/cap-config.module';
 import { TheBuybackCapOrderModule } from './cap-order/cap-order.module';
 import { TheBuybackMarketOfferModule } from './market-offer/market-offer.module';
 import {CapitalSalesModule} from "./capital-sales/capital-sales.module";
+import {ConsolidationModule} from "./consolidation/consolidation.module";
 /* jhipster-needle-add-entity-module-import - JHipster will add entity modules imports here */
 
 @NgModule({
@@ -14,6 +15,7 @@ import {CapitalSalesModule} from "./capital-sales/capital-sales.module";
         TheBuybackCapOrderModule,
         TheBuybackMarketOfferModule,
         CapitalSalesModule,
+        ConsolidationModule,
         /* jhipster-needle-add-entity-module - JHipster will add entity modules here */
     ],
     declarations: [],
