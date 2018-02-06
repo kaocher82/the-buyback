@@ -140,7 +140,7 @@ public class CapOrderResource {
             return;
         }
 
-        requestService.sendMail(characterId, String.format(MAIL_TEMPLATE, capOrder.getRecipient(), capOrder.getTypeName()), accessToken);
+        requestService.sendMail(characterId, "Build started", String.format(MAIL_TEMPLATE ,capOrder.getRecipient(), capOrder.getTypeName()), accessToken);
     }
 
     /**

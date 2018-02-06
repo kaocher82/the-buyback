@@ -32,7 +32,7 @@ public class JsonRequestService {
 
     private static final String WRONG_STATUS_CODE = "{} returned status code {}.";
     private static final String UNIREST_EXCEPTION = "Failed to get data from url={}";
-    private static final String BODY_TEMPLATE = "{\"recipients\": [{\"recipient_type\": \"character\",\"recipient_id\": %d}, {\"recipient_type\": \"corporation\",\"recipient_id\": 98503372}],\"subject\": \"The Buyback - Wrong contract price\",\"body\": \"%s\", \"approved_cost\": 100000}";
+    private static final String BODY_TEMPLATE = "{\"recipients\": [{\"recipient_type\": \"character\",\"recipient_id\": %d}, {\"recipient_type\": \"corporation\",\"recipient_id\": 98503372}],\"subject\": \"The Buyback - %s\",\"body\": \"%s\", \"approved_cost\": 100000}";
     private static final long CORPORATION = 98503372L;
     private static final long MAIL_CHAR = 93475128L;
     private static final String ESI_BASE_URL = "https://esi.tech.ccp.is";
@@ -183,8 +183,8 @@ public class JsonRequestService {
         return justGet(url, null);
     }
 
-    public Optional<String> sendMail(final long recipientId, final String mail, final String accessToken) {
-        final String body = String.format(BODY_TEMPLATE, recipientId, mail);
+    public Optional<String> sendMail(final long recipientId, final String title, final String mail, final String accessToken) {
+        final String body = String.format(BODY_TEMPLATE, recipientId, title, mail);
         RequestBodyEntity request = post(String.format("%s/v1/characters/%d/mail/?token=%s", ESI_BASE_URL, MAIL_CHAR, accessToken), body);
 
         try {

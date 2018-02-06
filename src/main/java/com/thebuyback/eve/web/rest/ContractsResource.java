@@ -109,7 +109,7 @@ public class ContractsResource {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
 
-                final Optional<String> jsonNode = requestService.sendMail(contract.getIssuerId(), mail, accessToken);
+                final Optional<String> jsonNode = requestService.sendMail(contract.getIssuerId(), "Wrong contract price", mail, accessToken);
 
                 if (!jsonNode.isPresent()) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
