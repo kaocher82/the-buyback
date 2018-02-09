@@ -45,11 +45,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-//@Component
+import io.github.jhipster.config.JHipsterConstants;
+
+@Component
 public class StockDataLoader {
 
     private final Logger log = LoggerFactory.getLogger(StockDataLoader.class);
@@ -65,6 +68,7 @@ public class StockDataLoader {
     private final FittingRepository fittingRepository;
     private final TypeService typeService;
     private final StockDoctrineRepository stockDoctrineRepository;
+    private final Environment env;
 
     public StockDataLoader(final TokenRepository tokenRepository,
                            final HubRepository hubRepository,
@@ -74,7 +78,8 @@ public class StockDataLoader {
                            final DoctrineRepository doctrineRepository,
                            final FittingRepository fittingRepository,
                            final TypeService typeService,
-                           final StockDoctrineRepository stockDoctrineRepository) {
+                           final StockDoctrineRepository stockDoctrineRepository,
+                           final Environment env) {
         this.tokenRepository = tokenRepository;
         this.hubRepository = hubRepository;
         this.requestService = requestService;
@@ -84,11 +89,16 @@ public class StockDataLoader {
         this.fittingRepository = fittingRepository;
         this.typeService = typeService;
         this.stockDoctrineRepository = stockDoctrineRepository;
+        this.env = env;
     }
 
     @Async
     @Scheduled(fixedDelay = 1_200_000L) // 20 minutes
     public void loadAllData() {
+        if (env.acceptsProfiles(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT)) {
+            return;
+        }
+
         log.info("Loading data for all hubs.");
         Stream.concat(hubRepository.findAll().stream().map(Hub::getId), Stream.of(JITA)).collect(Collectors.toList()).forEach(id -> {
             try {
