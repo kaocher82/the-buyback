@@ -2,13 +2,17 @@ package com.thebuyback.eve.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.thebuyback.eve.domain.Asset;
 import com.thebuyback.eve.domain.AssetOverview;
 import com.thebuyback.eve.repository.AssetRepository;
+import com.thebuyback.eve.web.dto.AssetsPerSystem;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -30,6 +34,32 @@ public class AssetService {
     }
 
     public AssetOverview getAssetsForOverview(final String region, final String isHub) {
+        final List<Asset> assets = getAssets(region, isHub);
+
+        final double stuffValue = assets.stream()
+                                        .filter(asset -> !asset.getTypeName().startsWith("Compressed"))
+                                        .mapToDouble(asset -> asset.getQuantity() * asset.getPrice())
+                                        .sum();
+
+        final double stuffVolume = assets.stream()
+                                         .filter(asset -> !asset.getTypeName().startsWith("Compressed"))
+                                         .mapToDouble(asset -> asset.getQuantity() * asset.getVolume())
+                                         .sum();
+
+        final double oreValue = assets.stream()
+                                        .filter(asset -> asset.getTypeName().startsWith("Compressed"))
+                                        .mapToDouble(asset -> asset.getQuantity() * asset.getPrice())
+                                        .sum();
+
+        final double oreVolume = assets.stream()
+                                         .filter(asset -> asset.getTypeName().startsWith("Compressed"))
+                                         .mapToDouble(asset -> asset.getQuantity() * asset.getVolume())
+                                         .sum();
+
+        return new AssetOverview(oreVolume, oreValue, stuffVolume, stuffValue);
+    }
+
+    private List<Asset> getAssets(final String region, final String isHub) {
         final List<String> systems = new ArrayList<>();
         Long locationId = null;
         if (region.equals("442-CS")) {
@@ -66,13 +96,7 @@ public class AssetService {
                            .filter(asset -> startsWithAnyOf(asset.getLocationName(), systems))
                            .collect(Collectors.toList());
         }
-
-        final double sum = assets.stream()
-                                 .filter(asset -> asset.getTypeName() != null && !asset.getTypeName().contains("Blueprint"))
-                                 .mapToDouble(asset -> asset.getQuantity() * asset.getPrice())
-                                 .sum();
-
-        return new AssetOverview(0, 0, 0, sum);
+        return assets.stream().filter(asset -> asset.getTypeName() != null && !asset.getTypeName().contains("Blueprint")).collect(Collectors.toList());
     }
 
     boolean startsWithAnyOf(final String locationName, final Iterable<String> systems) {
@@ -82,5 +106,31 @@ public class AssetService {
             }
         }
         return false;
+    }
+
+    public Set<AssetsPerSystem> getAssetsForOverviewDetails(final String region, final String isHub) {
+        final List<Asset> assets = getAssets(region, isHub);
+        final Set<AssetsPerSystem> result = new HashSet<>();
+
+        for (final Asset asset : assets) {
+            if (asset.getLocationName() == null || asset.getLocationName().equals("N/A")) {
+                continue;
+            }
+            final String systemName = asset.getLocationName().split(" ")[0];
+            final Optional<AssetsPerSystem> first = result.stream().filter(a -> a.getSystemName().equals(systemName)).findFirst();
+            final double stuffWorth = asset.getQuantity() * asset.getPrice();
+            final double stuffVolume = asset.getQuantity() * asset.getVolume();
+            AssetsPerSystem assetsPerSystem;
+            if (first.isPresent()) {
+                assetsPerSystem = first.get();
+                assetsPerSystem.addStuffWorth(stuffWorth);
+                assetsPerSystem.addStuffVolume(stuffVolume);
+            } else {
+                assetsPerSystem = new AssetsPerSystem(systemName, stuffWorth, stuffVolume);
+            }
+            result.add(assetsPerSystem);
+        }
+
+        return result;
     }
 }

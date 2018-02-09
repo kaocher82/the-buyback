@@ -1,7 +1,6 @@
 package com.thebuyback.eve.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,11 +22,14 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.stereotype.Service;
+
+import io.github.jhipster.config.JHipsterConstants;
 
 @Service
 public class AssetParser implements SchedulingConfigurer {
@@ -41,20 +43,26 @@ public class AssetParser implements SchedulingConfigurer {
     private final TypeService typeService;
     private final LocationService locationService;
     private final TokenRepository tokenRepository;
+    private final Environment env;
 
     public AssetParser(final JsonRequestService requestService, final AssetRepository assetRepository,
                        final TypeService typeService,
                        final LocationService locationService,
-                       final TokenRepository tokenRepository) {
+                       final TokenRepository tokenRepository, final Environment env) {
         this.requestService = requestService;
         this.assetRepository = assetRepository;
         this.typeService = typeService;
         this.locationService = locationService;
         this.tokenRepository = tokenRepository;
+        this.env = env;
     }
 
     @Async
     public void refreshAssets() {
+        if (env.acceptsProfiles(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT)) {
+            return;
+        }
+
         final Token token = tokenRepository.findByClientId(ASSET_PARSER_CLIENT).get(0);
         final String accessToken;
         try {
@@ -103,6 +111,8 @@ public class AssetParser implements SchedulingConfigurer {
         }).filter(asset -> !asset.getLocationName().equals("N/A")).peek(asset -> {
             final String typeName = typeService.getNameByTypeId(asset.getTypeId());
             asset.setTypeName(typeName);
+            final double volume = typeService.getVolume(asset.getTypeId());
+            asset.setVolume(volume);
         }).collect(Collectors.toList());
 
         final Map<String, Double> prices = new HashMap<>();

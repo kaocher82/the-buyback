@@ -14,6 +14,7 @@ import com.thebuyback.eve.security.SecurityUtils;
 import com.thebuyback.eve.service.AssetService;
 import com.thebuyback.eve.web.dto.AssetDTO;
 import com.thebuyback.eve.web.dto.AssetRequest;
+import com.thebuyback.eve.web.dto.AssetsPerSystem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,11 @@ public class AssetResource {
     @GetMapping("/{region}/{isHub}")
     public ResponseEntity<AssetOverview> getAssetOverview(@PathVariable final String region, @PathVariable final String isHub) {
         return ResponseEntity.ok(assetService.getAssetsForOverview(region, isHub));
+    }
+
+    @GetMapping("/{region}/{isHub}/details")
+    public ResponseEntity<Set<AssetsPerSystem>> getAssetOverviewDetails(@PathVariable final String region, @PathVariable final String isHub) {
+        return ResponseEntity.ok(assetService.getAssetsForOverviewDetails(region, isHub));
     }
 
     private static final Comparator<AssetDTO> COMPARE_BY_LOCATION

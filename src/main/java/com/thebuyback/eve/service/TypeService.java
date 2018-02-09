@@ -30,6 +30,15 @@ public class TypeService {
         return getType(typeId).getTypeName();
     }
 
+    public double getVolume(long typeId) {
+        final Type type = getType(typeId);
+        Double volume = type.getPackagedVolume();
+        if (volume == null) {
+            volume = type.getVolume();
+        }
+        return volume;
+    }
+
     private Type getType(long typeId) {
         final Optional<Type> optional = repository.findByTypeId(typeId);
         if (optional.isPresent()) {

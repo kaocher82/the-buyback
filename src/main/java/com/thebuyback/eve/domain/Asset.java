@@ -13,6 +13,7 @@ public class Asset {
     private String typeName;
     private String locationName;
     private Double price;
+    private Double volume;
 
     public Asset(final long itemId, final long typeId, final long quantity,
                  final long locationId, final String locationFlag) {
@@ -65,5 +66,17 @@ public class Asset {
 
     public void setLocationName(final String locationName) {
         this.locationName = locationName;
+    }
+
+    public void setVolume(final double volume) {
+        this.volume = volume;
+    }
+
+    public Double getVolume() {
+        return volume;
+    }
+
+    public void setVolume(final Double volume) {
+        this.volume = volume;
     }
 }

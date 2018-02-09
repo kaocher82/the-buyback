@@ -1,192 +1,306 @@
 <div class="row">
+    <div class="col-md-12">
+        <h3>442-CS
+            <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapse442" aria-expanded="false" aria-controls="collapse442">
+                Details
+            </button>
+            <small>Total: {{region442.oreValue + region442.stuffValue | number:'1.0-0'}} ISK</small>
+        </h3>
+    </div>
+</div>
+<div class="row">
     <div class="col-md-6">
-        <h3>Hub: 442-CS</h3>
+        <h4>Hub</h4>
         <table class="table table-striped">
             <tbody>
             <tr>
                 <td>Ore Volume</td>
-                <td></td>
+                <td><span *ngIf="hub442">{{hub442.oreVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Ore Value</td>
-                <td></td>
+                <td><span *ngIf="hub442">{{hub442.oreValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             <tr>
                 <td>Stuff Volume</td>
-                <td></td>
+                <td><span *ngIf="hub442">{{hub442.stuffVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Stuff Value</td>
-                <td><span *ngIf="hub442">{{hub442.stuffValue | number:'1.0-2'}} ISK</span></td>
+                <td><span *ngIf="hub442">{{hub442.stuffValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             </tbody>
         </table>
     </div>
     <div class="col-md-6">
-        <h3>Surroundings: 442-CS</h3>
+        <h4>Surroundings</h4>
         <table class="table table-striped">
             <tbody>
             <tr>
                 <td>Ore Volume</td>
-                <td></td>
+                <td><span *ngIf="region442">{{region442.oreVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Ore Value</td>
-                <td></td>
+                <td><span *ngIf="region442">{{region442.oreValue - hub442.oreValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             <tr>
                 <td>Stuff Volume</td>
-                <td></td>
+                <td><span *ngIf="region442">{{region442.stuffVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Stuff Value</td>
-                <td><span *ngIf="region442">{{region442.stuffValue - hub442.stuffValue | number:'1.0-2'}} ISK</span></td>
+                <td><span *ngIf="region442">{{region442.stuffValue - hub442.stuffValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
 <div class="row">
+    <div class="col-md-12">
+        <div class="collapse" id="collapse442">
+            <div class="card card-body">
+                <table class="table table-striped">
+                    <tbody>
+                    <tr *ngFor="let system of detailsRegion442">
+                        <td>{{system.systemName}}</td>
+                        <td style="width: 40%"><span class="pull-right" >{{system.stuffWorth| number:'1.0-0'}} ISK</span></td>
+                        <td style="width: 40%"><span class="pull-right" >{{system.stuffVolume| number:'1.0-0'}} m3</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr/>
+<div class="row">
+    <div class="col-md-12">
+        <h3>68FT-6
+            <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapse68" aria-expanded="false" aria-controls="collapse68">
+                Details
+            </button>
+            <small>Total: {{region68.oreValue + region68.stuffValue | number:'1.0-0'}} ISK</small>
+        </h3>
+    </div>
+</div>
+<div class="row">
     <div class="col-md-6">
-        <h3>Hub: 68FT-6</h3>
+        <h4>Hub</h4>
         <table class="table table-striped">
             <tbody>
             <tr>
                 <td>Ore Volume</td>
-                <td></td>
+                <td><span *ngIf="hub68">{{hub68.oreVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Ore Value</td>
-                <td></td>
+                <td><span *ngIf="hub68">{{hub68.oreValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             <tr>
                 <td>Stuff Volume</td>
-                <td></td>
+                <td><span *ngIf="hub68">{{hub68.stuffVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Stuff Value</td>
-                <td><span *ngIf="hub68">{{hub68.stuffValue | number:'1.0-2'}} ISK</span></td>
+                <td><span *ngIf="hub68">{{hub68.stuffValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             </tbody>
         </table>
     </div>
     <div class="col-md-6">
-        <h3>Surroundings: 68FT-6</h3>
+        <h4>Surroundings</h4>
         <table class="table table-striped">
             <tbody>
             <tr>
                 <td>Ore Volume</td>
-                <td></td>
+                <td><span *ngIf="region68">{{region68.oreVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Ore Value</td>
-                <td></td>
+                <td><span *ngIf="region68">{{region68.oreValue - hub68.oreValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             <tr>
                 <td>Stuff Volume</td>
-                <td></td>
+                <td><span *ngIf="region68">{{region68.stuffVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Stuff Value</td>
-                <td><span *ngIf="region68">{{region68.stuffValue - hub68.stuffValue | number:'1.0-2'}} ISK</span></td>
+                <td><span *ngIf="region68">{{region68.stuffValue - hub68.stuffValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
 <div class="row">
+    <div class="col-md-12">
+        <div class="collapse" id="collapse68">
+            <div class="card card-body">
+                <table class="table table-striped">
+                    <tbody>
+                    <tr *ngFor="let system of detailsRegion68">
+                        <td>{{system.systemName}}</td>
+                        <td style="width: 40%"><span class="pull-right" >{{system.stuffWorth| number:'1.0-0'}} ISK</span></td>
+                        <td style="width: 40%"><span class="pull-right" >{{system.stuffVolume| number:'1.0-0'}} m3</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr/>
+<div class="row">
+    <div class="col-md-12">
+        <h3>TM-0P2
+            <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapseTM" aria-expanded="false" aria-controls="collapseTM">
+                Details
+            </button>
+            <small>Total: {{regionTM.oreValue + regionTM.stuffValue | number:'1.0-0'}} ISK</small>
+        </h3>
+    </div>
+</div>
+<div class="row">
     <div class="col-md-6">
-        <h3>Hub: TM-0P2</h3>
+        <h4>Hub</h4>
         <table class="table table-striped">
             <tbody>
             <tr>
                 <td>Ore Volume</td>
-                <td></td>
+                <td><span *ngIf="hubTM">{{hubTM.oreVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Ore Value</td>
-                <td></td>
+                <td><span *ngIf="hubTM">{{hubTM.oreValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             <tr>
                 <td>Stuff Volume</td>
-                <td></td>
+                <td><span *ngIf="hubTM">{{hubTM.stuffVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Stuff Value</td>
-                <td><span *ngIf="hubTM">{{hubTM.stuffValue | number:'1.0-2'}} ISK</span></td>
+                <td><span *ngIf="hubTM">{{hubTM.stuffValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             </tbody>
         </table>
     </div>
     <div class="col-md-6">
-        <h3>Surroundings: TM-0P2</h3>
+        <h4>Surroundings</h4>
         <table class="table table-striped">
             <tbody>
             <tr>
                 <td>Ore Volume</td>
-                <td></td>
+                <td><span *ngIf="regionTM">{{regionTM.oreVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Ore Value</td>
-                <td></td>
+                <td><span *ngIf="regionTM">{{regionTM.oreValue - hubTM.oreValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             <tr>
                 <td>Stuff Volume</td>
-                <td></td>
+                <td><span *ngIf="regionTM">{{regionTM.stuffVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Stuff Value</td>
-                <td><span *ngIf="regionTM">{{regionTM.stuffValue - hubTM.stuffValue | number:'1.0-2'}} ISK</span></td>
+                <td><span *ngIf="regionTM">{{regionTM.stuffValue - hubTM.stuffValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
 <div class="row">
+    <div class="col-md-12">
+        <div class="collapse" id="collapseTM">
+            <div class="card card-body">
+                <table class="table table-striped">
+                    <tbody>
+                    <tr *ngFor="let system of detailsRegionTM">
+                        <td>{{system.systemName}}</td>
+                        <td style="width: 40%"><span class="pull-right" >{{system.stuffWorth| number:'1.0-0'}} ISK</span></td>
+                        <td style="width: 40%"><span class="pull-right" >{{system.stuffVolume| number:'1.0-0'}} m3</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr/>
+<div class="row">
+    <div class="col-md-12">
+        <h3>GE-8JV
+            <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapseGE" aria-expanded="false" aria-controls="collapseGE">
+                Details
+            </button>
+            <small>Total: {{regionGE.oreValue + regionGE.stuffValue | number:'1.0-0'}} ISK</small>
+        </h3>
+    </div>
+</div>
+<div class="row">
     <div class="col-md-6">
-        <h3>Hub: GE-8JV</h3>
+        <h4>Hub</h4>
         <table class="table table-striped">
             <tbody>
             <tr>
                 <td>Ore Volume</td>
-                <td></td>
+                <td><span *ngIf="hubGE">{{hubGE.oreVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Ore Value</td>
-                <td></td>
+                <td><span *ngIf="hubGE">{{hubGE.oreValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             <tr>
                 <td>Stuff Volume</td>
-                <td></td>
+                <td><span *ngIf="hubGE">{{hubGE.stuffVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Stuff Value</td>
-                <td><span *ngIf="hubGE">{{hubGE.stuffValue | number:'1.0-2'}} ISK</span></td>
+                <td><span *ngIf="hubGE">{{hubGE.stuffValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             </tbody>
         </table>
     </div>
     <div class="col-md-6">
-        <h3>Surroundings: GE-8JV</h3>
+        <h3>Surroundings</h3>
         <table class="table table-striped">
             <tbody>
             <tr>
                 <td>Ore Volume</td>
-                <td></td>
+                <td><span *ngIf="regionGE">{{regionGE.oreVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Ore Value</td>
-                <td></td>
+                <td><span *ngIf="regionGE">{{regionGE.oreValue - hubGE.oreValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             <tr>
                 <td>Stuff Volume</td>
-                <td></td>
+                <td><span *ngIf="regionGE">{{regionGE.stuffVolume | number:'1.0-0'}} m3</span></td>
             </tr>
             <tr>
                 <td>Stuff Value</td>
-                <td><span *ngIf="regionGE">{{regionGE.stuffValue - hubGE.stuffValue | number:'1.0-2'}} ISK</span></td>
+                <td><span *ngIf="regionGE">{{regionGE.stuffValue - hubGE.stuffValue | number:'1.0-0'}} ISK</span></td>
             </tr>
             </tbody>
         </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="collapse" id="collapseGE">
+            <div class="card card-body">
+                <table class="table table-striped">
+                    <tbody>
+                    <tr *ngFor="let system of detailsRegionGE">
+                        <td>{{system.systemName}}</td>
+                        <td style="width: 40%"><span class="pull-right" >{{system.stuffWorth| number:'1.0-0'}} ISK</span></td>
+                        <td style="width: 40%"><span class="pull-right" >{{system.stuffVolume| number:'1.0-0'}} m3</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>

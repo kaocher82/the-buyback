@@ -30,18 +30,21 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.stereotype.Service;
 
+import io.github.jhipster.config.JHipsterConstants;
+
 /**
  * ContractParser
  *
  * Created on 08.11.2017
  */
-//@Service
+@Service
 public class ContractParser implements SchedulingConfigurer {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -55,18 +58,22 @@ public class ContractParser implements SchedulingConfigurer {
     private final CapitalShipRepository capitalShipRepository;
     private final ItemBuybackRateRepository buybackRateRepository;
 
+    private final Environment env;
+
     public ContractParser(final JsonRequestService requestService,
                           final TokenRepository tokenRepository,
                           final ContractRepository contractRepository,
                           final TypeService typeService,
                           final CapitalShipRepository capitalShipRepository,
-                          final ItemBuybackRateRepository buybackRateRepository) {
+                          final ItemBuybackRateRepository buybackRateRepository,
+                          final Environment env) {
         this.requestService = requestService;
         this.tokenRepository = tokenRepository;
         this.contractRepository = contractRepository;
         this.typeService = typeService;
         this.capitalShipRepository = capitalShipRepository;
         this.buybackRateRepository = buybackRateRepository;
+        this.env = env;
     }
 
     @Async
@@ -287,6 +294,9 @@ public class ContractParser implements SchedulingConfigurer {
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        if (env.acceptsProfiles(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT)) {
+            return;
+        }
         taskRegistrar.setScheduler(taskExecutor());
         taskRegistrar.addTriggerTask(
             this::loadNonCompletedContracts,
