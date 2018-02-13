@@ -136,8 +136,8 @@ public class JsonRequestService {
         return Unirest.post(url).body(body);
     }
 
-    Optional<JsonNode> getCorpContracts(final String accessToken) {
-        return justGet(String.format("%s/v1/corporations/%d/contracts/?token=%s", ESI_BASE_URL, CORPORATION, accessToken), "corpContracts");
+    Optional<JsonNode> getCorpContracts(final String accessToken, final int page) {
+        return justGet(String.format("%s/v1/corporations/%d/contracts/?token=%s&page=%d", ESI_BASE_URL, CORPORATION, accessToken, page), "corpContracts");
     }
 
     Optional<JsonNode> getCorpContractItems(final long contractId, final String accessToken) {

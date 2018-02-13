@@ -87,19 +87,29 @@ public class ContractParser implements SchedulingConfigurer {
             log.error("Failed to get access for loadNonCompletedContracts.", e);
             return;
         }
-        final Optional<JsonNode> corpContracts = requestService.getCorpContracts(accessToken);
-        if (corpContracts.isPresent()) {
-            JSONArray contractArray = corpContracts.get().getArray();
-            for (int i = 0; i < contractArray.length(); i++) {
-                try {
-                    parseContract(accessToken, contractArray, i);
-                } catch (UnirestException e) {
-                    log.error("Failed to parse contract.", e);
+
+        boolean nextPageAvailable = true;
+        int pageCounter = 1;
+        while (nextPageAvailable) {
+            final Optional<JsonNode> corpContracts = requestService.getCorpContracts(accessToken, pageCounter);
+            if (corpContracts.isPresent()) {
+                JSONArray contractArray = corpContracts.get().getArray();
+                if (contractArray.length() < 1000) {
+                    nextPageAvailable = false;
+                } else {
+                    pageCounter++;
                 }
+                for (int i = 0; i < contractArray.length(); i++) {
+                    try {
+                        parseContract(accessToken, contractArray, i);
+                    } catch (UnirestException e) {
+                        log.error("Failed to parse contract.", e);
+                    }
+                }
+                log.info("Contract parsing complete.");
+            } else {
+                log.warn("ESI did not return any contracts.");
             }
-            log.info("Contract parsing complete.");
-        } else {
-            log.warn("ESI did not return any contracts.");
         }
 
         loadOutstandingCaps();
@@ -138,7 +148,6 @@ public class ContractParser implements SchedulingConfigurer {
             return;
         }
 
-        final Optional<Contract> optional = contractRepository.findById(contractId);
         String appraisalLink;
         double buyValue = 0.0;
         double sellValue = 0.0;
@@ -146,6 +155,8 @@ public class ContractParser implements SchedulingConfigurer {
         Map<Integer, Integer> items;
         boolean declineMailSent;
         boolean approved;
+
+        final Optional<Contract> optional = contractRepository.findById(contractId);
         if (optional.isPresent()) {
             Contract contract = optional.get();
             if (asList("finished", "rejected", "deleted").contains(contract.getStatus())) {
