@@ -13,9 +13,9 @@ export class ItemStockComponent implements OnInit, AfterViewInit {
 
     loading = true;
     data: any;
-    private systemName: string;
-    private typeId: number;
+    systemName: string;
     showCopiedPrice: boolean;
+    private typeId: number;
 
     constructor(public router: Router, private route: ActivatedRoute, private http: Http,
                 private location: Location, private clipboard: ClipboardService) {
