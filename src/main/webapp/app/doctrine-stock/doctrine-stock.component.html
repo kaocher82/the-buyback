@@ -72,7 +72,6 @@
         <p *ngIf="showProfitExplanation" style="color: #444"><b>Potential Profit:</b><br/>The calculation of the potential profit takes all items into account that are currently labeled MISSING. The algorithm then "tries to buy" the missing quantities (target quantities minus stocked quantities) from Jita. That means it calculates the cost to buy the missing quantity from Jita sell orders. This leaves us with the total cost of all missing items which is then multiplied with 20% (aiming for Jita sell plus 50% but taking logistics into account).</p>
     </div>
 </div>
-<div class="alert alert-warning">We're still migrating the doctrine stock page. Feature parity should be reached over the next days.</div>
 <div *ngIf="!data" class="alert alert-info">Loading ...</div>
 <div *ngIf="data">
     <div class="alert alert-info" *ngIf="data.length == 0">There's nothing here yet.</div>
