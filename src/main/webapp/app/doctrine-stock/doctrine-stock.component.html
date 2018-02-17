@@ -90,7 +90,7 @@
             </thead>
             <tbody>
                 <tr *ngFor="let item of stockedDoctrine['stockItems'] | doctrineStockPipe: showStocked:showMissingOnly">
-                    <td><img src="https://image.eveonline.com/Type/{{item['typeId']}}_32.png" /> {{item['typeName']}}</td>
+                    <td><img src="https://image.eveonline.com/Type/{{item['typeId']}}_32.png" /> <a [routerLink]="['./', selectedHub['systemName'], item['typeId']]">{{item['typeName']}}</a></td>
                     <td style="width: 15%">{{item['stocked'] | number:'1.0-0'}}</td>
                     <td style="width: 15%">{{item['targetStock'] | number:'1.0-0'}}</td>
                     <td style="width: 15%">{{item['stocked'] / item['targetStock'] * 100 | number:'1.0-0'}}%</td>

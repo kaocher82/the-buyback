@@ -4,6 +4,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 declare let ga: Function;
 import {Chart} from 'chart.js';
 import { Http, Response } from '@angular/http';
+import {ClipboardService} from "../shared/appraisal/clipboard.service";
 
 @Component({
                selector: 'jhi-item-stock', templateUrl: './item-stock.component.html', styles: []
@@ -12,10 +13,12 @@ export class ItemStockComponent implements OnInit, AfterViewInit {
 
     loading = true;
     data: any;
+    private systemName: string;
     private typeId: number;
+    showCopiedPrice: boolean;
 
     constructor(public router: Router, private route: ActivatedRoute, private http: Http,
-                private location: Location) {
+                private location: Location, private clipboard: ClipboardService) {
     }
 
     backClicked() {
@@ -24,53 +27,46 @@ export class ItemStockComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.route.params.subscribe((params) => {
+            this.systemName = params['systemName'];
             this.typeId = params['typeId'];
         });
     }
 
     ngAfterViewInit() {
-        this.load(this.typeId);
+        this.load(this.typeId, this.systemName);
     }
 
-    private load(typeId: number) {
-        this.http.get('doctrines/stock/item-stock/BRAVE_FORT/' + typeId).map((res: Response) => {
+    private load(typeId: number, systemName: string) {
+        this.http.get('api/stock/doctrines/item-stock/' + systemName + '/' + typeId).map((res: Response) => {
             return res.json();
         }).subscribe((data) => {
             this.data = data;
             this.loading = false;
-            this.setUpStockChart(data);
-            this.setUpPriceChart(data);
+            this.setUpStockChart(data.stockHistory);
+            this.setUpPriceChart(data.stockHistory);
         });
     }
 
-    private setUpStockChart(data: any) {
-        const fortStockHistory = data.fortStockHistory;
+    private setUpStockChart(stockHistory: any) {
         const stockChartCanvas = document.getElementById("stockChart");
         const myChart = new Chart(stockChartCanvas, {
             type: 'line',
             data: {
                 datasets: [{
-                    label: 'Min # in Fort',
-                    data: this.prepareData(fortStockHistory, "lowestQuantity", false),
+                    label: 'Min #',
+                    data: this.prepareData(stockHistory, "minQuantity", false),
                     // backgroundColor: ['rgba(0, 0, 0, 0.05)'],
                     borderColor: ['rgba(122, 122, 122, 0.8)'],
                     borderWidth: 1,
                     fill: false
 
                 }, {
-                    label: 'Max # in Fort',
-                    data: this.prepareData(fortStockHistory, "highestQuantity", false),
+                    label: 'Max #',
+                    data: this.prepareData(stockHistory, "maxQuantity", false),
                     backgroundColor: ['rgba(0, 0, 0, 0.05)'],
                     borderColor: ['rgba(122, 122, 122, 0.8)'],
                     borderWidth: 1,
                     fill: "-1"
-                }, {
-                    label: 'Target Stock',
-                    data: this.prepareDataTargetStock(fortStockHistory, data.targetStock, false),
-                    backgroundColor: ['rgba(100, 0, 0, 0.05)'],
-                    borderColor: ['rgba(122, 30, 30, 0.8)'],
-                    borderWidth: 1,
-                    // fill: "-1"
                 }]
             },
             options: {
@@ -95,35 +91,27 @@ export class ItemStockComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private setUpPriceChart(data: any) {
-        const fortStockHistory = data.fortStockHistory;
+    private setUpPriceChart(stockHistory: any[]) {
         const stockChartCanvas = document.getElementById("priceChart");
         const myChart = new Chart(stockChartCanvas, {
             type: 'line',
             data: {
                 datasets: [{
-                    label: 'Min sell price in Fort in mil ISK',
-                    data: this.prepareData(fortStockHistory, "lowestMinSell", true),
+                    label: 'Min sell price in mil ISK',
+                    data: this.prepareData(stockHistory, "minPrice", true),
                     // backgroundColor: ['rgba(0, 0, 0, 0.05)'],
                     borderColor: ['rgba(122, 122, 122, 0.8)'],
                     borderWidth: 1,
                     fill: false
 
                 }, {
-                    label: 'Max sell price in Fort in mil ISK',
-                    data: this.prepareData(fortStockHistory, "highestMinSell", true),
+                    label: 'Max sell price in mil ISK',
+                    data: this.prepareData(stockHistory, "maxPrice", true),
                     backgroundColor: ['rgba(0, 0, 0, 0.05)'],
                     borderColor: ['rgba(122, 122, 122, 0.8)'],
                     borderWidth: 1,
                     fill: "-1"
 
-                }, {
-                    label: 'Overpriced Border',
-                    data: this.prepareDataTargetStock(fortStockHistory, data.priceBorder, true),
-                    backgroundColor: ['rgba(200, 200, 0, 0.05)'],
-                    borderColor: ['rgba(200, 200, 0, 0.8)'],
-                    borderWidth: 1,
-                    // fill: "-1"
                 }]
             },
             options: {
@@ -164,18 +152,12 @@ export class ItemStockComponent implements OnInit, AfterViewInit {
         return result;
     }
 
-    prepareDataTargetStock(data: any[], value: number, divByMil: boolean) {
-        // data.sort(function(a, b) {
-        //     return +new Date(a['date']).getTime() - +new Date(b['date']).getTime();
-        // });
-        if (divByMil) {
-            value = value / 1000000;
-        }
-        const result = [];
-        for (let i = 0; i < data.length; i++) {
-            const el = data[i];
-            result.push({x: el['date'], y: value});
-        }
-        return result;
+    toClipboard(value: string) {
+        this.clipboard.copy(value + '');
+
+        this.showCopiedPrice = true;
+        setTimeout(function() {
+            this.showCopiedPrice = false;
+        }.bind(this), 4000);
     }
 }

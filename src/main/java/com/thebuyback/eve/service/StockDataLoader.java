@@ -210,7 +210,7 @@ public class StockDataLoader {
 
     private void doAddStockHistories(final Hub hub) {
         final Map<Long, Long> typeIdStocks = new HashMap<>();
-        log.trace("Loading market order quantities for {}", hub);
+        log.debug("Loading market order quantities for {}", hub);
         final Set<Long> doctrineTypeIds = new HashSet<>();
         doctrineRepository.findByHub(hub).forEach(doctrine -> {
             final List<String> fittingIds = doctrine.getFittingsQuantities().entrySet().stream().map(Entry::getKey).collect(Collectors.toList());
@@ -230,17 +230,18 @@ public class StockDataLoader {
                 typeIdStocks.put(id, 0L);
             }
         });
-        log.trace("Calculating TypeStockHistories for {}.", hub);
-        typeIdStocks.entrySet().parallelStream().forEach(integerLongEntry -> {
-            final Long typeId = integerLongEntry.getKey();
-            final Long quantity = integerLongEntry.getValue();
-            final List<MarketOrder> sellOrdersForType = marketOrderRepository.findByLocationIdAndIsBuyOrderAndTypeIdOrderByPriceAsc(hub.getId(), false, typeId);
-            final Optional<TypeStockHistory> optional = stockHistoryRepository.findByDateAndTypeIdAndHub(LocalDate.now(), typeId, hub);
+        log.debug("Calculating TypeStockHistories for {}.", hub);
+        typeIdStocks.forEach((typeId, quantity) -> {
+            final List<MarketOrder> sellOrdersForType = marketOrderRepository
+                .findByLocationIdAndIsBuyOrderAndTypeIdOrderByPriceAsc(hub.getId(), false, typeId);
+            final Optional<TypeStockHistory> optional = stockHistoryRepository.findByDateAndTypeIdAndHub(
+                LocalDate.now(), typeId, hub);
             final TypeStockHistory stockHistory = optional.orElseGet(() -> new TypeStockHistory(typeId, hub));
             if (!sellOrdersForType.isEmpty()) {
                 setPrices(sellOrdersForType.get(0).getPrice(), stockHistory);
             }
             setQuantities(quantity, stockHistory);
+            stockHistory.setLatestQuantity(quantity);
             stockHistoryRepository.save(stockHistory);
         });
     }
@@ -259,17 +260,17 @@ public class StockDataLoader {
         }
     }
 
-    private void setPrices(final Double minSell, final TypeStockHistory stockHistory) {
-        if (stockHistory.getMinPrice() != null && stockHistory.getMinPrice() > minSell) {
-            stockHistory.setMinPrice(minSell);
-        } else if (stockHistory.getMaxPrice() != null && stockHistory.getMaxPrice() < minSell) {
-            stockHistory.setMaxPrice(minSell);
+    private void setPrices(final Double price, final TypeStockHistory stockHistory) {
+        if (stockHistory.getMinPrice() != null && stockHistory.getMinPrice() > price) {
+            stockHistory.setMinPrice(price);
+        } else if (stockHistory.getMaxPrice() != null && stockHistory.getMaxPrice() < price) {
+            stockHistory.setMaxPrice(price);
         }
         if (stockHistory.getMinPrice() == null) {
-            stockHistory.setMinPrice(minSell);
+            stockHistory.setMinPrice(price);
         }
         if (stockHistory.getMaxPrice() == null) {
-            stockHistory.setMaxPrice(minSell);
+            stockHistory.setMaxPrice(price);
         }
     }
 

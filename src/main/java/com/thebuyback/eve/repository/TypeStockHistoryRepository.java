@@ -11,6 +11,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface TypeStockHistoryRepository extends MongoRepository<TypeStockHistory, String> {
     List<TypeStockHistory> findByHubAndTypeId(Hub hub, long typeId);
-
     Optional<TypeStockHistory> findByDateAndTypeIdAndHub(LocalDate date, Long typeId, Hub hub);
 }

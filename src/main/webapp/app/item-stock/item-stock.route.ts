@@ -9,7 +9,7 @@ const OR_ROUTES = [
 ];
 
 export const orderReviewState: Routes = [{
-    path: 'doctrine-stock/:typeId',
+    path: 'doctrine-stock/:systemName/:typeId',
     component: ItemStockComponent,
     data: {
         authorities: ['ROLE_USER']

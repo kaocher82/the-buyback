@@ -1,7 +1,16 @@
 <style>
     /*used for completely missing items*/
     .bold {
-        font-weight: bold;
+        font-weight : bold;
+    }
+
+    .show {
+        opacity : 1 !important;
+    }
+
+    .step {
+        opacity    : 0;
+        transition : .5s ease-in-out all;
     }
 </style>
 
@@ -10,39 +19,27 @@
 <div>
     <div *ngIf="!loading && data && data.typeId" class="row">
         <div class="col-md-9">
-            <h1><img src="https://image.eveonline.com/Type/{{data.typeId}}_64.png" /> {{data.typeName}}</h1>
+            <h1><img src="https://image.eveonline.com/Type/{{data.typeId}}_64.png" /> {{data.typeName}}
+                <a (click)="toClipboard(data.typeName)">
+                    <i style="color: grey; font-size: 20px;" class="fa fa-clipboard"></i>
+                </a>
+                <span [class.show]="showCopiedPrice" class="step" style="color: green; font-size: small;"><b>Copied!</b></span>
+            </h1>
         </div>
         <div class="col-md-3">
             <button style="float: right; margin-left: 10px" class="btn btn-secondary" (click)="backClicked()">Back</button>
             <div style="float: right;" [ngClass]="data['availability'] | statusClassPipe:(data['wellPriced']+data['overPriced'])">{{data['availability'] | statusNamePipe}}</div>
         </div>
     </div>
-    <h2>Stock</h2>
+    <h2>Stock in {{systemName}}</h2>
     <div class="row">
         <div class="col-md-5">
             <div class="table-responsive">
                 <table class="table table-striped">
                     <tbody *ngIf="!loading && data && data.typeId">
                     <tr>
-                        <td style="width: 50%"><b>Well priced</b></td>
-                        <td>{{data.wellPriced | number:'1.0-0'}}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Over priced</b></td>
-                        <td>{{data.overPriced | number:'1.0-0'}}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Target Stock</b></td>
-                        <td>{{data.targetStock | number:'1.0-0'}}</td>
-                    </tr>
-                    <tr *ngIf="data['availability'] === 'MISSING'">
-                        <td><b>Jita Escrow for Missing</b></td>
-                        <td>{{(data.targetStock - data.overPriced - data.wellPriced) * data.jitaSell | number:'1.0-0'}} ISK</td>
-                    </tr>
-                    <tr *ngIf="data['availability'] === 'MISSING'">
-                        <td><b>Possible profit for Missing</b></td>
-                        <td *ngIf="data.targetSell != -1 && data.jitaSell != -1">{{(data.targetStock - data.overPriced - data.wellPriced) * (data.targetSell - data.jitaSell) | number:'1.0-0'}} ISK</td>
-                        <td *ngIf="data.targetSell == -1 || data.jitaSell == -1">{{data.targetStock * data.priceBorder | number:'1.0-0'}} ISK</td>
+                        <td style="width: 50%"><b>Stocked</b></td>
+                        <td>{{data.stocked | number:'1.0-0'}}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -62,10 +59,10 @@
                 <table class="table table-striped">
                     <tbody *ngIf="!loading && data && data.typeId">
                     <tr>
-                        <td style="width: 50%"><b>GE Sell</b></td>
-                        <td *ngIf="data.targetSell != -1">{{data.targetSell | number:'1.0-0'}} ISK</td>
-                        <td *ngIf="data.targetSell == -1">N/A</td>
-                        <td><span *ngIf="data.targetSell != -1 && data.jitaSell != -1">{{data.targetSell/data.jitaSell*100 | number:'1.0-0'}}%</span></td>
+                        <td style="width: 50%"><b>{{systemName}} Sell</b></td>
+                        <td *ngIf="data.sellPrice != -1">{{data.sellPrice | number:'1.0-0'}} ISK</td>
+                        <td *ngIf="data.sellPrice == -1">N/A</td>
+                        <td><span *ngIf="data.sellPrice != -1 && data.jitaSell != -1">{{data.sellPrice/data.jitaSell*100 | number:'1.0-0'}}%</span></td>
                     </tr>
                     <tr>
                         <td><b>Jita Sell</b></td>
@@ -85,18 +82,18 @@
                         <td><span *ngIf="data.jitaSell != -1">{{data.priceBorder/data.jitaSell*100 | number:'1.0-0'}}%</span></td>
                     </tr>
                     <tr>
-                        <td *ngIf="data.targetSell != -1 && data.jitaSell != -1"><b>Margin Jita Sell - GE Sell</b></td>
-                        <td *ngIf="data.targetSell != -1 && data.jitaSell != -1">{{data.targetSell - data.jitaSell | number:'1.0-0'}} ISK</td>
-                        <td *ngIf="data.targetSell == -1 || data.jitaSell == -1"><b>Margin Jita Sell - Border</b></td>
-                        <td *ngIf="data.targetSell == -1 || data.jitaSell == -1">{{data.priceBorder - data.jitaSell | number:'1.0-0'}} ISK</td>
-                        <td><span *ngIf="data.jitaSell != -1 && data.targetSell != -1">{{((data.targetSell/data.jitaSell)-1)*100 | number:'1.0-0'}}%</span></td>
+                        <td *ngIf="data.sellPrice != -1 && data.jitaSell != -1"><b>Margin Jita Sell - {{systemName}} Sell</b></td>
+                        <td *ngIf="data.sellPrice != -1 && data.jitaSell != -1">{{data.sellPrice - data.jitaSell | number:'1.0-0'}} ISK</td>
+                        <td *ngIf="data.sellPrice == -1 || data.jitaSell == -1"><b>Margin Jita Sell - Border</b></td>
+                        <td *ngIf="data.sellPrice == -1 || data.jitaSell == -1">{{data.priceBorder - data.jitaSell | number:'1.0-0'}} ISK</td>
+                        <td><span *ngIf="data.jitaSell != -1 && data.sellPrice != -1">{{((data.sellPrice/data.jitaSell)-1)*100 | number:'1.0-0'}}%</span></td>
                     </tr>
                     <tr>
-                        <td *ngIf="data.targetSell != -1 && data.jitaBuy != -1"><b>Margin Jita Buy - GE Sell</b></td>
-                        <td *ngIf="data.targetSell != -1 && data.jitaBuy != -1">{{data.targetSell - data.jitaBuy | number:'1.0-0'}} ISK</td>
-                        <td *ngIf="data.targetSell == -1 || data.jitaBuy == -1"><b>Margin Jita Buy - Border</b></td>
-                        <td *ngIf="data.targetSell == -1 || data.jitaBuy == -1">{{data.priceBorder - data.jitaBuy | number:'1.0-0'}} ISK</td>
-                        <td><span *ngIf="data.jitaBuy != -1 && data.targetSell != -1">{{((data.targetSell/data.jitaBuy)-1)*100 | number:'1.0-0'}}%</span></td>
+                        <td *ngIf="data.sellPrice != -1 && data.jitaBuy != -1"><b>Margin Jita Buy - {{systemName}} Sell</b></td>
+                        <td *ngIf="data.sellPrice != -1 && data.jitaBuy != -1">{{data.sellPrice - data.jitaBuy | number:'1.0-0'}} ISK</td>
+                        <td *ngIf="data.sellPrice == -1 || data.jitaBuy == -1"><b>Margin Jita Buy - Border</b></td>
+                        <td *ngIf="data.sellPrice == -1 || data.jitaBuy == -1">{{data.priceBorder - data.jitaBuy | number:'1.0-0'}} ISK</td>
+                        <td><span *ngIf="data.jitaBuy != -1 && data.sellPrice != -1">{{((data.sellPrice/data.jitaBuy)-1)*100 | number:'1.0-0'}}%</span></td>
                     </tr>
                     </tbody>
                 </table>

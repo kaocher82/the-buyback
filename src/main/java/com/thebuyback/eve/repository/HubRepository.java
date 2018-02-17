@@ -10,4 +10,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface HubRepository extends MongoRepository<Hub, String> {
     Optional<Hub> findById(long id);
     List<Hub> findAllByIsPublic(boolean isPublic);
+    Hub findBySystemNameAndIsPublic(String systemName, boolean isPublic);
 }

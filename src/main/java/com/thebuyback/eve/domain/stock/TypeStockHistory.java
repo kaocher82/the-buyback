@@ -12,6 +12,7 @@ public class TypeStockHistory {
     private LocalDate date;
     private Long maxQuantity;
     private Long minQuantity;
+    private Long latestQuantity;
     private Double maxPrice;
     private Double minPrice;
 
@@ -22,6 +23,14 @@ public class TypeStockHistory {
         date = LocalDate.now();
         this.typeId = typeId;
         this.hub = hub;
+    }
+
+    public Long getLatestQuantity() {
+        return latestQuantity;
+    }
+
+    public void setLatestQuantity(final Long latestQuantity) {
+        this.latestQuantity = latestQuantity;
     }
 
     public Double getMaxPrice() {
