@@ -3,6 +3,8 @@ import { JhiEventManager } from 'ng-jhipster';
 
 import { Account, Principal } from '../shared';
 
+declare var $: any;
+
 @Component({
     selector: 'jhi-home',
     templateUrl: './home.component.html',
