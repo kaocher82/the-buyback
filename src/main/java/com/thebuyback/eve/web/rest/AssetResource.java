@@ -41,22 +41,22 @@ public class AssetResource {
     @PostMapping
     @Timed
     public ResponseEntity<List<AssetDTO>> requestAssets(@RequestBody AssetRequest appraisal) {
-        final Set<String> typeNames = Arrays.stream(appraisal.getText().split("\n"))
+        final Set<String> lines = Arrays.stream(appraisal.getText().split("\n"))
                                             .filter(Objects::nonNull)
                                             .map(String::trim)
                                             .filter(line -> !line.isEmpty())
                                             .collect(Collectors.toSet());
 
-        if (typeNames.size() > 50) {
+        if (lines.size() > 50) {
             return ResponseEntity.status(420).build();
         }
 
-        final List<AssetDTO> assets = assetService.findAssets(typeNames)
+        final List<AssetDTO> assets = assetService.findAssets(lines)
                                                   .stream()
                                                   .map(AssetResource::toDTO)
                                                   .collect(Collectors.toList());
 
-        log.info("{} searched for {} items: {}", SecurityUtils.getCurrentUserLoginAsString(), typeNames.size(), typeNames.toArray());
+        log.info("{} searched for {} items: {}", SecurityUtils.getCurrentUserLoginAsString(), lines.size(), lines.toArray());
 
         return ResponseEntity.ok(assets);
     }

@@ -8,28 +8,49 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.thebuyback.eve.domain.Asset;
 import com.thebuyback.eve.domain.AssetOverview;
+import com.thebuyback.eve.domain.ItemWithQuantity;
 import com.thebuyback.eve.repository.AssetRepository;
 import com.thebuyback.eve.web.dto.AssetsPerSystem;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AssetService {
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private final MongoTemplate mongoTemplate;
     private final AssetRepository assetRepository;
+    private final List<String> HUBS = Arrays.asList("68FT-6 - Mothership Bellicose", "GE-8JV - BROADCAST4REPS");
 
     public AssetService(final MongoTemplate mongoTemplate, final AssetRepository assetRepository) {
         this.mongoTemplate = mongoTemplate;
         this.assetRepository = assetRepository;
     }
 
-    public List<Asset> findAssets(Set<String> typeNames) {
+    public List<Asset> findAssets(Set<String> lines) {
         // limit to GE Fort and 68 KS
-        return assetRepository.findAllByTypeNameInAndLocationNameIn(typeNames, Arrays.asList("68FT-6 - Mothership Bellicose", "GE-8JV - BROADCAST4REPS"));
+        List<Asset> assets = assetRepository.findAllByTypeNameInAndLocationNameIn(lines, HUBS);
+
+        if (assets.isEmpty()) {
+            // fallback to evepraisal parser if someone was too dumb to read the instructions
+            try {
+                final String link = AppraisalUtil.getLinkFromRaw(String.join(",", lines));
+                final Set<String> items = AppraisalUtil.getItems(link).stream().map(ItemWithQuantity::getTypeName)
+                                                         .collect(Collectors.toSet());
+                assets = assetRepository.findAllByTypeNameInAndLocationNameIn(items, HUBS);
+            } catch (UnirestException e) {
+                log.error("Failed to load appraisal for assets. {}", lines, e);
+            }
+        }
+
+        return assets;
     }
 
     public AssetOverview getAssetsForOverview(final String region, final String isHub) {

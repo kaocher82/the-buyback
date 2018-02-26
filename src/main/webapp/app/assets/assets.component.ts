@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {Router} from "@angular/router";
+import {Component} from '@angular/core';
 import {Http} from "@angular/http";
+
 declare let ga: Function;
 
 @Component({
@@ -17,8 +17,9 @@ export class AssetsComponent {
     constructor(private http: Http) { }
 
     search() {
-        this.loading = false;
+        this.loading = true;
         this.errorMessage = null;
+        this.data = null;
         const request = { 'text': this.searchText }
         this.http.post('api/assets', request).subscribe((data) => {
             this.data = data.json();
