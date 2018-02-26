@@ -19,7 +19,7 @@ export class AssetsComponent {
     search() {
         this.loading = true;
         this.errorMessage = null;
-        this.data = null;
+        this.data = [];
         const request = { 'text': this.searchText }
         this.http.post('api/assets', request).subscribe((data) => {
             this.data = data.json();
