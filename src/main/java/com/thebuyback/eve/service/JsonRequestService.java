@@ -6,6 +6,8 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -99,6 +101,10 @@ public class JsonRequestService {
 
     Optional<JsonNode> executeRequest(final BaseRequest request, final String cachingUserCase) {
         try {
+            if (esiCacheExpiries.containsKey("backOff") && esiCacheExpiries.get("backOff").isAfter(Instant.now())) {
+                log.info("Waiting until backOff ends.");
+                return Optional.empty();
+            }
             HttpResponse<JsonNode> response = request.asJson();
             // warn if deprecated
             if (response.getHeaders().containsKey("warning")) {
@@ -106,12 +112,15 @@ public class JsonRequestService {
                 log.warn("Deprecation: {}, {}", warning, request.getHttpRequest().getUrl());
             }
             if (response.getStatus() != 200) {
+                if (Arrays.asList(420, 502, 503).contains(response.getStatus())) {
+                    esiCacheExpiries.put("backOff", Instant.now().plus(5, ChronoUnit.MINUTES));
+                }
                 log.warn(WRONG_STATUS_CODE, request.getHttpRequest().getUrl(), response.getStatus());
                 return Optional.empty();
             }
             if (null != cachingUserCase) {
                 final String expires = response.getHeaders().getFirst("Expires");
-                esiCacheExpiries.put(cachingUserCase, parseInstant(expires));
+                esiCacheExpiries.put(cachingUserCase, parseInstant(expires).plus(1, ChronoUnit.MINUTES));
             }
             return Optional.of(response.getBody());
         } catch (UnirestException e) {
