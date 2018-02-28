@@ -27,7 +27,7 @@
 </div>
 
 <h3>Search Form</h3>
-<div>Type in one item a line, case sensitive!</div>
+<div>Use any evepraisal.com compatible format, case sensitive types are faster ;)</div>
 <form #formCtrl="ngForm">
     <div class="form-group">
                     <textarea class="form-control"
@@ -46,7 +46,7 @@
 
 <div class="alert alert-info" *ngIf="loading">Loading ...</div>
 <div class="alert alert-danger" *ngIf="errorMessage">{{errorMessage}}</div>
-<div class="alert alert-warning" *ngIf="data?.length === 0">Nothing found :( Is your search case sensitive?</div>
+<div class="alert alert-warning" *ngIf="data?.length === 0">Nothing found :(</div>
 <table class="table table-striped" *ngIf="data?.length > 0">
     <thead>
     <tr>
