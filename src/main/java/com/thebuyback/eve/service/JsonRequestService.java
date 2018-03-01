@@ -38,6 +38,7 @@ public class JsonRequestService {
     private static final long CORPORATION = 98503372L;
     private static final long MAIL_CHAR = 93475128L;
     private static final String ESI_BASE_URL = "https://esi.tech.ccp.is";
+    private static final String BACK_OFF = "backOff";
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Map<String, String> defaultHeaders;
     private final Map<String, Instant> esiCacheExpiries = new HashMap<>();
@@ -54,6 +55,9 @@ public class JsonRequestService {
     }
 
     public Instant getNextExecutionTime(final String useCase) {
+        if (esiCacheExpiries.containsKey(BACK_OFF) && esiCacheExpiries.get(BACK_OFF).isAfter(Instant.now())) {
+            return esiCacheExpiries.get(BACK_OFF);
+        }
         return esiCacheExpiries.containsKey(useCase) ? esiCacheExpiries.get(useCase) : Instant.now().plusSeconds(60);
     }
 
@@ -101,7 +105,7 @@ public class JsonRequestService {
 
     Optional<JsonNode> executeRequest(final BaseRequest request, final String cachingUserCase) {
         try {
-            if (esiCacheExpiries.containsKey("backOff") && esiCacheExpiries.get("backOff").isAfter(Instant.now())) {
+            if (esiCacheExpiries.containsKey(BACK_OFF) && esiCacheExpiries.get(BACK_OFF).isAfter(Instant.now())) {
                 log.info("Waiting until backOff ends.");
                 return Optional.empty();
             }
@@ -113,7 +117,7 @@ public class JsonRequestService {
             }
             if (response.getStatus() != 200) {
                 if (Arrays.asList(420, 502, 503).contains(response.getStatus())) {
-                    esiCacheExpiries.put("backOff", Instant.now().plus(5, ChronoUnit.MINUTES));
+                    esiCacheExpiries.put(BACK_OFF, Instant.now().plus(5, ChronoUnit.MINUTES));
                 }
                 log.warn(WRONG_STATUS_CODE, request.getHttpRequest().getUrl(), response.getStatus());
                 return Optional.empty();

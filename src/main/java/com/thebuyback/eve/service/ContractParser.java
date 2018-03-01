@@ -109,6 +109,7 @@ public class ContractParser implements SchedulingConfigurer {
                 log.info("Contract parsing complete.");
             } else {
                 log.warn("ESI did not return any contracts.");
+                return;
             }
         }
 
