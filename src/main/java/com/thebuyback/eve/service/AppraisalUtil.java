@@ -28,6 +28,7 @@ public class AppraisalUtil {
         if (raw.isEmpty()) {
             return null;
         }
+        LOG.info("Tyring to get evepraisal link for {}.", raw.replace("\n", ";"));
         HttpResponse<String> stringHttpResponse = Unirest.post("http://evepraisal.com/appraisal")
                                                          .field("raw_textarea", raw)
                                                          .field("market", "jita")
