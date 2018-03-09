@@ -1,6 +1,7 @@
 import { Injectable, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { HttpResponse } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { CapOrder } from './cap-order.model';
 import { CapOrderService } from './cap-order.service';
@@ -27,12 +28,14 @@ export class CapOrderPopupService {
             }
 
             if (id) {
-                this.capOrderService.find(id).subscribe((capOrder) => {
-                    capOrder.created = this.datePipe
-                        .transform(capOrder.created, 'yyyy-MM-ddTHH:mm:ss');
-                    this.ngbModalRef = this.capOrderModalRef(component, capOrder);
-                    resolve(this.ngbModalRef);
-                });
+                this.capOrderService.find(id)
+                    .subscribe((capOrderResponse: HttpResponse<CapOrder>) => {
+                        const capOrder: CapOrder = capOrderResponse.body;
+                        capOrder.created = this.datePipe
+                            .transform(capOrder.created, 'yyyy-MM-ddTHH:mm:ss');
+                        this.ngbModalRef = this.capOrderModalRef(component, capOrder);
+                        resolve(this.ngbModalRef);
+                    });
             } else {
                 // setTimeout used as a workaround for getting ExpressionChangedAfterItHasBeenCheckedError
                 setTimeout(() => {

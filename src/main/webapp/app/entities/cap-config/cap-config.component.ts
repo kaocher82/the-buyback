@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs/Subscription';
 import { JhiEventManager, JhiAlertService } from 'ng-jhipster';
 
 import { CapConfig } from './cap-config.model';
 import { CapConfigService } from './cap-config.service';
-import { Principal, ResponseWrapper } from '../../shared';
+import { Principal } from '../../shared';
 
 @Component({
     selector: 'jhi-cap-config',
@@ -25,10 +26,10 @@ capConfigs: CapConfig[];
 
     loadAll() {
         this.capConfigService.query().subscribe(
-            (res: ResponseWrapper) => {
-                this.capConfigs = res.json;
+            (res: HttpResponse<CapConfig[]>) => {
+                this.capConfigs = res.body;
             },
-            (res: ResponseWrapper) => this.onError(res.json)
+            (res: HttpErrorResponse) => this.onError(res.message)
         );
     }
     ngOnInit() {
