@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { HttpResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs/Subscription';
 import { JhiEventManager } from 'ng-jhipster';
 
@@ -31,9 +32,10 @@ export class CapConfigDetailComponent implements OnInit, OnDestroy {
     }
 
     load(id) {
-        this.capConfigService.find(id).subscribe((capConfig) => {
-            this.capConfig = capConfig;
-        });
+        this.capConfigService.find(id)
+            .subscribe((capConfigResponse: HttpResponse<CapConfig>) => {
+                this.capConfig = capConfigResponse.body;
+            });
     }
     previousState() {
         window.history.back();

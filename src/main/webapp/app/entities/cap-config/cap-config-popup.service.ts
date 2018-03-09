@@ -1,6 +1,7 @@
 import { Injectable, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { HttpResponse } from '@angular/common/http';
 import { CapConfig } from './cap-config.model';
 import { CapConfigService } from './cap-config.service';
 
@@ -25,10 +26,12 @@ export class CapConfigPopupService {
             }
 
             if (id) {
-                this.capConfigService.find(id).subscribe((capConfig) => {
-                    this.ngbModalRef = this.capConfigModalRef(component, capConfig);
-                    resolve(this.ngbModalRef);
-                });
+                this.capConfigService.find(id)
+                    .subscribe((capConfigResponse: HttpResponse<CapConfig>) => {
+                        const capConfig: CapConfig = capConfigResponse.body;
+                        this.ngbModalRef = this.capConfigModalRef(component, capConfig);
+                        resolve(this.ngbModalRef);
+                    });
             } else {
                 // setTimeout used as a workaround for getting ExpressionChangedAfterItHasBeenCheckedError
                 setTimeout(() => {

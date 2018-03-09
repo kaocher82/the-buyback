@@ -1,6 +1,7 @@
 import { Injectable, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { HttpResponse } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { MarketOffer } from './market-offer.model';
 import { MarketOfferService } from './market-offer.service';
@@ -27,16 +28,18 @@ export class MarketOfferPopupService {
             }
 
             if (id) {
-                this.marketOfferService.find(id).subscribe((marketOffer) => {
-                    marketOffer.created = this.datePipe
-                        .transform(marketOffer.created, 'yyyy-MM-ddTHH:mm:ss');
-                    marketOffer.expiry = this.datePipe
-                        .transform(marketOffer.expiry, 'yyyy-MM-ddTHH:mm:ss');
-                    marketOffer.expiryUpdated = this.datePipe
-                        .transform(marketOffer.expiryUpdated, 'yyyy-MM-ddTHH:mm:ss');
-                    this.ngbModalRef = this.marketOfferModalRef(component, marketOffer);
-                    resolve(this.ngbModalRef);
-                });
+                this.marketOfferService.find(id)
+                    .subscribe((marketOfferResponse: HttpResponse<MarketOffer>) => {
+                        const marketOffer: MarketOffer = marketOfferResponse.body;
+                        marketOffer.created = this.datePipe
+                            .transform(marketOffer.created, 'yyyy-MM-ddTHH:mm:ss');
+                        marketOffer.expiry = this.datePipe
+                            .transform(marketOffer.expiry, 'yyyy-MM-ddTHH:mm:ss');
+                        marketOffer.expiryUpdated = this.datePipe
+                            .transform(marketOffer.expiryUpdated, 'yyyy-MM-ddTHH:mm:ss');
+                        this.ngbModalRef = this.marketOfferModalRef(component, marketOffer);
+                        resolve(this.ngbModalRef);
+                    });
             } else {
                 // setTimeout used as a workaround for getting ExpressionChangedAfterItHasBeenCheckedError
                 setTimeout(() => {
