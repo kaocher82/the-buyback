@@ -2,7 +2,7 @@ import './vendor.ts';
 
 import { NgModule, Injector } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { Ng2Webstorage, LocalStorageService, SessionStorageService  } from 'ngx-webstorage';
 import { JhiEventManager } from 'ng-jhipster';
 
@@ -35,11 +35,15 @@ import {LayoutRoutingModule} from "./app-routing.module";
 import {TheBuybackDoctrineStockModule} from "./doctrine-stock/doctrine-stock.module";
 import {TheBuybackItemStockModule} from "./item-stock/item-stock.module";
 import {TheBuybackAssetsModule} from "./assets/assets.module";
+import {HttpModule} from "@angular/http";
 
 @NgModule({
     imports: [
         BrowserModule,
         LayoutRoutingModule,
+        // https://github.com/angular/angular/issues/20096#issuecomment-341374051
+        HttpModule,
+        HttpClientModule,
         Ng2Webstorage.forRoot({ prefix: 'jhi', separator: '-'}),
         TheBuybackSharedModule,
         TheBuybackHomeModule,
