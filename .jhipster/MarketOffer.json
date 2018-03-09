@@ -1,0 +1,53 @@
+{
+    "fluentMethods": true,
+    "relationships": [],
+    "fields": [
+        {
+            "fieldName": "issuer",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "created",
+            "fieldType": "Instant"
+        },
+        {
+            "fieldName": "expiry",
+            "fieldType": "Instant"
+        },
+        {
+            "fieldName": "expiryUpdated",
+            "fieldType": "Instant"
+        },
+        {
+            "fieldName": "type",
+            "fieldType": "MarketOfferType",
+            "fieldValues": "SELL,BUY"
+        },
+        {
+            "fieldName": "category",
+            "fieldType": "MarketOfferCategory",
+            "fieldValues": "NONE"
+        },
+        {
+            "fieldName": "location",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "isRecurring",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "text",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "appraisalLink",
+            "fieldType": "String"
+        }
+    ],
+    "dto": "no",
+    "service": "no",
+    "entityTableName": "market_offer",
+    "jpaMetamodelFiltering": false,
+    "pagination": "pagination"
+}

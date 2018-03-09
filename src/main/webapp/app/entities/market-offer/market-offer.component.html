@@ -1,0 +1,84 @@
+<div>
+    <h2>
+        <span>Market Offers</span>
+        <button class="btn btn-primary float-right jh-create-entity create-market-offer" [routerLink]="['/', { outlets: { popup: ['market-offer-new'] } }]">
+            <span class="fa fa-plus"></span>
+            <span >
+            Create new Market Offer
+            </span>
+        </button>
+    </h2>
+    <jhi-alert></jhi-alert>
+    <div class="row">
+    </div>
+    <br/>
+    <div class="table-responsive" *ngIf="marketOffers">
+        <table class="table table-striped">
+            <thead>
+            <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
+            <th jhiSortBy="id"><span>ID</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="issuer"><span>Issuer</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="created"><span>Created</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="expiry"><span>Expiry</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="expiryUpdated"><span>Expiry Updated</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="type"><span>Type</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="category"><span>Category</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="location"><span>Location</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="isRecurring"><span>Is Recurring</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="text"><span>Text</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="appraisalLink"><span>Appraisal Link</span> <span class="fa fa-sort"></span></th>
+            <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let marketOffer of marketOffers ;trackBy: trackId">
+                <td><a [routerLink]="['../market-offer', marketOffer.id ]">{{marketOffer.id}}</a></td>
+                <td>{{marketOffer.issuer}}</td>
+                <td>{{marketOffer.created | date:'medium'}}</td>
+                <td>{{marketOffer.expiry | date:'medium'}}</td>
+                <td>{{marketOffer.expiryUpdated | date:'medium'}}</td>
+                <td>{{marketOffer.type}}</td>
+                <td>{{marketOffer.category}}</td>
+                <td>{{marketOffer.location}}</td>
+                <td>{{marketOffer.isRecurring}}</td>
+                <td>{{marketOffer.text}}</td>
+                <td>{{marketOffer.appraisalLink}}</td>
+                <td class="text-right">
+                    <div class="btn-group flex-btn-group-container">
+                        <button type="submit"
+                                [routerLink]="['../market-offer', marketOffer.id ]"
+                                class="btn btn-info btn-sm">
+                            <span class="fa fa-eye"></span>
+                            <span class="d-none d-md-inline">View</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/', { outlets: { popup: 'market-offer/'+ marketOffer.id + '/edit'} }]"
+                                replaceUrl="true"
+                                queryParamsHandling="merge"
+                                class="btn btn-primary btn-sm">
+                            <span class="fa fa-pencil"></span>
+                            <span class="d-none d-md-inline">Edit</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/', { outlets: { popup: 'market-offer/'+ marketOffer.id + '/delete'} }]"
+                                replaceUrl="true"
+                                queryParamsHandling="merge"
+                                class="btn btn-danger btn-sm">
+                            <span class="fa fa-remove"></span>
+                            <span class="d-none d-md-inline">Delete</span>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div *ngIf="marketOffers && marketOffers.length">
+        <div class="row justify-content-center">
+            <jhi-item-count [page]="page" [total]="queryCount" [maxSize]="5" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+        </div>
+        <div class="row justify-content-center">
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
+        </div>
+    </div>
+</div>
