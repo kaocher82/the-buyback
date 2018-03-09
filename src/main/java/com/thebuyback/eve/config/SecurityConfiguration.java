@@ -4,8 +4,6 @@ import com.thebuyback.eve.security.AuthoritiesConstants;
 import com.thebuyback.eve.security.jwt.JWTConfigurer;
 import com.thebuyback.eve.security.jwt.TokenProvider;
 
-import io.github.jhipster.security.*;
-
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +23,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.filter.CorsFilter;
 
 import javax.annotation.PostConstruct;
+
+import io.github.jhipster.security.Http401UnauthorizedEntryPoint;
 
 @Configuration
 @EnableWebSecurity

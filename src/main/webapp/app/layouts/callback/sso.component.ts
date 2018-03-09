@@ -11,8 +11,6 @@ import {LocalStorageService, SessionStorageService} from "ngx-webstorage";
            })
 export class SsoComponent implements OnInit {
 
-    private authenticationError: boolean;
-
     constructor(private route: ActivatedRoute, private http: Http, private principal: Principal, private stateStorageService: StateStorageService,
                 private eventManager: JhiEventManager, private router: Router,
                 private $localStorage: LocalStorageService,
@@ -44,7 +42,7 @@ export class SsoComponent implements OnInit {
                                    this.router.navigate(["/"]);
                                }
                            }, () => {
-                               this.authenticationError = true;
+                               alert('Authentication failed.');
                            });
                        });
 

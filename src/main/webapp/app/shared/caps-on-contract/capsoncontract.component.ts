@@ -8,7 +8,7 @@ import {Principal} from "../auth/principal.service";
 })
 export class CapsOnContractComponent implements OnInit {
 
-    capsOnContract: any[]
+    capsOnContract: any[];
     account: any;
 
     constructor(

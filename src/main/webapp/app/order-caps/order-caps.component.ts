@@ -27,7 +27,7 @@ export class OrderCapsComponent implements OnInit {
         this.http.get("/api/cap-configs").subscribe(
             (data) => this.capConfigs = data.json(),
             (err) => this.initFailed = true
-        )
+        );
     }
 
     selectConf(name: string) {
@@ -64,6 +64,6 @@ export class OrderCapsComponent implements OnInit {
         this.http.post("/api/cap-orders", order).subscribe(
             (data) => this.orderComplete = true,
             (err) => this.orderFailed = true
-        )
+        );
     }
 }

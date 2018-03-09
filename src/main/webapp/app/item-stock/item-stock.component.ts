@@ -1,9 +1,8 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {Location} from '@angular/common';
 import {ActivatedRoute, Router} from "@angular/router";
-declare let ga: Function;
 import {Chart} from 'chart.js';
-import { Http, Response } from '@angular/http';
+import {Http, Response} from '@angular/http';
 import {ClipboardService} from "../shared/appraisal/clipboard.service";
 
 @Component({
@@ -89,6 +88,7 @@ export class ItemStockComponent implements OnInit, AfterViewInit {
                 maintainAspectRatio: true
             }
         });
+        console.log(myChart);
     }
 
     private setUpPriceChart(stockHistory: any[]) {
@@ -134,6 +134,7 @@ export class ItemStockComponent implements OnInit, AfterViewInit {
                 maintainAspectRatio: true
             }
         });
+        console.log(myChart);
     }
 
     prepareData(data: any[], quantity: string, divByMil: boolean) {

@@ -1,9 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { JhiEventManager } from 'ng-jhipster';
+import {Component, OnInit} from '@angular/core';
+import {JhiEventManager} from 'ng-jhipster';
 
-import { Account, Principal } from '../shared';
-
-declare var $: any;
+import {Account, Principal} from '../shared';
 
 @Component({
     selector: 'jhi-home',

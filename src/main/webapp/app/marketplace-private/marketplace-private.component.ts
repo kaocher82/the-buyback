@@ -32,11 +32,11 @@ export class MarketplacePrivateComponent implements OnInit {
         this.http.get("/api/market-offers/private/SELL").subscribe(
             (data) => this.sellList = data.json(),
             (err) => this.loadSellFailed = true
-        )
+        );
         this.http.get("/api/market-offers/private/BUY").subscribe(
             (data) => this.buyList = data.json(),
             (err) => this.loadBuyFailed = true
-        )
+        );
     }
 
 }

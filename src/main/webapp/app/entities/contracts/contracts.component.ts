@@ -23,7 +23,7 @@ export class ContractsComponent implements OnInit {
     }
 
     private loadContracts() {
-        this.contractsService.loadBuybackContracts().subscribe((data) => this.contracts = data)
+        this.contractsService.loadBuybackContracts().subscribe((data) => this.contracts = data);
     }
 
     copyPrice(price: number, id: string) {

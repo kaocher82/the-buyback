@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {Http} from "@angular/http";
-declare let ga: Function;
 
 @Component({
                selector: 'jhi-doctrine-stock', templateUrl: './doctrine-stock.component.html', styles: []
@@ -59,7 +58,7 @@ export class DoctrineStockComponent implements OnInit {
         this.loading = true;
         this.http.get('api/stock/hubs').subscribe((data) => {
             this.hubs = data.json();
-        })
+        });
         this.http.get('api/stock/doctrines/' + this.selectedHub['id']).subscribe((data) => {
             this.data = data.json();
             this.loading = false;

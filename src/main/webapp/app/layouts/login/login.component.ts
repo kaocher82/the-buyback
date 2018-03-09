@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Http} from "@angular/http";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({selector: 'jhi-login', templateUrl: './login.component.html'})
 export class LoginComponent implements OnInit {

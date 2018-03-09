@@ -1,7 +1,6 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 
-import { ErrorComponent } from './error.component';
-import {SsoComponent} from "../callback/sso.component";
+import {ErrorComponent} from './error.component';
 
 export const errorRoute: Routes = [
     {
