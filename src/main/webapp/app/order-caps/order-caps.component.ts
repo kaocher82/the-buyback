@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {Http} from "@angular/http";
 import {CapConfig} from "../entities/cap-config/cap-config.model";
 import {CapOrder} from "../entities/cap-order/cap-order.model";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
     selector: 'jhi-order-caps',
@@ -19,13 +19,13 @@ export class OrderCapsComponent implements OnInit {
     orderComplete: boolean;
     orderFailed: boolean;
 
-    constructor(private http: Http) {
+    constructor(private http: HttpClient) {
 
     }
 
     ngOnInit(): void {
-        this.http.get("/api/cap-configs").subscribe(
-            (data) => this.capConfigs = data.json(),
+        this.http.get<CapConfig[]>("/api/cap-configs").subscribe(
+            (data) => this.capConfigs = data,
             (err) => this.initFailed = true
         );
     }

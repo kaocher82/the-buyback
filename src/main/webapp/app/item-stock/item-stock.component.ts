@@ -2,8 +2,8 @@ import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {Location} from '@angular/common';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Chart} from 'chart.js';
-import {Http, Response} from '@angular/http';
 import {ClipboardService} from "../shared/appraisal/clipboard.service";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
                selector: 'jhi-item-stock', templateUrl: './item-stock.component.html', styles: []
@@ -16,7 +16,7 @@ export class ItemStockComponent implements OnInit, AfterViewInit {
     showCopiedPrice: boolean;
     private typeId: number;
 
-    constructor(public router: Router, private route: ActivatedRoute, private http: Http,
+    constructor(public router: Router, private route: ActivatedRoute, private http: HttpClient,
                 private location: Location, private clipboard: ClipboardService) {
     }
 
@@ -36,9 +36,7 @@ export class ItemStockComponent implements OnInit, AfterViewInit {
     }
 
     private load(typeId: number, systemName: string) {
-        this.http.get('api/stock/doctrines/item-stock/' + systemName + '/' + typeId).map((res: Response) => {
-            return res.json();
-        }).subscribe((data) => {
+        this.http.get<any>('api/stock/doctrines/item-stock/' + systemName + '/' + typeId).subscribe((data) => {
             this.data = data;
             this.loading = false;
             this.setUpStockChart(data.stockHistory);

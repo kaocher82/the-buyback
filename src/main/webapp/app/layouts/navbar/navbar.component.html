@@ -22,13 +22,6 @@
                 </a>
             </li>
             <li ngbDropdown class="nav-item dropdown pointer" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-                <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="marketplace-menu">
-                    <span>
-                        <i class="fa fa-line-chart" aria-hidden="true"></i>
-                        <span>Marketplace</span>
-                        <b class="caret"></b>
-                    </span>
-                </a>
                 <ul class="dropdown-menu" ngbDropdownMenu>
                     <li *ngIf="!isAuthenticated()">
                         <a class="dropdown-item" routerLink="login/marketplace" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">

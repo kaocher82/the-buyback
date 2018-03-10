@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
-import {Http} from "@angular/http";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
                selector: 'jhi-doctrine-stock', templateUrl: './doctrine-stock.component.html', styles: []
@@ -17,7 +17,7 @@ export class DoctrineStockComponent implements OnInit {
     hubs: any;
     selectedHub: any;
 
-    constructor(private http: Http,
+    constructor(private http: HttpClient,
                 public router: Router) {
         this.hubs = [{'systemName': '68FT-6', 'structureType': 'Keepstar', 'id': 1023425394442}];
         this.selectedHub = this.hubs[0];
@@ -27,7 +27,7 @@ export class DoctrineStockComponent implements OnInit {
         this.selectedHub = hub;
         this.loading = true;
         this.http.get('api/stock/doctrines/' + this.selectedHub['id']).subscribe((data) => {
-            this.data = data.json();
+            this.data = data;
             this.loading = false;
         });
     }
@@ -57,10 +57,10 @@ export class DoctrineStockComponent implements OnInit {
     private load() {
         this.loading = true;
         this.http.get('api/stock/hubs').subscribe((data) => {
-            this.hubs = data.json();
+            this.hubs = data;
         });
         this.http.get('api/stock/doctrines/' + this.selectedHub['id']).subscribe((data) => {
-            this.data = data.json();
+            this.data = data;
             this.loading = false;
         });
     }

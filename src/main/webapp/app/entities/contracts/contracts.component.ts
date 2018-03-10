@@ -37,7 +37,7 @@ export class ContractsComponent implements OnInit {
 
     approveContract(contractId: number) {
         this.http.post('/api/contracts/buyback/' + contractId + '/approve/', null).subscribe(
-            (date) => this.loadContracts(),
+            (data) => this.loadContracts(),
             (err) => {
                 if (err.status === 404) {
                     this.errorMessage = "The contract could not be found. Sad!";
