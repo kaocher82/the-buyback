@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.thebuyback.eve.config.AppraisalService;
+import com.thebuyback.eve.domain.Appraisal;
+import com.thebuyback.eve.domain.AppraisalFailed;
 import com.thebuyback.eve.domain.Asset;
 import com.thebuyback.eve.domain.ItemWithQuantity;
 import com.thebuyback.eve.domain.Token;
@@ -44,17 +47,20 @@ public class AssetParser implements SchedulingConfigurer {
     private final LocationService locationService;
     private final TokenRepository tokenRepository;
     private final Environment env;
+    private final AppraisalService appraisalService;
 
     public AssetParser(final JsonRequestService requestService, final AssetRepository assetRepository,
                        final TypeService typeService,
                        final LocationService locationService,
-                       final TokenRepository tokenRepository, final Environment env) {
+                       final TokenRepository tokenRepository, final Environment env,
+                       final AppraisalService appraisalService) {
         this.requestService = requestService;
         this.assetRepository = assetRepository;
         this.typeService = typeService;
         this.locationService = locationService;
         this.tokenRepository = tokenRepository;
         this.env = env;
+        this.appraisalService = appraisalService;
     }
 
     @Async
@@ -117,22 +123,15 @@ public class AssetParser implements SchedulingConfigurer {
 
         final Map<String, Double> prices = new HashMap<>();
         final List<String> typeNames = assets.stream().map(Asset::getTypeName).distinct().collect(Collectors.toList());
-        String raw = "";
-        for (int i = 0; i < typeNames.size(); i++) {
-            raw += typeNames.get(i) + "\n";
-            if (i+1 % 100 == 0) {
-                try {
-                    setPrices(prices, raw);
-                } catch (UnirestException e) {
-                    log.error("Failed to appraise items for AssetParser.", e);
-                    return;
-                }
-            }
-        }
+
+
         try {
-            setPrices(prices, raw);
-        } catch (UnirestException e) {
-            log.error("Failed to appraise items for AssetParser.", e);
+            final Appraisal appraisal = appraisalService.getAppraisalFromList(typeNames);
+            for (final ItemWithQuantity item : appraisal.getItems()) {
+                prices.put(item.getTypeName(), item.getJitaBuyPerUnit());
+            }
+        } catch (AppraisalFailed e) {
+            log.warn("AppraisalFailed, stopping the asset parsing.", e);
             return;
         }
 
@@ -175,14 +174,6 @@ public class AssetParser implements SchedulingConfigurer {
             return "N/A";
         }
         return locationService.fetchCitadelName(locationId);
-    }
-
-    public void setPrices(final Map<String, Double> prices, final String raw) throws UnirestException {
-        final String link = AppraisalUtil.getLinkFromRaw(raw);
-        final List<ItemWithQuantity> items = AppraisalUtil.getItems(link);
-        for (final ItemWithQuantity item : items) {
-            prices.put(item.getTypeName(), item.getJitaBuyPerUnit());
-        }
     }
 
     @Bean

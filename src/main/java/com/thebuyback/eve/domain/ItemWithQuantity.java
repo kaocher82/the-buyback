@@ -5,7 +5,7 @@ public class ItemWithQuantity {
     private long typeID;
     private Integer quantity;
     private double jitaBuyPerUnit;
-    private double rate;
+    private Double rate;
 
     public ItemWithQuantity() {
     }
@@ -25,7 +25,7 @@ public class ItemWithQuantity {
         this.jitaBuyPerUnit = jitaBuyPerUnit;
     }
 
-    public double getRate() {
+    public Double getRate() {
         return rate;
     }
 

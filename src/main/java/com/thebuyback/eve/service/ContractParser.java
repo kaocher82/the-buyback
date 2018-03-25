@@ -13,6 +13,9 @@ import static java.util.Arrays.asList;
 import com.codahale.metrics.annotation.Timed;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.thebuyback.eve.config.AppraisalService;
+import com.thebuyback.eve.domain.Appraisal;
+import com.thebuyback.eve.domain.AppraisalFailed;
 import com.thebuyback.eve.domain.CapitalShipOnContract;
 import com.thebuyback.eve.domain.CapitalShipStatus;
 import com.thebuyback.eve.domain.Contract;
@@ -57,7 +60,7 @@ public class ContractParser implements SchedulingConfigurer {
     private final TypeService typeService;
     private final CapitalShipRepository capitalShipRepository;
     private final ItemBuybackRateRepository buybackRateRepository;
-
+    private final AppraisalService appraisalService;
     private final Environment env;
 
     public ContractParser(final JsonRequestService requestService,
@@ -66,15 +69,22 @@ public class ContractParser implements SchedulingConfigurer {
                           final TypeService typeService,
                           final CapitalShipRepository capitalShipRepository,
                           final ItemBuybackRateRepository buybackRateRepository,
-                          final Environment env) {
+                          final AppraisalService appraisalService, final Environment env) {
         this.requestService = requestService;
         this.tokenRepository = tokenRepository;
         this.contractRepository = contractRepository;
         this.typeService = typeService;
         this.capitalShipRepository = capitalShipRepository;
         this.buybackRateRepository = buybackRateRepository;
+        this.appraisalService = appraisalService;
         this.env = env;
     }
+
+    private final List<Integer> brokenContracts = asList(129118780, 129229042, 129078167, 129116596, 129448034,
+                                                         129360245, 129124161, 129125851, 129155957, 129457059,
+                                                         129461097, 129194666, 129496855, 129765624, 129538703,
+                                                         129290486, 130164422, 130190365, 129407409, 129429769,
+                                                         129430434, 129437261, 129443768, 129603837, 129664415);
 
     @Async
     @Timed
@@ -102,7 +112,7 @@ public class ContractParser implements SchedulingConfigurer {
                 for (int i = 0; i < contractArray.length(); i++) {
                     try {
                         parseContract(accessToken, contractArray, i);
-                    } catch (UnirestException e) {
+                    } catch (AppraisalFailed e) {
                         log.error("Failed to parse contract.", e);
                     }
                 }
@@ -133,10 +143,11 @@ public class ContractParser implements SchedulingConfigurer {
     }
 
     private void parseContract(final String accessToken, final JSONArray contractArray, final int i)
-        throws UnirestException {
+        throws AppraisalFailed {
         final JSONObject jsonContract = contractArray.getJSONObject(i);
 
         long contractId = jsonContract.getLong("contract_id");
+
         long issuerId = jsonContract.getLong("issuer_id");
         long assigneeId = jsonContract.getLong("assignee_id");
         long issuerCorporationId = jsonContract.getLong("issuer_corporation_id");
@@ -177,12 +188,16 @@ public class ContractParser implements SchedulingConfigurer {
             contractRepository.delete(contract);
         } else {
             items = getItemsForContract(contractId, accessToken);
-
-            appraisalLink = AppraisalUtil.getLinkFromRaw(getRaw(items));
-            if (null != appraisalLink) {
-                buyValue = AppraisalUtil.getBuy(appraisalLink);
-                sellValue = AppraisalUtil.getSell(appraisalLink);
+            if (items.isEmpty()) {
+                log.warn("Could not retrieve items for contract {}.", contractId);
+                return;
             }
+
+            final Appraisal appraisal = appraisalService.getAppraisalFromTypeIdMap(items);
+            appraisalLink = appraisal.getLink();
+
+            buyValue = appraisal.getJitaBuy();
+            sellValue = appraisal.getJitaSell();
 
             Optional<JsonNode> characterName = requestService.getCharacterName(issuerId);
             characterName.ifPresent(jsonNode -> client[0] = jsonNode.getArray().getJSONObject(0)
@@ -240,10 +255,9 @@ public class ContractParser implements SchedulingConfigurer {
         }
         final List<ItemWithQuantity> items;
         try {
-            String linkFromRaw = AppraisalUtil.getLinkFromRaw(raw.toString());
-            items = AppraisalUtil.getItems(linkFromRaw);
-        } catch (UnirestException e) {
-            log.error("Failed to get appraisal.", e);
+            items = appraisalService.getAppraisalFromNewLineSeparatedRaw(raw.toString()).getItems();
+        } catch (AppraisalFailed e) {
+            log.error("Failed to get appraisal for calcBuybackRate.", e);
             return 0;
         }
 

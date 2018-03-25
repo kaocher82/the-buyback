@@ -1,6 +1,7 @@
 package com.thebuyback.eve.service;
 
 import java.util.List;
+import java.util.Set;
 
 import com.thebuyback.eve.domain.ItemBuybackRate;
 import com.thebuyback.eve.repository.ItemBuybackRateRepository;
@@ -19,7 +20,7 @@ public class ItemBuybackRateService {
         this.requestService = requestService;
     }
 
-    public List<ItemBuybackRate> getRates(final List<Long> typeIds) {
+    public List<ItemBuybackRate> getRates(final Set<Long> typeIds) {
         return itemRateRepository.findAllByTypeIdIn(typeIds);
     }
 }

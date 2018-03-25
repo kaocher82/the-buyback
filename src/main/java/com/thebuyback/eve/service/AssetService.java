@@ -8,7 +8,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.mashape.unirest.http.exceptions.UnirestException;
+import com.thebuyback.eve.config.AppraisalService;
+import com.thebuyback.eve.domain.Appraisal;
+import com.thebuyback.eve.domain.AppraisalFailed;
 import com.thebuyback.eve.domain.Asset;
 import com.thebuyback.eve.domain.AssetOverview;
 import com.thebuyback.eve.domain.ItemWithQuantity;
@@ -27,11 +29,14 @@ public class AssetService {
 
     private final MongoTemplate mongoTemplate;
     private final AssetRepository assetRepository;
+    private final AppraisalService appraisalService;
     private final List<String> HUBS = Arrays.asList("68FT-6 - Mothership Bellicose", "GE-8JV - BROADCAST4REPS");
 
-    public AssetService(final MongoTemplate mongoTemplate, final AssetRepository assetRepository) {
+    public AssetService(final MongoTemplate mongoTemplate, final AssetRepository assetRepository,
+                        final AppraisalService appraisalService) {
         this.mongoTemplate = mongoTemplate;
         this.assetRepository = assetRepository;
+        this.appraisalService = appraisalService;
     }
 
     public List<Asset> findAssets(Set<String> lines) {
@@ -41,12 +46,12 @@ public class AssetService {
         if (assets.isEmpty()) {
             // fallback to evepraisal parser if someone was too dumb to read the instructions
             try {
-                final String link = AppraisalUtil.getLinkFromRaw(String.join(",", lines));
-                final Set<String> items = AppraisalUtil.getItems(link).stream().map(ItemWithQuantity::getTypeName)
-                                                         .collect(Collectors.toSet());
-                assets = assetRepository.findAllByTypeNameInAndLocationNameIn(items, HUBS);
-            } catch (UnirestException e) {
-                log.error("Failed to load appraisal for assets. {}", lines, e);
+                final Appraisal appraisal = appraisalService.getAppraisalFromNewLineSeparatedRaw(String.join("\n", lines));
+                final Set<String> itemNames = appraisal.getItems().stream().map(ItemWithQuantity::getTypeName).collect(
+                    Collectors.toSet());
+                assets = assetRepository.findAllByTypeNameInAndLocationNameIn(itemNames, HUBS);
+            } catch (AppraisalFailed e) {
+                log.error("Failed to load appraisal for assets: {}", String.join(";", lines), e);
             }
         }
 
