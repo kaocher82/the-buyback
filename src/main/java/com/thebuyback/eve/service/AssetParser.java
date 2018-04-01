@@ -1,5 +1,6 @@
 package com.thebuyback.eve.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -15,8 +16,10 @@ import com.thebuyback.eve.config.AppraisalService;
 import com.thebuyback.eve.domain.Appraisal;
 import com.thebuyback.eve.domain.AppraisalFailed;
 import com.thebuyback.eve.domain.Asset;
+import com.thebuyback.eve.domain.AssetHistory;
 import com.thebuyback.eve.domain.ItemWithQuantity;
 import com.thebuyback.eve.domain.Token;
+import com.thebuyback.eve.repository.AssetHistoryRepository;
 import com.thebuyback.eve.repository.AssetRepository;
 import com.thebuyback.eve.repository.TokenRepository;
 
@@ -48,12 +51,14 @@ public class AssetParser implements SchedulingConfigurer {
     private final TokenRepository tokenRepository;
     private final Environment env;
     private final AppraisalService appraisalService;
+    private final AssetHistoryRepository assetHistoryRepository;
 
     public AssetParser(final JsonRequestService requestService, final AssetRepository assetRepository,
                        final TypeService typeService,
                        final LocationService locationService,
                        final TokenRepository tokenRepository, final Environment env,
-                       final AppraisalService appraisalService) {
+                       final AppraisalService appraisalService,
+                       final AssetHistoryRepository assetHistoryRepository) {
         this.requestService = requestService;
         this.assetRepository = assetRepository;
         this.typeService = typeService;
@@ -61,6 +66,7 @@ public class AssetParser implements SchedulingConfigurer {
         this.tokenRepository = tokenRepository;
         this.env = env;
         this.appraisalService = appraisalService;
+        this.assetHistoryRepository = assetHistoryRepository;
     }
 
     @Async
@@ -68,6 +74,8 @@ public class AssetParser implements SchedulingConfigurer {
         if (env.acceptsProfiles(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT)) {
             return;
         }
+
+        log.info("Refreshing assets.");
 
         final Token token = tokenRepository.findByClientId(ASSET_PARSER_CLIENT).get(0);
         final String accessToken;
@@ -78,6 +86,50 @@ public class AssetParser implements SchedulingConfigurer {
             return;
         }
 
+        final Collection<Asset> assets = collectAssets(accessToken);
+
+        final Map<Long, Long> officeMappings = getOfficeMappings(assets);
+
+        final List<Asset> enhancedAssets = assets.stream().peek(asset -> {
+            long locationId = asset.getLocationId();
+            if (officeMappings.containsKey(asset.getLocationId())) {
+                locationId = officeMappings.get(asset.getLocationId());
+            }
+            final String locationName = resolveLocation(locationId);
+            asset.setLocationName(locationName);
+        }).filter(asset -> !asset.getLocationName().equals("N/A"))
+          .peek(asset -> {
+            final String typeName = typeService.getNameByTypeId(asset.getTypeId());
+            asset.setTypeName(typeName);
+            final double volume = typeService.getVolume(asset.getTypeId());
+            asset.setVolume(volume);
+        }).collect(Collectors.toList());
+
+        final Map<String, Double> prices = new HashMap<>();
+        final List<String> typeNames = assets.stream().map(Asset::getTypeName).distinct().collect(Collectors.toList());
+
+        try {
+            final Appraisal appraisal = appraisalService.getAppraisalFromList(typeNames);
+            for (final ItemWithQuantity item : appraisal.getItems()) {
+                prices.put(item.getTypeName(), item.getJitaBuyPerUnit());
+            }
+        } catch (AppraisalFailed e) {
+            log.warn("AppraisalFailed, stopping the asset parsing.", e);
+            return;
+        }
+
+        final List<Asset> pricedAssets = assets.stream().peek(asset -> asset.setPrice(prices.get(asset.getTypeName())))
+                                          .collect(Collectors.toList());
+
+        assetRepository.deleteAll();
+        assetRepository.save(pricedAssets);
+        log.info("Asset parsing complete. {} entries have been added.", assets.size());
+
+        addAssetHistory();
+        log.info("Asset history added.");
+    }
+
+    private Collection<Asset> collectAssets(final String accessToken) {
         final Collection<Asset> assets = new ArrayList<>();
         boolean nextPageAvailable = true;
         int pageCounter = 0;
@@ -104,43 +156,25 @@ public class AssetParser implements SchedulingConfigurer {
                 nextPageAvailable = false;
             }
         }
+        return assets;
+    }
 
-        final Map<Long, Long> officeMappings = getOfficeMappings(assets);
-
-        final List<Asset> enhancedAssets = assets.stream().peek(asset -> {
-            long locationId = asset.getLocationId();
-            if (officeMappings.containsKey(asset.getLocationId())) {
-                locationId = officeMappings.get(asset.getLocationId());
+    private void addAssetHistory() {
+        final double currentAssetsValue = assetRepository.findAll().stream()
+                                                         .filter(a -> a.getPrice() != null)
+                                          .mapToDouble(asset -> asset.getPrice() * asset.getQuantity()).sum();
+        final Optional<AssetHistory> optionalHistory = assetHistoryRepository.findOneByDate(LocalDate.now());
+        if (optionalHistory.isPresent()) {
+            final AssetHistory assetHistory = optionalHistory.get();
+            if (assetHistory.getLow() > currentAssetsValue) {
+                assetHistory.setLow(currentAssetsValue);
+            } else if (assetHistory.getHigh() < currentAssetsValue) {
+                assetHistory.setHigh(currentAssetsValue);
             }
-            final String locationName = resolveLocation(locationId);
-            asset.setLocationName(locationName);
-        }).filter(asset -> !asset.getLocationName().equals("N/A")).peek(asset -> {
-            final String typeName = typeService.getNameByTypeId(asset.getTypeId());
-            asset.setTypeName(typeName);
-            final double volume = typeService.getVolume(asset.getTypeId());
-            asset.setVolume(volume);
-        }).collect(Collectors.toList());
-
-        final Map<String, Double> prices = new HashMap<>();
-        final List<String> typeNames = assets.stream().map(Asset::getTypeName).distinct().collect(Collectors.toList());
-
-
-        try {
-            final Appraisal appraisal = appraisalService.getAppraisalFromList(typeNames);
-            for (final ItemWithQuantity item : appraisal.getItems()) {
-                prices.put(item.getTypeName(), item.getJitaBuyPerUnit());
-            }
-        } catch (AppraisalFailed e) {
-            log.warn("AppraisalFailed, stopping the asset parsing.", e);
-            return;
+            assetHistoryRepository.save(assetHistory);
+        } else {
+            assetHistoryRepository.save(new AssetHistory(LocalDate.now(), currentAssetsValue, currentAssetsValue));
         }
-
-        final List<Asset> pricedAssets = assets.stream().peek(asset -> asset.setPrice(prices.get(asset.getTypeName())))
-                                          .collect(Collectors.toList());
-
-        assetRepository.deleteAll();
-        assetRepository.save(pricedAssets);
-        log.info("Asset parsing complete. {} entries have been added.", assets.size());
     }
 
     private Map<Long, Long> getOfficeMappings(final Iterable<Asset> assetsArray) {
