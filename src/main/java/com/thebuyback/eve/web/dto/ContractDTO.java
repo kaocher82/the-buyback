@@ -1,4 +1,4 @@
-package com.thebuyback.eve.web.rest;
+package com.thebuyback.eve.web.dto;
 
 import java.time.Instant;
 

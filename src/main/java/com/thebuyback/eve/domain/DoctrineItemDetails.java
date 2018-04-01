@@ -13,6 +13,15 @@ public class DoctrineItemDetails {
     private Double jitaSell;
     private Double sellPrice;
     private List<TypeStockHistory> stockHistory;
+    private Integer daysRemaining;
+
+    public Integer getDaysRemaining() {
+        return daysRemaining;
+    }
+
+    public void setDaysRemaining(final Integer daysRemaining) {
+        this.daysRemaining = daysRemaining;
+    }
 
     public Double getSellPrice() {
         return sellPrice;

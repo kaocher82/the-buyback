@@ -102,8 +102,31 @@ public class DoctrineResource {
         final List<MarketOrder> jitaSell = marketOrderRepository.findByLocationIdAndIsBuyOrderAndTypeIdOrderByPriceAsc(JITA, false, typeId);
         result.setJitaSell(getFirstOrMinusOne(jitaSell));
         result.setPriceBorder(calcOverpricedBorder(result.getJitaSell()));
-        result.setStockHistory(typeStockHistoryRepository.findByHubAndTypeId(hub, typeId));
+        result.setStockHistory(history);
+        result.setDaysRemaining(calcDaysRemaining(history, history.get(history.size() - 1).getLatestQuantity().intValue()));
+
         return result;
+    }
+
+    private Integer calcDaysRemaining(final List<TypeStockHistory> history, final int latestQuantity) {
+        int totalChange = 0;
+        int days = 0;
+        // start at the first because we can't check if the first was a huge stock day
+        for (int i = 1; i < history.size(); i++) {
+            if (history.get(i).getMaxQuantity() > history.get(i - 1).getMaxQuantity()) {
+                // skip days that had a positive stock
+                continue;
+            } else {
+                days++;
+                totalChange += history.get(i).getMaxQuantity() - history.get(i).getMinQuantity();
+            }
+        }
+        final int changePerDay = totalChange / days;
+        if (changePerDay == 0) {
+            // will be turned into N/A in the frontend
+            return -1;
+        }
+        return latestQuantity / changePerDay;
     }
 
     private DoctrineItemDetails from(final TypeStockHistory item) {

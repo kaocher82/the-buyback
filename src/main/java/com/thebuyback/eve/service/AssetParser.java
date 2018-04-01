@@ -72,7 +72,7 @@ public class AssetParser implements SchedulingConfigurer {
     @Async
     public void refreshAssets() {
         if (env.acceptsProfiles(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT)) {
-            return;
+//            return;
         }
 
         log.info("Refreshing assets.");
@@ -162,6 +162,8 @@ public class AssetParser implements SchedulingConfigurer {
     private void addAssetHistory() {
         final double currentAssetsValue = assetRepository.findAll().stream()
                                                          .filter(a -> a.getPrice() != null)
+                                                         .filter(a -> a.getTypeName() != null)
+                                                         .filter(a -> !a.getTypeName().contains("Blueprint"))
                                           .mapToDouble(asset -> asset.getPrice() * asset.getQuantity()).sum();
         final Optional<AssetHistory> optionalHistory = assetHistoryRepository.findOneByDate(LocalDate.now());
         if (optionalHistory.isPresent()) {

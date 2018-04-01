@@ -41,6 +41,11 @@
                         <td style="width: 50%"><b>Stocked</b></td>
                         <td>{{data.stocked | number:'1.0-0'}}</td>
                     </tr>
+                    <tr>
+                        <td style="width: 50%"><b>Days remaining</b></td>
+                        <td *ngIf="data.daysRemaining >= 0">{{data.daysRemaining | number:'1.0-0'}}</td>
+                        <td *ngIf="data.daysRemaining == -1">N/A</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
