@@ -19,7 +19,6 @@ import com.thebuyback.eve.web.dto.AssetsPerSystem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,14 +26,12 @@ public class AssetService {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private final MongoTemplate mongoTemplate;
     private final AssetRepository assetRepository;
     private final AppraisalService appraisalService;
-    private final List<String> HUBS = Arrays.asList("68FT-6 - Mothership Bellicose", "GE-8JV - BROADCAST4REPS");
+    private static final List<String> HUBS = Arrays.asList("68FT-6 - Mothership Bellicose", "GE-8JV - BROADCAST4REPS");
 
-    public AssetService(final MongoTemplate mongoTemplate, final AssetRepository assetRepository,
+    public AssetService(final AssetRepository assetRepository,
                         final AppraisalService appraisalService) {
-        this.mongoTemplate = mongoTemplate;
         this.assetRepository = assetRepository;
         this.appraisalService = appraisalService;
     }
@@ -61,23 +58,24 @@ public class AssetService {
     public AssetOverview getAssetsForOverview(final String region, final String isHub) {
         final List<Asset> assets = getAssets(region, isHub);
 
+        final String oreIdentifier = "Compressed";
         final double stuffValue = assets.stream()
-                                        .filter(asset -> !asset.getTypeName().startsWith("Compressed"))
+                                        .filter(asset -> !asset.getTypeName().startsWith(oreIdentifier))
                                         .mapToDouble(asset -> asset.getQuantity() * asset.getPrice())
                                         .sum();
 
         final double stuffVolume = assets.stream()
-                                         .filter(asset -> !asset.getTypeName().startsWith("Compressed"))
+                                         .filter(asset -> !asset.getTypeName().startsWith(oreIdentifier))
                                          .mapToDouble(asset -> asset.getQuantity() * asset.getVolume())
                                          .sum();
 
         final double oreValue = assets.stream()
-                                        .filter(asset -> asset.getTypeName().startsWith("Compressed"))
+                                        .filter(asset -> asset.getTypeName().startsWith(oreIdentifier))
                                         .mapToDouble(asset -> asset.getQuantity() * asset.getPrice())
                                         .sum();
 
         final double oreVolume = assets.stream()
-                                         .filter(asset -> asset.getTypeName().startsWith("Compressed"))
+                                         .filter(asset -> asset.getTypeName().startsWith(oreIdentifier))
                                          .mapToDouble(asset -> asset.getQuantity() * asset.getVolume())
                                          .sum();
 
@@ -87,30 +85,38 @@ public class AssetService {
     private List<Asset> getAssets(final String region, final String isHub) {
         final List<String> systems = new ArrayList<>();
         String locationName = null;
-        if (region.equals("442-CS")) {
-            if (isHub.equals("hub")) {
-                locationName = "442-CS - Has Midslots";
-            } else {
-                systems.addAll(Arrays.asList("442-CS", "9ZFH-Z", "Z-N9IP", "PZMA-E", "TWJ-AW", "4-MPSJ", "N-7ECY"));
-            }
-        } else if (region.equals("68FT-6")) {
-            if (isHub.equals("hub")) {
-                locationName = "68FT-6 - Mothership Bellicose";
-            } else {
-                systems.addAll(Arrays.asList("68FT-6", "AFJ-NB", "IV-UNR", "YALR-F", "H-64KI", "9I-SRF", "9-IIBL", "5GQ-S9", "HOHF-B", "Y-6B0E", "IRE-98"));
-            }
-        } else if (region.equals("TM-0P2")) {
-            if (isHub.equals("hub")) {
-                locationName = "1L"; // todo: get real ID for tm- fort
-            } else {
-                systems.addAll(Arrays.asList("TM-0P2", "E3-SDZ", "N-CREL", "4OIV-X", "Y-JKJ8"));
-            }
-        } else if (region.equals("GE-8JV")) {
-            if (isHub.equals("hub")) {
-                locationName = "GE-8JV - BROADCAST4REPS";
-            } else {
-                systems.addAll(Arrays.asList("GE-8JV", "AOK-WQ", "B-XJX4", "7LHB-Z", "E1-Y4H", "MUXX-4", "AX-DOT", "YHN-3K", "V-3YG7", "3-OKDA", "4M-HGL", "MY-W1V", "8B-2YA", "SNFV-I", "HP-64T"));
-            }
+        switch (region) {
+            case "442-CS":
+                if (isHub.equals("hub")) {
+                    locationName = "442-CS - Has Midslots";
+                } else {
+                    systems.addAll(Arrays.asList("442-CS", "9ZFH-Z", "Z-N9IP", "PZMA-E", "TWJ-AW", "4-MPSJ", "N-7ECY"));
+                }
+                break;
+            case "68FT-6":
+                if (isHub.equals("hub")) {
+                    locationName = "68FT-6 - Mothership Bellicose";
+                } else {
+                    systems.addAll(Arrays.asList("68FT-6", "AFJ-NB", "IV-UNR", "YALR-F", "H-64KI", "9I-SRF", "9-IIBL",
+                                                 "5GQ-S9", "HOHF-B", "Y-6B0E", "IRE-98"));
+                }
+                break;
+            case "TM-0P2":
+                if (isHub.equals("hub")) {
+                    locationName = "1L"; // todo: get real ID for tm- fort
+                } else {
+                    systems.addAll(Arrays.asList("TM-0P2", "E3-SDZ", "N-CREL", "4OIV-X", "Y-JKJ8"));
+                }
+                break;
+            case "GE-8JV":
+                if (isHub.equals("hub")) {
+                    locationName = "GE-8JV - BROADCAST4REPS";
+                } else {
+                    systems.addAll(Arrays.asList("GE-8JV", "AOK-WQ", "B-XJX4", "7LHB-Z", "E1-Y4H", "MUXX-4", "AX-DOT",
+                                                 "YHN-3K", "V-3YG7", "3-OKDA", "4M-HGL", "MY-W1V", "8B-2YA", "SNFV-I",
+                                                 "HP-64T"));
+                }
+                break;
         }
 
         final List<Asset> assets;
@@ -121,10 +127,20 @@ public class AssetService {
                            .filter(asset -> startsWithAnyOf(asset.getLocationName(), systems))
                            .collect(Collectors.toList());
         }
-        return assets.stream().filter(asset -> asset.getTypeName() != null && !asset.getTypeName().contains("Blueprint")).collect(Collectors.toList());
+        return assets.stream()
+                     .filter(asset -> asset.getTypeName() != null)
+                     .filter(asset -> !asset.getTypeName().contains("Blueprint"))
+                     .filter(asset -> asset.getLocationName() != null)
+                     .filter(asset -> asset.getPrice() != null)
+                     .peek(asset -> {
+                         if (asset.getVolume() == null) {
+                             asset.setVolume(0.0);
+                         }
+                     })
+                     .collect(Collectors.toList());
     }
 
-    boolean startsWithAnyOf(final String locationName, final Iterable<String> systems) {
+    private boolean startsWithAnyOf(final String locationName, final Iterable<String> systems) {
         for (String system : systems) {
             if (locationName.startsWith(system)) {
                 return true;

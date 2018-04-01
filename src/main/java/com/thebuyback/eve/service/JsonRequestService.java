@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class JsonRequestService {
 
+    public static final String USER_AGENT = "EvE: Rihan Shazih";
     private static final String WRONG_STATUS_CODE = "{} returned status code {}.";
     private static final String UNIREST_EXCEPTION = "Failed to get data from url={}";
     private static final String BODY_TEMPLATE = "{\"recipients\": [{\"recipient_type\": \"character\",\"recipient_id\": %d}, {\"recipient_type\": \"corporation\",\"recipient_id\": 98503372}],\"subject\": \"The Buyback - %s\",\"body\": \"%s\", \"approved_cost\": 100000}";
@@ -50,7 +51,7 @@ public class JsonRequestService {
 
     public JsonRequestService() {
         defaultHeaders = new HashMap<>();
-        defaultHeaders.put("X-User-Agent", "EvE: Rihan Shazih");
+        defaultHeaders.put("X-User-Agent", USER_AGENT);
         defaultHeaders.put("Accept-Encoding", "gzip");
     }
 

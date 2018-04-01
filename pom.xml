@@ -11,7 +11,7 @@
 
     <groupId>com.thebuyback.eve</groupId>
     <artifactId>theBuyback</artifactId>
-    <version>1.11.0</version>
+    <version>1.11.1</version>
     <packaging>war</packaging>
     <name>TheBuyback</name>
 
@@ -104,6 +104,12 @@
 
 
     <dependencies>
+        <dependency>
+            <groupId>enterprises.orbital.eve.esi</groupId>
+            <artifactId>client</artifactId>
+            <version>1.0.0.20180326</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.zalando/problem -->
         <dependency>
             <groupId>org.zalando</groupId>
