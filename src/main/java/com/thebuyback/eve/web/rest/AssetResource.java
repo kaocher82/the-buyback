@@ -9,7 +9,9 @@ import java.util.stream.Collectors;
 
 import com.codahale.metrics.annotation.Timed;
 import com.thebuyback.eve.domain.Asset;
+import com.thebuyback.eve.domain.AssetFilter;
 import com.thebuyback.eve.domain.AssetOverview;
+import com.thebuyback.eve.repository.AssetFilterRepository;
 import com.thebuyback.eve.security.SecurityUtils;
 import com.thebuyback.eve.service.AssetService;
 import com.thebuyback.eve.web.dto.AssetDTO;
@@ -33,9 +35,12 @@ public class AssetResource {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final AssetService assetService;
+    private final AssetFilterRepository assetFilterRepository;
 
-    public AssetResource(final AssetService assetService) {
+    public AssetResource(final AssetService assetService,
+                         final AssetFilterRepository assetFilterRepository) {
         this.assetService = assetService;
+        this.assetFilterRepository = assetFilterRepository;
     }
 
     @PostMapping
@@ -51,8 +56,12 @@ public class AssetResource {
             return ResponseEntity.status(420).build();
         }
 
+        final Set<Long> filterTypeIds = assetFilterRepository.findAll().stream().map(AssetFilter::getTypeId)
+                                                             .collect(Collectors.toSet());
+
         final List<AssetDTO> assets = assetService.findAssets(lines)
                                                   .stream()
+                                                  .filter(e -> !filterTypeIds.contains(e.getTypeId()))
                                                   .map(AssetResource::toDTO)
                                                   .collect(Collectors.toList());
 
