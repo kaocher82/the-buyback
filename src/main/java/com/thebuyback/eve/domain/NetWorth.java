@@ -11,6 +11,8 @@ public class NetWorth {
     private Double assetHigh;
     private Double walletLow;
     private Double walletHigh;
+    private Double compressedOreLow;
+    private Double compressedOreHigh;
 
     public NetWorth() {
     }
@@ -25,13 +27,24 @@ public class NetWorth {
         this.assetHigh = assetHigh;
     }
 
-    public NetWorth(final LocalDate date, final double assetLow, final double assetHigh, final double walletLow,
-                    final double walletHigh) {
+    public Double getCompressedOreLow() {
+        return compressedOreLow;
+    }
+
+    public void setDate(final LocalDate date) {
         this.date = date;
-        this.assetLow = assetLow;
-        this.assetHigh = assetHigh;
-        this.walletLow = walletLow;
-        this.walletHigh = walletHigh;
+    }
+
+    public void setCompressedOreLow(final Double compressedOreLow) {
+        this.compressedOreLow = compressedOreLow;
+    }
+
+    public Double getCompressedOreHigh() {
+        return compressedOreHigh;
+    }
+
+    public void setCompressedOreHigh(final Double compressedOreHigh) {
+        this.compressedOreHigh = compressedOreHigh;
     }
 
     public LocalDate getDate() {

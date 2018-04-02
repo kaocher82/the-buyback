@@ -12,12 +12,16 @@
                 <td><span>{{netWorth.assetHigh | number:'1.0-0'}} ISK</span></td>
             </tr>
             <tr>
+                <td>Compressed Ore</td>
+                <td><span>{{netWorth.compressedOreHigh | number:'1.0-0'}} ISK</span></td>
+            </tr>
+            <tr>
                 <td>Loans</td>
                 <td><span>{{totalLoans | number:'1.0-0'}} ISK</span></td>
             </tr>
             <tr>
                 <td><b>Sum</b></td>
-                <td><span>{{netWorth.walletHigh + netWorth.assetHigh - totalLoans | number:'1.0-0'}} ISK</span></td>
+                <td><span>{{netWorth.walletHigh + netWorth.assetHigh + netWorth.compressedOreHigh - totalLoans | number:'1.0-0'}} ISK</span></td>
             </tr>
             </tbody>
         </table>

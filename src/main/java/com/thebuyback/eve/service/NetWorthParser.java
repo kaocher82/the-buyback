@@ -1,10 +1,13 @@
 package com.thebuyback.eve.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.thebuyback.eve.domain.Asset;
 import com.thebuyback.eve.domain.NetWorth;
 import com.thebuyback.eve.domain.Token;
 import com.thebuyback.eve.repository.AssetRepository;
@@ -54,7 +57,7 @@ public class NetWorthParser {
 
         log.info("Refreshing net worth.");
 
-        addAssetHistory();
+        addAssetAndOreHistory();
         log.info("Asset history added.");
         addWalletHistory();
         log.info("Wallet history added.");
@@ -111,12 +114,20 @@ public class NetWorthParser {
         }
     }
 
-    private void addAssetHistory() {
-        final double currentAssetsValue = assetRepository.findAll().stream()
-                                                         .filter(a -> a.getPrice() != null)
-                                                         .filter(a -> a.getTypeName() != null)
-                                                         .filter(a -> !a.getTypeName().contains("Blueprint"))
-                                          .mapToDouble(asset -> asset.getPrice() * asset.getQuantity()).sum();
+    private void addAssetAndOreHistory() {
+        final List<Asset> assets = assetRepository.findAll().stream()
+                                                     .filter(a -> a.getPrice() != null)
+                                                     .filter(a -> a.getTypeName() != null)
+                                                     .filter(a -> !a.getTypeName().contains("Blueprint"))
+                                                     .collect(Collectors.toList());
+
+        final double currentAssetsValue = assets.stream()
+                                                .filter(asset -> !asset.getTypeName().startsWith("Compressed"))
+                                                .mapToDouble(asset -> asset.getPrice() * asset.getQuantity()).sum();
+        final double currentOreValue = assets.stream()
+                                                .filter(asset -> asset.getTypeName().startsWith("Compressed"))
+                                                .mapToDouble(asset -> asset.getPrice() * asset.getQuantity()).sum();
+
         final Optional<NetWorth> optionalHistory = netWorthHistoryRepository.findOneByDate(LocalDate.now());
         if (optionalHistory.isPresent()) {
             final NetWorth netWorth = optionalHistory.get();
@@ -125,9 +136,17 @@ public class NetWorthParser {
             } else if (netWorth.getAssetHigh() == null || netWorth.getAssetHigh() < currentAssetsValue) {
                 netWorth.setAssetHigh(currentAssetsValue);
             }
+            if (netWorth.getCompressedOreLow() == null || netWorth.getCompressedOreLow() > currentOreValue) {
+                netWorth.setCompressedOreLow(currentOreValue);
+            } else if (netWorth.getCompressedOreHigh() == null || netWorth.getCompressedOreHigh() < currentOreValue) {
+                netWorth.setCompressedOreHigh(currentOreValue);
+            }
             netWorthHistoryRepository.save(netWorth);
         } else {
-            netWorthHistoryRepository.save(new NetWorth(LocalDate.now(), currentAssetsValue, currentAssetsValue));
+            final NetWorth netWorth = new NetWorth(LocalDate.now(), currentAssetsValue, currentAssetsValue);
+            netWorth.setCompressedOreHigh(currentOreValue);
+            netWorth.setCompressedOreLow(currentOreValue);
+            netWorthHistoryRepository.save(netWorth);
         }
     }
 
