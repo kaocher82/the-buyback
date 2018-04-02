@@ -1,5 +1,32 @@
 <div class="row">
     <div class="col-md-12">
+        <h3>Totals</h3>
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <td>Wallet</td>
+                <td><span>{{netWorth.walletLow | number:'1.0-0'}} ISK</span></td>
+            </tr>
+            <tr>
+                <td>Assets</td>
+                <td><span>{{netWorth.assetLow | number:'1.0-0'}} ISK</span></td>
+            </tr>
+            <tr>
+                <td>Loans</td>
+                <td><span>{{totalLoans | number:'1.0-0'}} ISK</span></td>
+            </tr>
+            <tr>
+                <td><b>Sum</b></td>
+                <td><span>{{netWorth.walletLow + netWorth.assetLow - totalLoans | number:'1.0-0'}} ISK</span></td>
+            </tr>
+            </tbody>
+        </table>
+        <p>Contracts and Couriers not included. Wallet/Assets are the lowest values of each day.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
         <h3>442-CS
             <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapse442" aria-expanded="false" aria-controls="collapse442">
                 Details

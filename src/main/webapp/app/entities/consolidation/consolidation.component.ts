@@ -23,11 +23,22 @@ export class ConsolidationComponent implements OnInit {
     regionGE: any;
     detailsRegionGE: any;
 
+    netWorth: any;
+    totalLoans: number;
+
     constructor(private http: HttpClient) {
     }
 
     ngOnInit(): void {
-
+        this.http.get<any>('/api/assets/value').subscribe((data) => {
+            this.netWorth = data;
+        });
+        this.http.get<any>('/api/assets/loans').subscribe((data) => {
+            this.totalLoans = 0;
+            data.forEach(e => {
+                this.totalLoans = this.totalLoans + e.loan;
+            });
+        });
         this.http.get<any>('/api/assets/442-CS/hub').subscribe((data) => {
             this.hub442 = data;
         });

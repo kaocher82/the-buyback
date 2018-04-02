@@ -218,4 +218,9 @@ public class JsonRequestService {
             return Optional.empty();
         }
     }
+
+    public Optional<JsonNode> getMasterWalletBalance(final String accessToken) {
+        String url = String.format("%s/v1/corporations/%d/wallets/?token=%s", ESI_BASE_URL, THE_BUYBACK, accessToken);
+        return justGet(url, accessToken);
+    }
 }
