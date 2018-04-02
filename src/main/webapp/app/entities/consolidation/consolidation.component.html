@@ -5,11 +5,11 @@
             <tbody>
             <tr>
                 <td>Wallet</td>
-                <td><span>{{netWorth.walletLow | number:'1.0-0'}} ISK</span></td>
+                <td><span>{{netWorth.walletHigh | number:'1.0-0'}} ISK</span></td>
             </tr>
             <tr>
                 <td>Assets</td>
-                <td><span>{{netWorth.assetLow | number:'1.0-0'}} ISK</span></td>
+                <td><span>{{netWorth.assetHigh | number:'1.0-0'}} ISK</span></td>
             </tr>
             <tr>
                 <td>Loans</td>
@@ -17,11 +17,11 @@
             </tr>
             <tr>
                 <td><b>Sum</b></td>
-                <td><span>{{netWorth.walletLow + netWorth.assetLow - totalLoans | number:'1.0-0'}} ISK</span></td>
+                <td><span>{{netWorth.walletHigh + netWorth.assetHigh - totalLoans | number:'1.0-0'}} ISK</span></td>
             </tr>
             </tbody>
         </table>
-        <p>Contracts and Couriers not included. Wallet/Assets are the lowest values of each day.</p>
+        <p>Contracts and Couriers not included. Wallet/Assets are the highest values of each day.</p>
     </div>
 </div>
 
