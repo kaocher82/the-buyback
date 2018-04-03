@@ -186,7 +186,7 @@ public class JsonRequestService {
     }
 
     Optional<JsonNode> getAssets(final String accessToken, final int page) {
-        return justGet(String.format("%s/v2/corporations/%d/assets/?token=%s&page=%d", ESI_BASE_URL, THE_BUYBACK, accessToken, page), "corpAssets");
+        return justGet(String.format("%s/v3/corporations/%d/assets/?token=%s&page=%d", ESI_BASE_URL, THE_BUYBACK, accessToken, page), "corpAssets");
     }
 
     Optional<JsonNode> getStructureInfo(final long locationId, final String accessToken) {
@@ -221,6 +221,11 @@ public class JsonRequestService {
 
     public Optional<JsonNode> getMasterWalletBalance(final String accessToken) {
         String url = String.format("%s/v1/corporations/%d/wallets/?token=%s", ESI_BASE_URL, THE_BUYBACK, accessToken);
+        return justGet(url, accessToken);
+    }
+
+    public Optional<JsonNode> getCorpMarketOrders(final String accessToken) {
+        String url = String.format("%s/v2/corporations/%d/orders/?token=%s", ESI_BASE_URL, THE_BUYBACK, accessToken);
         return justGet(url, accessToken);
     }
 }
