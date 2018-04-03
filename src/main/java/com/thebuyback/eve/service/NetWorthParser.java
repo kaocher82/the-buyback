@@ -15,6 +15,7 @@ import com.thebuyback.eve.repository.NetWorthHistoryRepository;
 import com.thebuyback.eve.repository.TokenRepository;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -52,20 +53,10 @@ public class NetWorthParser {
     @Scheduled(fixedDelay = DELAY)
     public void refreshNetWorth() {
         if (env.acceptsProfiles(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT)) {
-//            return;
+            return;
         }
 
         log.info("Refreshing net worth.");
-
-        addAssetAndOreHistory();
-        log.info("Asset history added.");
-        addWalletHistory();
-        log.info("Wallet history added.");
-
-        log.info("Refreshing net worth complete.");
-    }
-
-    private void addWalletHistory() {
         final Token token = tokenRepository.findByClientId(THE_BUYBACK_APP).get(0);
         final String accessToken;
         try {
@@ -74,6 +65,61 @@ public class NetWorthParser {
             log.error("Failed to get access token for refreshAssets.", e);
             return;
         }
+
+        addAssetAndOreHistory();
+        log.info("Asset history added.");
+        addWalletHistory(accessToken);
+        log.info("Wallet history added.");
+        addMarketHistory(accessToken);
+        log.info("Market history added.");
+
+        log.info("Refreshing net worth complete.");
+    }
+
+    private void addMarketHistory(final String accessToken) {
+        final Optional<JsonNode> node = requestService.getCorpMarketOrders(accessToken);
+        if (node.isPresent()) {
+            double total = 0.0;
+            final JSONArray ordersArray = node.get().getArray();
+            for (int i = 0; i < ordersArray.length(); i++) {
+                final JSONObject order = ordersArray.getJSONObject(i);
+                final boolean isBuyOrder = order.has("is_buy_order") ? order.getBoolean("is_buy_order") : false;
+                final int volumeRemain = order.getInt("volume_remain");
+                final double price = order.getDouble("price");
+                final double escrow = order.has("escrow") ? order.getDouble("escrow") : 0.0;
+                if (isBuyOrder) {
+                    total += escrow;
+                } else {
+                    total += price * volumeRemain;
+                }
+            }
+            saveMarketOrdersToNetWorth(total);
+        } else {
+            log.warn("getCorpMarketOrders did not return a result.");
+        }
+    }
+
+    private void saveMarketOrdersToNetWorth(final double amount) {
+        final Optional<NetWorth> optionalHistory = netWorthHistoryRepository.findOneByDate(LocalDate.now());
+        if (optionalHistory.isPresent()) {
+            final NetWorth netWorth = optionalHistory.get();
+            if (netWorth.getMarketOrdersLow() == null || netWorth.getMarketOrdersLow() > amount) {
+                netWorth.setMarketOrdersLow(amount);
+            }
+            if (netWorth.getMarketOrdersHigh() == null || netWorth.getMarketOrdersHigh() < amount) {
+                netWorth.setMarketOrdersHigh(amount);
+            }
+            netWorthHistoryRepository.save(netWorth);
+        } else {
+            final NetWorth entity = new NetWorth(LocalDate.now());
+            entity.setMarketOrdersHigh(amount);
+            entity.setMarketOrdersLow(amount);
+            netWorthHistoryRepository.save(entity);
+        }
+    }
+
+    private void addWalletHistory(final String accessToken) {
+
 
         final Optional<JsonNode> node = requestService.getMasterWalletBalance(accessToken);
         if (node.isPresent()) {
@@ -102,7 +148,8 @@ public class NetWorthParser {
             final NetWorth netWorth = optionalHistory.get();
             if (netWorth.getWalletLow() == null || netWorth.getWalletLow() > balance) {
                 netWorth.setWalletLow(balance);
-            } else if (netWorth.getWalletHigh() == null || netWorth.getWalletHigh() < balance) {
+            }
+            if (netWorth.getWalletHigh() == null || netWorth.getWalletHigh() < balance) {
                 netWorth.setWalletHigh(balance);
             }
             netWorthHistoryRepository.save(netWorth);
