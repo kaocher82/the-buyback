@@ -13,6 +13,8 @@ public class NetWorth {
     private Double walletHigh;
     private Double compressedOreLow;
     private Double compressedOreHigh;
+    private Double marketOrdersLow;
+    private Double marketOrdersHigh;
 
     public NetWorth() {
     }
@@ -25,6 +27,22 @@ public class NetWorth {
         this.date = date;
         this.assetLow = assetLow;
         this.assetHigh = assetHigh;
+    }
+
+    public Double getMarketOrdersLow() {
+        return marketOrdersLow;
+    }
+
+    public void setMarketOrdersLow(final Double marketOrdersLow) {
+        this.marketOrdersLow = marketOrdersLow;
+    }
+
+    public Double getMarketOrdersHigh() {
+        return marketOrdersHigh;
+    }
+
+    public void setMarketOrdersHigh(final Double marketOrdersHigh) {
+        this.marketOrdersHigh = marketOrdersHigh;
     }
 
     public Double getCompressedOreLow() {
