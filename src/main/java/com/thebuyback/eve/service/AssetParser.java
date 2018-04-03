@@ -104,7 +104,7 @@ public class AssetParser implements SchedulingConfigurer {
         }).collect(Collectors.toList());
 
         final Map<String, Double> prices = new HashMap<>();
-        final List<String> typeNames = assets.stream().map(Asset::getTypeName).distinct().collect(Collectors.toList());
+        final List<String> typeNames = enhancedAssets.stream().map(Asset::getTypeName).distinct().collect(Collectors.toList());
 
         try {
             final Appraisal appraisal = appraisalService.getAppraisalFromList(typeNames);
@@ -116,7 +116,7 @@ public class AssetParser implements SchedulingConfigurer {
             return;
         }
 
-        final List<Asset> pricedAssets = assets.stream().peek(asset -> asset.setPrice(prices.get(asset.getTypeName())))
+        final List<Asset> pricedAssets = enhancedAssets.stream().peek(asset -> asset.setPrice(prices.get(asset.getTypeName())))
                                           .collect(Collectors.toList());
 
         assetRepository.deleteAll();
