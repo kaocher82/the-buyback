@@ -109,11 +109,13 @@ public class NetWorthParser {
             if (netWorth.getMarketOrdersHigh() == null || netWorth.getMarketOrdersHigh() < amount) {
                 netWorth.setMarketOrdersHigh(amount);
             }
+            netWorth.setMarketOrdersLatest(amount);
             netWorthHistoryRepository.save(netWorth);
         } else {
             final NetWorth entity = new NetWorth(LocalDate.now());
             entity.setMarketOrdersHigh(amount);
             entity.setMarketOrdersLow(amount);
+            entity.setMarketOrdersLatest(amount);
             netWorthHistoryRepository.save(entity);
         }
     }
@@ -152,11 +154,13 @@ public class NetWorthParser {
             if (netWorth.getWalletHigh() == null || netWorth.getWalletHigh() < balance) {
                 netWorth.setWalletHigh(balance);
             }
+            netWorth.setWalletLatest(balance);
             netWorthHistoryRepository.save(netWorth);
         } else {
             final NetWorth entity = new NetWorth(LocalDate.now());
             entity.setWalletHigh(balance);
             entity.setWalletLow(balance);
+            entity.setWalletLatest(balance);
             netWorthHistoryRepository.save(entity);
         }
     }
@@ -188,11 +192,15 @@ public class NetWorthParser {
             } else if (netWorth.getCompressedOreHigh() == null || netWorth.getCompressedOreHigh() < currentOreValue) {
                 netWorth.setCompressedOreHigh(currentOreValue);
             }
+            netWorth.setAssetLatest(currentAssetsValue);
+            netWorth.setCompressedOreLatest(currentOreValue);
             netWorthHistoryRepository.save(netWorth);
         } else {
             final NetWorth netWorth = new NetWorth(LocalDate.now(), currentAssetsValue, currentAssetsValue);
             netWorth.setCompressedOreHigh(currentOreValue);
             netWorth.setCompressedOreLow(currentOreValue);
+            netWorth.setAssetLatest(currentAssetsValue);
+            netWorth.setCompressedOreLatest(currentOreValue);
             netWorthHistoryRepository.save(netWorth);
         }
     }

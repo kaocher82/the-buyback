@@ -9,12 +9,16 @@ public class NetWorth {
     private LocalDate date;
     private Double assetLow;
     private Double assetHigh;
+    private Double assetLatest;
     private Double walletLow;
     private Double walletHigh;
+    private Double walletLatest;
     private Double compressedOreLow;
     private Double compressedOreHigh;
+    private Double compressedOreLatest;
     private Double marketOrdersLow;
     private Double marketOrdersHigh;
+    private Double marketOrdersLatest;
 
     public NetWorth() {
     }
@@ -27,6 +31,38 @@ public class NetWorth {
         this.date = date;
         this.assetLow = assetLow;
         this.assetHigh = assetHigh;
+    }
+
+    public Double getAssetLatest() {
+        return assetLatest;
+    }
+
+    public void setAssetLatest(final Double assetLatest) {
+        this.assetLatest = assetLatest;
+    }
+
+    public Double getWalletLatest() {
+        return walletLatest;
+    }
+
+    public void setWalletLatest(final Double walletLatest) {
+        this.walletLatest = walletLatest;
+    }
+
+    public Double getCompressedOreLatest() {
+        return compressedOreLatest;
+    }
+
+    public void setCompressedOreLatest(final Double compressedOreLatest) {
+        this.compressedOreLatest = compressedOreLatest;
+    }
+
+    public Double getMarketOrdersLatest() {
+        return marketOrdersLatest;
+    }
+
+    public void setMarketOrdersLatest(final Double marketOrdersLatest) {
+        this.marketOrdersLatest = marketOrdersLatest;
     }
 
     public Double getMarketOrdersLow() {
