@@ -21,6 +21,7 @@ import com.thebuyback.eve.domain.Appraisal;
 import com.thebuyback.eve.domain.AppraisalFailed;
 import com.thebuyback.eve.domain.ItemBuybackRate;
 import com.thebuyback.eve.domain.ItemWithQuantity;
+import com.thebuyback.eve.domain.TypeBuybackRate;
 import com.thebuyback.eve.service.ItemBuybackRateService;
 import com.thebuyback.eve.service.TypeService;
 
@@ -173,10 +174,10 @@ public class AppraisalService {
 
     private void setRates(final Collection<ItemWithQuantity> items) {
         final Set<Long> typeIds = items.stream().map(ItemWithQuantity::getTypeID).collect(Collectors.toSet());
-        final List<ItemBuybackRate> rates = buybackRateService.getRates(typeIds);
+        final List<TypeBuybackRate> rates = buybackRateService.getRates(typeIds);
 
         // set defined rates
-        for (ItemBuybackRate rate : rates) {
+        for (TypeBuybackRate rate : rates) {
             for (ItemWithQuantity item : items) {
                 if (rate.getTypeId() == item.getTypeID()) {
                     item.setRate(rate.getRate());

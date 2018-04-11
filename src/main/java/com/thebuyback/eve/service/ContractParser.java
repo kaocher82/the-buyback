@@ -19,13 +19,13 @@ import com.thebuyback.eve.domain.AppraisalFailed;
 import com.thebuyback.eve.domain.CapitalShipOnContract;
 import com.thebuyback.eve.domain.CapitalShipStatus;
 import com.thebuyback.eve.domain.Contract;
-import com.thebuyback.eve.domain.ItemBuybackRate;
 import com.thebuyback.eve.domain.ItemWithQuantity;
 import com.thebuyback.eve.domain.Token;
+import com.thebuyback.eve.domain.TypeBuybackRate;
 import com.thebuyback.eve.repository.CapitalShipRepository;
 import com.thebuyback.eve.repository.ContractRepository;
-import com.thebuyback.eve.repository.ItemBuybackRateRepository;
 import com.thebuyback.eve.repository.TokenRepository;
+import com.thebuyback.eve.repository.TypeBuybackRateRepository;
 import static com.thebuyback.eve.web.rest.ContractsResource.THE_BUYBACK;
 
 import org.json.JSONArray;
@@ -59,7 +59,7 @@ public class ContractParser implements SchedulingConfigurer {
     private final ContractRepository contractRepository;
     private final TypeService typeService;
     private final CapitalShipRepository capitalShipRepository;
-    private final ItemBuybackRateRepository buybackRateRepository;
+    private final TypeBuybackRateRepository buybackRateRepository;
     private final AppraisalService appraisalService;
     private final Environment env;
 
@@ -68,7 +68,7 @@ public class ContractParser implements SchedulingConfigurer {
                           final ContractRepository contractRepository,
                           final TypeService typeService,
                           final CapitalShipRepository capitalShipRepository,
-                          final ItemBuybackRateRepository buybackRateRepository,
+                          final TypeBuybackRateRepository buybackRateRepository,
                           final AppraisalService appraisalService, final Environment env) {
         this.requestService = requestService;
         this.tokenRepository = tokenRepository;
@@ -266,7 +266,7 @@ public class ContractParser implements SchedulingConfigurer {
             final long typeId = item.getTypeID();
             final long quantity = item.getQuantity();
             double buy = item.getJitaBuyPerUnit();
-            ItemBuybackRate itemRate = buybackRateRepository.findOneByTypeId(typeId);
+            TypeBuybackRate itemRate = buybackRateRepository.findOneByTypeId(typeId);
             if (null == itemRate) {
                 total += buy * 0.9 * quantity;
             } else {
@@ -321,7 +321,7 @@ public class ContractParser implements SchedulingConfigurer {
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         if (env.acceptsProfiles(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT)) {
-            return;
+//            return;
         }
         taskRegistrar.setScheduler(taskExecutor());
         taskRegistrar.addTriggerTask(

@@ -44,10 +44,10 @@
             <td *ngIf="!contract.reward">
                 <div class="alert alert-warning" *ngIf="contract.price === 0">0 ISK contract. Please make sure <br/>this is not a WTB contract.</div>
                 <button *ngIf="!contract.declineMailSent && !contract.approved && (1 - (contract.buybackPrice / contract.price)) >= 0.03 && contract.buybackPrice > 0"
-                        class="btn btn-danger" (click)="sendDeclineMail(contract.id)">Decline
+                        class="btn btn-danger" (click)="sendDeclineMail(contract.id)" disabled>Decline
                 </button>
                 <button *ngIf="!contract.declineMailSent && !contract.approved && (1 - (contract.buybackPrice / contract.price)) >= 0.03 && contract.buybackPrice > 0"
-                        class="btn btn-success" (click)="approveContract(contract.id)">Approve
+                        class="btn btn-success" (click)="approveContract(contract.id)" disabled>Approve
                 </button>
                 <div *ngIf="contract.declineMailSent" class="alert alert-danger">
                     This contract was declined.
