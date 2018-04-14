@@ -3,24 +3,18 @@ package com.thebuyback.eve.repository;
 import java.util.List;
 import java.util.Set;
 
-import com.thebuyback.eve.domain.ItemBuybackRate;
 import com.thebuyback.eve.domain.TypeBuybackRate;
 import com.thebuyback.eve.domain.TypeIngredients;
 import com.thebuyback.eve.domain.enumeration.TypeCategory;
 
-import org.springframework.stereotype.Repository;
-
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * Spring Data MongoDB repository for the TypeBuybackRate entity.
  */
 @SuppressWarnings("unused")
 @Repository
-public interface TypeBuybackRateRepository extends MongoRepository<TypeBuybackRate, String> {
-    List<TypeBuybackRate> findAllByTypeIdIn(Set<Long> typeIds);
-
-    TypeBuybackRate findOneByTypeId(long typeId);
-
-    List<TypeBuybackRate> findByCategory(TypeCategory category);
+public interface TypeIngredientsRepository extends MongoRepository<TypeIngredients, String> {
+    List<TypeIngredients> findAllByTypeIdIn(Set<Long> typeIds);
 }

@@ -140,7 +140,6 @@ public class AppraisalService {
         appraisal.setItems(items);
         appraisal.setLink("http://evepraisal.com/a/" + appraisalNode.getString("id"));
 
-
         appraisal.setBuybackPrice(getBuybackPrice(items));
         appraisal.setRaw(raw);
         return appraisal;

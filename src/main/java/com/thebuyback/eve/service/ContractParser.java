@@ -321,7 +321,7 @@ public class ContractParser implements SchedulingConfigurer {
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         if (env.acceptsProfiles(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT)) {
-//            return;
+            return;
         }
         taskRegistrar.setScheduler(taskExecutor());
         taskRegistrar.addTriggerTask(
