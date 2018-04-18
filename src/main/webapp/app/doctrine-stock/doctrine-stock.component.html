@@ -14,6 +14,7 @@
         <p>This data only shows an indication on what should be restocked or is lacking. It is your task to figure out margins, logistics, etc.</p>
            The markets are updated every 20 minutes.
         <p *ngIf="potentialProfit">Potential profit<i class="fa fa-fw fa-question" (click)="showProfitExplanation = true" aria-hidden="true"></i> from missing items: {{ potentialProfit | number:'1.0-0'}} ISK</p>
+        <div class="alert alert-info">If you see that a doctrine is not up to date, missing or obsolete, then please contact Rihan Shazih on Slack.</div>
     </div>
     <div class="col-md-4">
         <div class="row">
