@@ -94,6 +94,9 @@ public class AssetParser implements SchedulingConfigurer {
                 locationId = officeMappings.get(asset.getLocationId());
             }
             final String locationName = resolveLocation(locationId);
+            if (locationName.equals("N/A")) {
+                log.info("Could not resolve location for asset {}.", asset);
+            }
             asset.setLocationName(locationName);
         }).filter(asset -> !asset.getLocationName().equals("N/A"))
           .peek(asset -> {
@@ -173,6 +176,7 @@ public class AssetParser implements SchedulingConfigurer {
         } else if (locationId >= 60000000 && locationId < 66000000) {
             // station id
             // ignore for now
+            log.info("An item is in the station {}", locationId);
             return "N/A";
         } else if (locationId >= 66000000 && locationId <= 68000000) {
             // station office ids
@@ -182,6 +186,7 @@ public class AssetParser implements SchedulingConfigurer {
                 locationId -= 6000000;
             }
             // ignore for now
+            log.info("An item is in the station office {}", locationId);
             return "N/A";
         }
         return locationService.fetchCitadelName(locationId);

@@ -79,4 +79,19 @@ public class Asset {
     public void setVolume(final Double volume) {
         this.volume = volume;
     }
+
+    @Override
+    public String toString() {
+        return "Asset{" +
+               "itemId=" + itemId +
+               ", typeId=" + typeId +
+               ", quantity=" + quantity +
+               ", locationId=" + locationId +
+               ", locationFlag='" + locationFlag + '\'' +
+               ", typeName='" + typeName + '\'' +
+               ", locationName='" + locationName + '\'' +
+               ", price=" + price +
+               ", volume=" + volume +
+               '}';
+    }
 }
