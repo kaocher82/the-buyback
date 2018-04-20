@@ -31,7 +31,6 @@ import com.thebuyback.eve.service.TypeService;
 import com.thebuyback.eve.web.dto.CapitalShipOnContractDTO;
 import com.thebuyback.eve.web.dto.CapitalSoldDTO;
 import com.thebuyback.eve.web.dto.ContractDTO;
-
 import static com.thebuyback.eve.security.AuthoritiesConstants.MANAGER;
 import static com.thebuyback.eve.service.ContractParser.CONTRACT_PARSER_CLIENT;
 

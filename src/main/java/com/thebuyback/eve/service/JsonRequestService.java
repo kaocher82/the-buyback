@@ -32,10 +32,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class JsonRequestService {
 
-    public static final String USER_AGENT = "EvE: Rihan Shazih";
+    private static final String USER_AGENT = "EvE: Rihan Shazih";
     private static final String WRONG_STATUS_CODE = "{} returned status code {}.";
     private static final String UNIREST_EXCEPTION = "Failed to get data from url={}";
-    private static final String BODY_TEMPLATE = "{\"recipients\": [{\"recipient_type\": \"character\",\"recipient_id\": %d}, {\"recipient_type\": \"corporation\",\"recipient_id\": 98503372}],\"subject\": \"The Buyback - %s\",\"body\": \"%s\", \"approved_cost\": 100000}";
+    private static final String BODY_TEMPLATE = "{\"recipients\": [{\"recipient_type\": \"character\",\"recipient_id\": %d}, {\"recipient_type\": \"corporation\",\"recipient_id\": 98503372}],\"subject\": \"The Buyback - %s\",\"body\": \"%s\"}";
     private static final long CORPORATION = 98503372L;
     private static final long MAIL_CHAR = 93475128L;
     private static final String ESI_BASE_URL = "https://esi.tech.ccp.is";
@@ -146,8 +146,9 @@ public class JsonRequestService {
         return Unirest.post(url).basicAuth(username, password).headers(defaultHeaders).headers(headers).fields(fields);
     }
 
-    RequestBodyEntity post(final String url, final String body) {
-        return Unirest.post(url).body(body);
+    RequestBodyEntity post(final String url, final String body, final Map<String, String> headers) {
+        final JsonNode node = new JsonNode(body);
+        return Unirest.post(url).headers(headers).body(node);
     }
 
     Optional<JsonNode> getCorpContracts(final String accessToken, final int page) {
@@ -201,7 +202,10 @@ public class JsonRequestService {
 
     public Optional<String> sendMail(final long recipientId, final String title, final String mail, final String accessToken) {
         final String body = String.format(BODY_TEMPLATE, recipientId, title, mail);
-        RequestBodyEntity request = post(String.format("%s/v1/characters/%d/mail/?token=%s", ESI_BASE_URL, MAIL_CHAR, accessToken), body);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", "Bearer " + accessToken);
+        headers.put("Content-Type", "application/json");
+        RequestBodyEntity request = post(String.format("%s/v1/characters/%d/mail/", ESI_BASE_URL, MAIL_CHAR), body, headers);
 
         try {
             HttpResponse<String> response = request.asString();

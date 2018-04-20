@@ -2,8 +2,8 @@ import {Component, OnInit} from '@angular/core';
 
 import {Contracts} from './contracts.model';
 import {ContractsService} from './contracts.service';
-import {Http} from "@angular/http";
 import {ClipboardService} from "../../shared/appraisal/clipboard.service";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
     selector: 'jhi-contracts',
@@ -16,7 +16,7 @@ export class ContractsComponent implements OnInit {
     errorMessage: string = null;
     showCopiedPriceFor: string = null;
 
-    constructor(private contractsService: ContractsService, private http: Http, private clipboard: ClipboardService) { }
+    constructor(private contractsService: ContractsService, private http: HttpClient, private clipboard: ClipboardService) { }
 
     ngOnInit(): void {
         this.loadContracts();
@@ -36,7 +36,7 @@ export class ContractsComponent implements OnInit {
     }
 
     approveContract(contractId: number) {
-        this.http.post('/api/contracts/buyback/' + contractId + '/approve/', null).subscribe(
+        this.http.post<any>('/api/contracts/buyback/' + contractId + '/approve/', null).subscribe(
             (data) => this.loadContracts(),
             (err) => {
                 if (err.status === 404) {
@@ -57,7 +57,7 @@ export class ContractsComponent implements OnInit {
             }
         });
 
-        this.http.post('/api/contracts/buyback/' + contractId + '/decline/', null).subscribe(
+        this.http.post<any>('/api/contracts/buyback/' + contractId + '/decline/', null).subscribe(
             (data) => this.declineSuccess = true,
             (err) => {
                 if (err.status === 409) {
