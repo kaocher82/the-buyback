@@ -13,25 +13,31 @@ import com.thebuyback.eve.repository.TypeRepository;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TypeService {
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private final TypeRepository repository;
     private final JsonRequestService requestService;
+    private final LRUCache<Long, Type> cache;
 
     public TypeService(final TypeRepository repository, final JsonRequestService requestService) {
         this.repository = repository;
         this.requestService = requestService;
+        cache = new LRUCache<Long, Type>(1000);
     }
 
     public String getNameByTypeId(long typeId) {
-        return getType(typeId).getTypeName();
+        return getTypeFromCache(typeId).getTypeName();
     }
 
     public double getVolume(long typeId) {
-        final Type type = getType(typeId);
+        final Type type = getTypeFromCache(typeId);
         Double volume = type.getPackagedVolume();
         if (volume == null) {
             volume = type.getVolume();
@@ -39,10 +45,16 @@ public class TypeService {
         return volume;
     }
 
+    private Type getTypeFromCache(long typeId) {
+        return cache.computeIfAbsent(typeId, this::getType);
+    }
+
     private Type getType(long typeId) {
+        log.debug("Loading type information for {}.", typeId);
         final Optional<Type> optional = repository.findByTypeId(typeId);
+        final Type type;
         if (optional.isPresent()) {
-            return optional.get();
+            type = optional.get();
         } else {
             final Optional<JsonNode> responseNode = requestService.getTypeInfo(typeId);
             if (!responseNode.isPresent()) {
@@ -56,18 +68,19 @@ public class TypeService {
             if (responseObj.has("packaged_volume")) {
                 packagedVolume = responseObj.getDouble("packaged_volume");
             }
-            final Type type = new Type(typeId, name, groupId, null, null, null, volume, packagedVolume);
+            type = new Type(typeId, name, groupId, null, null, null, volume, packagedVolume);
             repository.save(type);
-            return type;
         }
+        log.debug("Cache size={}", cache.size());
+        return type;
     }
 
     public String getGroupNameByTypeId(long typeId) {
-        return getType(typeId).getGroupName();
+        return getTypeFromCache(typeId).getGroupName();
     }
 
     public long getGroupIdByTypeId(long typeId) {
-        return getType(typeId).getGroupId();
+        return getTypeFromCache(typeId).getGroupId();
     }
 
     private void addGroupNameAndCategoryId(final Type type) {
@@ -90,7 +103,7 @@ public class TypeService {
     }
 
     public long getCategoryIdByTypeId(long typeId) {
-        final Type type = getType(typeId);
+        final Type type = getTypeFromCache(typeId);
         if (null == type.getCategoryId()) {
             addGroupNameAndCategoryId(type);
         }
@@ -98,7 +111,7 @@ public class TypeService {
     }
 
     public String getCategoryNameByTypeId(long typeId) {
-        final Type type = getType(typeId);
+        final Type type = getTypeFromCache(typeId);
         if (null == type.getCategoryName()) {
             addCategoryName(type);
         }
@@ -142,7 +155,7 @@ public class TypeService {
             if (array.length() == 0) {
                 throw new TypeResolveException("No typeIds returned for " + typeName);
             } else {
-                return getType(array.getLong(0));
+                return getTypeFromCache(array.getLong(0));
             }
         }
     }

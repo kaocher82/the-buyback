@@ -80,15 +80,10 @@ public class ContractParser implements SchedulingConfigurer {
         this.env = env;
     }
 
-    private final List<Integer> brokenContracts = asList(129118780, 129229042, 129078167, 129116596, 129448034,
-                                                         129360245, 129124161, 129125851, 129155957, 129457059,
-                                                         129461097, 129194666, 129496855, 129765624, 129538703,
-                                                         129290486, 130164422, 130190365, 129407409, 129429769,
-                                                         129430434, 129437261, 129443768, 129603837, 129664415);
-
     @Async
     @Timed
     public void loadNonCompletedContracts() {
+        log.info("Parsing contracts");
         final Token token = tokenRepository.findByClientId(CONTRACT_PARSER_CLIENT).get(0);
         final String accessToken;
         try {
@@ -111,7 +106,7 @@ public class ContractParser implements SchedulingConfigurer {
                 }
                 for (int i = 0; i < contractArray.length(); i++) {
                     try {
-                        parseContract(accessToken, contractArray, i);
+                        processContract(accessToken, contractArray, i);
                     } catch (AppraisalFailed e) {
                         log.error("Failed to parse contract.", e);
                     }
@@ -123,7 +118,10 @@ public class ContractParser implements SchedulingConfigurer {
             }
         }
 
+        log.info("Contract parsing complete");
+        log.info("Updating outstanding caps");
         loadOutstandingCaps();
+        log.info("Outstanding caps complete");
     }
 
     void loadOutstandingCaps() {
@@ -142,7 +140,7 @@ public class ContractParser implements SchedulingConfigurer {
         return new CapitalShipOnContract(CapitalShipStatus.PUBLIC_CONTRACT, contract.getPrice(), typeId, typeName);
     }
 
-    private void parseContract(final String accessToken, final JSONArray contractArray, final int i)
+    private void processContract(final String accessToken, final JSONArray contractArray, final int i)
         throws AppraisalFailed {
         final JSONObject jsonContract = contractArray.getJSONObject(i);
 
@@ -161,8 +159,8 @@ public class ContractParser implements SchedulingConfigurer {
         }
 
         String appraisalLink;
-        double buyValue = 0.0;
-        double sellValue = 0.0;
+        double buyValue;
+        double sellValue;
         final String[] client = {null};
         Map<Integer, Integer> items;
         boolean declineMailSent;
@@ -282,13 +280,6 @@ public class ContractParser implements SchedulingConfigurer {
 
     private boolean isAssignedToBraveCollective(final long assigneeId) {
         return assigneeId == 99003214L;
-    }
-
-    private String getRaw(final Map<Integer, Integer> items) {
-        return items.entrySet().stream().map(entry -> {
-            String typeName = typeService.getNameByTypeId(entry.getKey());
-            return typeName + " x" + entry.getValue();
-        }).collect(Collectors.joining("\n"));
     }
 
     private Map<Integer, Integer> getItemsForContract(final long contractId, final String accessToken) {

@@ -129,8 +129,14 @@ public class AssetService {
         }
         return assets.stream()
                      .filter(asset -> asset.getTypeName() != null)
-                     .filter(asset -> !asset.getTypeName().contains("Blueprint"))
                      .filter(asset -> asset.getLocationName() != null)
+                     // ignore items from the two cap production facilities
+                     .filter(a ->! a.getLocationName().equals("3GD6-8 - Brave Blue Balls"))
+                     .filter(a ->! a.getLocationName().equals("3GD6-8 - BRAVE Port"))
+                     // ignore blueprints in general
+                     .filter(a -> !a.getTypeName().contains("Blueprint"))
+                     // ignore capital components that may be in other locations than the cap production facilities
+                     .filter(a -> !a.getTypeName().startsWith("Capital "))
                      .filter(asset -> asset.getPrice() != null)
                      .peek(asset -> {
                          if (asset.getVolume() == null) {

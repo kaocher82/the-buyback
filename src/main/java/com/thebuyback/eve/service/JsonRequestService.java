@@ -189,11 +189,13 @@ public class JsonRequestService {
         return justGet(String.format("%s/v3/corporations/%d/assets/?token=%s&page=%d", ESI_BASE_URL, THE_BUYBACK, accessToken, page), "corpAssets");
     }
 
-    Optional<JsonNode> getStructureInfo(final long locationId, final String accessToken) {
-        String url = String.format("%s/v1/universe/structures/%d/", ESI_BASE_URL, locationId);
-        if (locationId > 70_000_000) {
-            url += "?token=" + accessToken;
-        }
+    Optional<JsonNode> getStructureInfo(final long structureId, final String accessToken) {
+        String url = String.format("%s/v1/universe/structures/%d/?token=%s", ESI_BASE_URL, structureId, accessToken);
+        return justGet(url, null);
+    }
+
+    Optional<JsonNode> getStationInfo(final long stationId) {
+        String url = String.format("%s/v2/universe/stations/%d/", ESI_BASE_URL, stationId);
         return justGet(url, null);
     }
 

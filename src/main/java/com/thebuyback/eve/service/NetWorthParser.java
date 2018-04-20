@@ -83,7 +83,7 @@ public class NetWorthParser {
             final JSONArray ordersArray = node.get().getArray();
             for (int i = 0; i < ordersArray.length(); i++) {
                 final JSONObject order = ordersArray.getJSONObject(i);
-                final boolean isBuyOrder = order.has("is_buy_order") ? order.getBoolean("is_buy_order") : false;
+                final boolean isBuyOrder = order.has("is_buy_order") && order.getBoolean("is_buy_order");
                 final int volumeRemain = order.getInt("volume_remain");
                 final double price = order.getDouble("price");
                 final double escrow = order.has("escrow") ? order.getDouble("escrow") : 0.0;
@@ -169,7 +169,13 @@ public class NetWorthParser {
         final List<Asset> assets = assetRepository.findAll().stream()
                                                      .filter(a -> a.getPrice() != null)
                                                      .filter(a -> a.getTypeName() != null)
+                                                  // ignore items from the two cap production facilities
+                                                     .filter(a ->! a.getLocationName().equals("3GD6-8 - Brave Blue Balls"))
+                                                     .filter(a ->! a.getLocationName().equals("3GD6-8 - BRAVE Port"))
+                                                  // ignore blueprints in general
                                                      .filter(a -> !a.getTypeName().contains("Blueprint"))
+                                                  // ignore capital components that may be in other locations than the cap production facilities
+                                                     .filter(a -> !a.getTypeName().startsWith("Capital "))
                                                      .collect(Collectors.toList());
 
         final double currentAssetsValue = assets.stream()

@@ -30,27 +30,36 @@ public class LocationService {
         this.tokenRepository = tokenRepository;
     }
 
-    String fetchCitadelName(final long locationId) {
+    String fetchStructureName(final long locationId, final boolean isStation) {
         if (!cache.containsKey(locationId)) {
-            setLocationName(locationId);
+            setStructureName(locationId, isStation);
         }
         return cache.get(locationId);
     }
 
-    private void setLocationName(final long locationId) {
+    private void setStructureName(final long locationId, final boolean isStation) {
         final Token token = tokenRepository.findByClientId(ASSET_PARSER_CLIENT).get(0);
         final String accessToken;
         String locationName = "N/A";
         try {
-            accessToken = requestService.getAccessToken(token);
-            final Optional<JsonNode> optional = requestService.getStructureInfo(locationId, accessToken);
-            if (optional.isPresent()) {
-                locationName = optional.get().getObject().getString("name");
+            if (!isStation) {
+                accessToken = requestService.getAccessToken(token);
+                final Optional<JsonNode> optional = requestService.getStructureInfo(locationId, accessToken);
+                if (optional.isPresent()) {
+                    locationName = optional.get().getObject().getString("name");
+                } else {
+                    log.warn("Failed to get location infos for structure={}.", locationId);
+                }
             } else {
-                log.warn("Failed to get location infos for {}.", locationId);
+                final Optional<JsonNode> optional = requestService.getStationInfo(locationId);
+                if (optional.isPresent()) {
+                    locationName = optional.get().getObject().getString("name");
+                } else {
+                    log.warn("Failed to get location infos for structure={}.", locationId);
+                }
             }
         } catch (UnirestException e) {
-            log.error("Failed to get access token for fetchCitadelName.", e);
+            log.error("Failed to get access token for fetchStructureName.", e);
         }
         cache.put(locationId, locationName);
         log.info("Added a locationName. Now holding {} locations. {} are N/A.", cache.size(), getNAs(cache));

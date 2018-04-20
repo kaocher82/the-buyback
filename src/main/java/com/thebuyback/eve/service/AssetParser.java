@@ -69,10 +69,6 @@ public class AssetParser implements SchedulingConfigurer {
 
     @Async
     public void refreshAssets() {
-        if (env.acceptsProfiles(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT)) {
-            return;
-        }
-
         log.info("Refreshing assets.");
 
         final Token token = tokenRepository.findByClientId(ASSET_PARSER_CLIENT).get(0);
@@ -84,14 +80,17 @@ public class AssetParser implements SchedulingConfigurer {
             return;
         }
 
+        log.info("Collecting assets from esi.");
         final Collection<Asset> assets = collectAssets(accessToken);
 
-        final Map<Long, Long> officeMappings = getOfficeMappings(assets);
+        log.info("Building location hierarchy.");
+        final Map<Long, Long> locationHierarchy = buildLocationHierarchy(assets);
 
+        log.info("Enhancing assets information.");
         final List<Asset> enhancedAssets = assets.stream().peek(asset -> {
             long locationId = asset.getLocationId();
-            if (officeMappings.containsKey(asset.getLocationId())) {
-                locationId = officeMappings.get(asset.getLocationId());
+            while (locationHierarchy.containsKey(locationId)) {
+                locationId = locationHierarchy.get(locationId);
             }
             final String locationName = resolveLocation(locationId);
             if (locationName.equals("N/A")) {
@@ -109,19 +108,27 @@ public class AssetParser implements SchedulingConfigurer {
         final Map<String, Double> prices = new HashMap<>();
         final List<String> typeNames = enhancedAssets.stream().map(Asset::getTypeName).distinct().collect(Collectors.toList());
 
-        try {
-            final Appraisal appraisal = appraisalService.getAppraisalFromList(typeNames);
-            for (final ItemWithQuantity item : appraisal.getItems()) {
-                prices.put(item.getTypeName(), item.getJitaBuyPerUnit());
+        log.info("Appraising {} items.", typeNames.size());
+        final int batchSize = 100;
+        for (int i = 0; i < typeNames.size(); i+= batchSize) {
+
+            try {
+                final Appraisal appraisal = appraisalService.getAppraisalFromList(typeNames.subList(i, i + batchSize
+                                                                                                       > typeNames.size() ? typeNames.size() - 1 : i + batchSize));
+                for (final ItemWithQuantity item : appraisal.getItems()) {
+                    prices.put(item.getTypeName(), item.getJitaBuyPerUnit());
+                }
+            } catch (AppraisalFailed e) {
+                log.warn("AppraisalFailed, stopping the asset parsing.", e);
+                return;
             }
-        } catch (AppraisalFailed e) {
-            log.warn("AppraisalFailed, stopping the asset parsing.", e);
-            return;
         }
+        log.info("Appraising complete.");
 
         final List<Asset> pricedAssets = enhancedAssets.stream().peek(asset -> asset.setPrice(prices.get(asset.getTypeName())))
                                           .collect(Collectors.toList());
 
+        log.info("Writing assets.");
         assetRepository.deleteAll();
         assetRepository.save(pricedAssets);
         log.info("Asset parsing complete. {} entries have been added.", assets.size());
@@ -157,27 +164,25 @@ public class AssetParser implements SchedulingConfigurer {
         return assets;
     }
 
-    private Map<Long, Long> getOfficeMappings(final Iterable<Asset> assetsArray) {
+    private Map<Long, Long> buildLocationHierarchy(final Collection<Asset> assetsArray) {
         final Map<Long, Long> result = new HashMap<>();
-        for (final Asset asset : assetsArray) {
-            final String locationFlag = asset.getLocationFlag();
-            if (locationFlag.equals("OfficeFolder")) {
+        assetsArray.forEach(asset -> {
+            if (asset.getItemId() != asset.getLocationId()) {
                 result.put(asset.getItemId(), asset.getLocationId());
             }
-        }
+        });
+        log.debug("Completed buildLocationHierarchy with {} entries for {} assets.", result.size(), assetsArray.size());
         return result;
     }
 
     private String resolveLocation(long locationId) {
         if (locationId >= 30000000 && locationId <= 32000000) {
             // system id, asset is probably in space
-            // ignore for now
-            return "N/A";
+            log.info("An item is in the space locationId={}", locationId);
+            return "Space";
         } else if (locationId >= 60000000 && locationId < 66000000) {
             // station id
-            // ignore for now
-            log.info("An item is in the station {}", locationId);
-            return "N/A";
+            return locationService.fetchStructureName(locationId, true);
         } else if (locationId >= 66000000 && locationId <= 68000000) {
             // station office ids
             if (locationId < 67000000) {
@@ -186,10 +191,10 @@ public class AssetParser implements SchedulingConfigurer {
                 locationId -= 6000000;
             }
             // ignore for now
-            log.info("An item is in the station office {}", locationId);
+            log.info("An item is in the station office locationId={} and is ignored.", locationId);
             return "N/A";
         }
-        return locationService.fetchCitadelName(locationId);
+        return locationService.fetchStructureName(locationId, false);
     }
 
     @Bean
@@ -201,6 +206,9 @@ public class AssetParser implements SchedulingConfigurer {
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        if (env.acceptsProfiles(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT)) {
+            return;
+        }
         taskRegistrar.setScheduler(taskExecutor());
         taskRegistrar.addTriggerTask(
             this::refreshAssets,
