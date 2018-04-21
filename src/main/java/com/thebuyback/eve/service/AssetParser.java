@@ -82,6 +82,10 @@ public class AssetParser implements SchedulingConfigurer {
 
         log.info("Collecting assets from esi.");
         final Collection<Asset> assets = collectAssets(accessToken);
+        if (assets.isEmpty()) {
+            log.info("No assets were returned. Aborting.");
+            return;
+        }
 
         log.info("Building location hierarchy.");
         final Map<Long, Long> locationHierarchy = buildLocationHierarchy(assets);
