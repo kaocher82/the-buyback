@@ -141,7 +141,7 @@ public class AssetParser implements SchedulingConfigurer {
     private Collection<Asset> collectAssets(final String accessToken) {
         final Collection<Asset> assets = new ArrayList<>();
         boolean nextPageAvailable = true;
-        int pageCounter = 0;
+        int pageCounter = 1;
 
         while (nextPageAvailable) {
             final Optional<JsonNode> jsonNode = requestService.getAssets(accessToken, pageCounter);
