@@ -182,7 +182,7 @@ public class ContractParser implements SchedulingConfigurer {
             declineMailSent = contract.isDeclineMailSent();
             approved = contract.isApproved();
 
-            // delete existing contract as we'll overwrite it in a second
+            // delete the possibly already existing contract as we'll overwrite it in a second
             contractRepository.delete(contract);
         } else {
             items = getItemsForContract(contractId, accessToken);
