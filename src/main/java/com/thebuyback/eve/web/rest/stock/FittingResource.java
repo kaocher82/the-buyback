@@ -46,6 +46,7 @@ public class FittingResource {
     }
 
     @PostMapping
+    @Secured(AuthoritiesConstants.STOCK_MANAGER)
     public ResponseEntity postFitting(@RequestBody String fittingText) {
         final Fitting fitting = parser.parse(fittingText);
         if (repository.findOne(fitting.getId()) != null) {
