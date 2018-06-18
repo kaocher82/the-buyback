@@ -72,6 +72,16 @@ public class DoctrineResource {
         return ResponseEntity.ok(repository.findAll());
     }
 
+    @PostMapping("/migrate-hub/{first}/{second}")
+    public void migrateDoctrines(@PathVariable Long first, @PathVariable Long second) {
+        final Hub firstHub = hubRepository.findById(first).get();
+        final Hub secondHub = hubRepository.findById(second).get();
+
+        final List<StockDoctrine> list = stockDoctrineRepository.findByHub(firstHub);
+        list.forEach(doctrine -> doctrine.setHub(secondHub));
+        stockDoctrineRepository.save(list);
+    }
+
     @GetMapping("/{hubId}")
     @Secured(AuthoritiesConstants.USER)
     public ResponseEntity<List<StockDoctrine>> getStock(@PathVariable("hubId") Long hubId) {

@@ -46,11 +46,14 @@ public class FittingResource {
     }
 
     @PostMapping
-//    @Secured(AuthoritiesConstants.STOCK_MANAGER)
-    public void postFitting(@RequestBody String fittingText, @PathParam("hubId") String hubId) {
+    public ResponseEntity postFitting(@RequestBody String fittingText) {
         final Fitting fitting = parser.parse(fittingText);
+        if (repository.findOne(fitting.getId()) != null) {
+            return ResponseEntity.status(409).build();
+        }
         repository.save(fitting);
         log.info("Fitting {} created.", fitting.getName());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping
