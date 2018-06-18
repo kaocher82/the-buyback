@@ -78,9 +78,9 @@ public class DoctrineResource {
         final Hub firstHub = hubRepository.findById(first).get();
         final Hub secondHub = hubRepository.findById(second).get();
 
-        final List<StockDoctrine> list = stockDoctrineRepository.findByHub(firstHub);
+        final List<Doctrine> list = repository.findByHub(firstHub);
         list.forEach(doctrine -> doctrine.setHub(secondHub));
-        stockDoctrineRepository.save(list);
+        repository.save(list);
 
         return ResponseEntity.ok(list);
     }
