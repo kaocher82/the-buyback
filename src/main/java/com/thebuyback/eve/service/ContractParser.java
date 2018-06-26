@@ -199,7 +199,7 @@ public class ContractParser implements SchedulingConfigurer {
 
             Optional<JsonNode> characterName = requestService.getCharacterName(issuerId);
             characterName.ifPresent(jsonNode -> client[0] = jsonNode.getArray().getJSONObject(0)
-                                                                    .getString("character_name"));
+                                                                    .getString("name"));
             declineMailSent = false;
             approved = false;
         }

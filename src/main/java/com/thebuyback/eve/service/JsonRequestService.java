@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Collections.singletonList;
+
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -160,7 +162,9 @@ public class JsonRequestService {
     }
 
     Optional<JsonNode> getCharacterName(final long characterId) {
-        return justGet(String.format("%s/v1/characters/names/?character_ids=%d", ESI_BASE_URL, characterId), "characterName");
+        String url = "https://esi.tech.ccp.is/v2/universe/names/";
+        final RequestBodyEntity request = Unirest.post(url).headers(defaultHeaders).body(singletonList(characterId));
+        return executeRequest(request, "characterName");
     }
 
     Optional<JsonNode> getTypeInfo(final long typeId) {

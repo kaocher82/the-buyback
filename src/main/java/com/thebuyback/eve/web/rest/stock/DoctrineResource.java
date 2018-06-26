@@ -60,20 +60,20 @@ public class DoctrineResource {
     }
 
     @PostMapping
-    @Secured(AuthoritiesConstants.STOCK_MANAGER)
+    @Secured(AuthoritiesConstants.MANAGER)
     public void postFitting(@RequestBody Doctrine doctrine) {
         repository.save(doctrine);
         log.info("Doctrine {} created.", doctrine.getName());
     }
 
     @GetMapping
-    @Secured(AuthoritiesConstants.STOCK_MANAGER)
+    @Secured(AuthoritiesConstants.MANAGER)
     public ResponseEntity<List<Doctrine>> getDoctrines() {
         return ResponseEntity.ok(repository.findAll());
     }
 
     @PostMapping("/migrate-hub/{first}/{second}")
-    @Secured(AuthoritiesConstants.STOCK_MANAGER)
+    @Secured(AuthoritiesConstants.MANAGER)
     public ResponseEntity migrateDoctrines(@PathVariable Long first, @PathVariable Long second) {
         final Hub firstHub = hubRepository.findById(first).get();
         final Hub secondHub = hubRepository.findById(second).get();
