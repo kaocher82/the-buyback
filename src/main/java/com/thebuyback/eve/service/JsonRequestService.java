@@ -152,7 +152,9 @@ public class JsonRequestService {
             }
             if (null != cachingUserCase) {
                 final String expires = response.getHeaders().getFirst("Expires");
-                esiCacheExpiries.put(cachingUserCase, parseInstant(expires).plus(1, ChronoUnit.MINUTES));
+                if (null != expires) {
+                    esiCacheExpiries.put(cachingUserCase, parseInstant(expires).plus(1, ChronoUnit.MINUTES));
+                }
             }
             return Optional.of(response.getBody());
         } catch (UnirestException e) {
