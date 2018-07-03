@@ -3,10 +3,10 @@ import {ContractsModule} from "./contracts/contracts.module";
 
 import { TheBuybackCapConfigModule } from './cap-config/cap-config.module';
 import { TheBuybackCapOrderModule } from './cap-order/cap-order.module';
-import { TheBuybackMarketOfferModule } from './market-offer/market-offer.module';
 import {CapitalSalesModule} from "./capital-sales/capital-sales.module";
 import {ConsolidationModule} from "./consolidation/consolidation.module";
 import {TheBuybackTypeBuybackRateModule} from "./type-buyback-rate/type-buyback-rate.module";
+import { TheBuybackManufacturingOrderModule } from './manufacturing-order/manufacturing-order.module';
 /* jhipster-needle-add-entity-module-import - JHipster will add entity modules imports here */
 
 @NgModule({
@@ -14,10 +14,10 @@ import {TheBuybackTypeBuybackRateModule} from "./type-buyback-rate/type-buyback-
         ContractsModule,
         TheBuybackCapConfigModule,
         TheBuybackCapOrderModule,
-        TheBuybackMarketOfferModule,
         CapitalSalesModule,
         ConsolidationModule,
-        TheBuybackTypeBuybackRateModule
+        TheBuybackTypeBuybackRateModule,
+        TheBuybackManufacturingOrderModule,
         /* jhipster-needle-add-entity-module - JHipster will add entity modules here */
     ],
     declarations: [],
