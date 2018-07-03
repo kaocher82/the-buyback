@@ -37,7 +37,7 @@ export class ManufacturingOrderDialogComponent implements OnInit {
     }
 
     loadData() {
-        console.log("Loading additional data.")
+        console.log("Loading additional data.");
         this.itemDataLoaded = false;
         return this.http.get<any>(`api/stock/doctrines/item-details/` + this.manufacturingOrder.typeName).subscribe((data) => {
             this.geSell = data.sellPrice;
