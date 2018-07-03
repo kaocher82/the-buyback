@@ -1,6 +1,10 @@
 package com.thebuyback.eve.repository;
 
+import java.util.stream.Stream;
+
 import com.thebuyback.eve.domain.ManufacturingOrder;
+import com.thebuyback.eve.domain.enumeration.ManufacturingOrderStatus;
+
 import org.springframework.stereotype.Repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -11,5 +15,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 @SuppressWarnings("unused")
 @Repository
 public interface ManufacturingOrderRepository extends MongoRepository<ManufacturingOrder, String> {
-
+    Stream<ManufacturingOrder> findAllByStatus(ManufacturingOrderStatus status);
 }

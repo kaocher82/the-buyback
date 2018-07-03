@@ -16,9 +16,8 @@
         <table class="table table-striped">
             <thead>
             <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
-            <th jhiSortBy="id"><span>ID</span> <span class="fa fa-sort"></span></th>
-            <th jhiSortBy="pricePerUnit"><span>Price Per Unit</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="typeName"><span>Type Name</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="pricePerUnit"><span>Price Per Unit</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="amount"><span>Amount</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="instant"><span>Instant</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="assignee"><span>Assignee</span> <span class="fa fa-sort"></span></th>
@@ -28,9 +27,8 @@
             </thead>
             <tbody>
             <tr *ngFor="let manufacturingOrder of manufacturingOrders ;trackBy: trackId">
-                <td><a [routerLink]="['../manufacturing-order', manufacturingOrder.id ]">{{manufacturingOrder.id}}</a></td>
-                <td>{{manufacturingOrder.pricePerUnit}}</td>
                 <td>{{manufacturingOrder.typeName}}</td>
+                <td>{{manufacturingOrder.pricePerUnit}}</td>
                 <td>{{manufacturingOrder.amount}}</td>
                 <td>{{manufacturingOrder.instant | date:'medium'}}</td>
                 <td>{{manufacturingOrder.assignee}}</td>
@@ -73,4 +71,9 @@
             <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
         </div>
     </div>
+
+    <hr/>
+    <p>WTB (manufacturers super welcome)</p>
+    <p *ngIf="pendingText">{{pendingText}}</p>
+    <p>DM me. If you can only have parts, that's fine, too.</p>
 </div>

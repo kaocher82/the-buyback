@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import {HttpResponse, HttpErrorResponse, HttpClient} from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { JhiEventManager, JhiParseLinks, JhiAlertService } from 'ng-jhipster';
@@ -28,6 +28,7 @@ currentAccount: any;
     predicate: any;
     previousPage: any;
     reverse: any;
+    pendingText: string;
 
     constructor(
         private manufacturingOrderService: ManufacturingOrderService,
@@ -36,7 +37,8 @@ currentAccount: any;
         private principal: Principal,
         private activatedRoute: ActivatedRoute,
         private router: Router,
-        private eventManager: JhiEventManager
+        private eventManager: JhiEventManager,
+        private http: HttpClient
     ) {
         this.itemsPerPage = ITEMS_PER_PAGE;
         this.routeData = this.activatedRoute.data.subscribe((data) => {
@@ -55,6 +57,8 @@ currentAccount: any;
                 (res: HttpResponse<ManufacturingOrder[]>) => this.onSuccess(res.body, res.headers),
                 (res: HttpErrorResponse) => this.onError(res.message)
         );
+
+        this.getPendingText();
     }
     loadPage(page: number) {
         if (page !== this.previousPage) {
@@ -114,7 +118,15 @@ currentAccount: any;
         this.queryCount = this.totalItems;
         // this.page = pagingParams.page;
         this.manufacturingOrders = data;
+
     }
+
+    private getPendingText() {
+        this.http.get<any>('api/manufacturing-orders/pending-text').subscribe((data) => {
+            this.pendingText = data.text;
+        });
+    }
+
     private onError(error) {
         this.jhiAlertService.error(error.message, null, null);
     }

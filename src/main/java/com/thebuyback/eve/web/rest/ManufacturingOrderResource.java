@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,6 +56,9 @@ public class ManufacturingOrderResource {
         if (manufacturingOrder.getId() != null) {
             throw new BadRequestAlertException("A new manufacturingOrder cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        manufacturingOrder.setInstant(Instant.now());
+
         ManufacturingOrder result = manufacturingOrderService.save(manufacturingOrder);
         return ResponseEntity.created(new URI("/api/manufacturing-orders/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
@@ -98,6 +102,13 @@ public class ManufacturingOrderResource {
         Page<ManufacturingOrder> page = manufacturingOrderService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/manufacturing-orders");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @GetMapping("/manufacturing-orders/pending-text")
+    @Timed
+    public ResponseEntity<PendingOrdersText> getPendingOrdersText() {
+        return ResponseEntity.ok(new PendingOrdersText(manufacturingOrderService.getPendingOrdersText()));
     }
 
     /**

@@ -130,7 +130,6 @@ public class ManufacturingOrderResourceIntTest {
         assertThat(testManufacturingOrder.getPricePerUnit()).isEqualTo(DEFAULT_PRICE_PER_UNIT);
         assertThat(testManufacturingOrder.getTypeName()).isEqualTo(DEFAULT_TYPE_NAME);
         assertThat(testManufacturingOrder.getAmount()).isEqualTo(DEFAULT_AMOUNT);
-        assertThat(testManufacturingOrder.getInstant()).isEqualTo(DEFAULT_INSTANT);
         assertThat(testManufacturingOrder.getAssignee()).isEqualTo(DEFAULT_ASSIGNEE);
         assertThat(testManufacturingOrder.getStatus()).isEqualTo(DEFAULT_STATUS);
     }

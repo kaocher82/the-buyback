@@ -1,6 +1,9 @@
 package com.thebuyback.eve.service;
 
+import java.util.stream.Collectors;
+
 import com.thebuyback.eve.domain.ManufacturingOrder;
+import com.thebuyback.eve.domain.enumeration.ManufacturingOrderStatus;
 import com.thebuyback.eve.repository.ManufacturingOrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,5 +67,13 @@ public class ManufacturingOrderService {
     public void delete(String id) {
         log.debug("Request to delete ManufacturingOrder : {}", id);
         manufacturingOrderRepository.delete(id);
+    }
+
+    public String getPendingOrdersText() {
+        return manufacturingOrderRepository.findAllByStatus(ManufacturingOrderStatus.OPEN)
+                                           .map(order -> order.getTypeName() + " x" + order.getAmount()
+                                                         + " (" + (int) (order.getPricePerUnit() * order.getAmount())
+                                                         + " ISK)")
+                                           .collect(Collectors.joining("\n"));
     }
 }

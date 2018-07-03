@@ -160,6 +160,10 @@ public class TypeService {
         }
     }
 
+    public long getTypeId(String typeName) {
+        return getType(typeName).getTypeId();
+    }
+
     public long getGroupIdByTypeId(String typeName) {
         return getType(typeName).getGroupId();
     }

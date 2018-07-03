@@ -102,6 +102,23 @@ public class DoctrineResource {
         return new ResponseEntity<>(getDetails(typeId, systemName), HttpStatus.OK);
     }
 
+    @GetMapping("/item-details/{typeName}")
+    @Secured(AuthoritiesConstants.MANAGER)
+    public ResponseEntity<DoctrineItemDetails> getItemDetailsForManufacturingOrder(@PathVariable final String typeName) {
+        final long typeId = typeService.getTypeId(typeName);
+        final DoctrineItemDetails details = getDetails(typeId, "GE-8JV");
+        return new ResponseEntity<>(stripUnnecessary(details), HttpStatus.OK);
+    }
+
+    private DoctrineItemDetails stripUnnecessary(final DoctrineItemDetails details) {
+        details.setJitaBuy(null);
+        details.setPriceBorder(null);
+        details.setStocked(null);
+        details.setTypeId(null);
+        details.setStockHistory(null);
+        return details;
+    }
+
     private DoctrineItemDetails getDetails(final long typeId, final String systemName) {
         final Hub hub = hubRepository.findBySystemNameAndIsPublic(systemName, true);
         final List<TypeStockHistory> history = typeStockHistoryRepository.findByHubAndTypeId(hub, typeId);

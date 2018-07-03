@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import {HttpResponse, HttpErrorResponse, HttpClient} from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -8,7 +8,7 @@ import { JhiEventManager } from 'ng-jhipster';
 
 import { ManufacturingOrder } from './manufacturing-order.model';
 import { ManufacturingOrderPopupService } from './manufacturing-order-popup.service';
-import { ManufacturingOrderService } from './manufacturing-order.service';
+import { ManufacturingOrderService} from './manufacturing-order.service';
 
 @Component({
     selector: 'jhi-manufacturing-order-dialog',
@@ -18,16 +18,41 @@ export class ManufacturingOrderDialogComponent implements OnInit {
 
     manufacturingOrder: ManufacturingOrder;
     isSaving: boolean;
+    itemDataLoaded: boolean;
+    manufacturingMargin: number;
+    geSell: number;
+    jitaSell: number;
+    daysRemaining: number;
 
     constructor(
         public activeModal: NgbActiveModal,
         private manufacturingOrderService: ManufacturingOrderService,
-        private eventManager: JhiEventManager
+        private eventManager: JhiEventManager,
+        private http: HttpClient
     ) {
+    }
+
+    getModifier(): number {
+        return 1 + (this.manufacturingMargin / 100);
+    }
+
+    loadData() {
+        console.log("Loading additional data.")
+        this.itemDataLoaded = false;
+        return this.http.get<any>(`api/stock/doctrines/item-details/` + this.manufacturingOrder.typeName).subscribe((data) => {
+            this.geSell = data.sellPrice;
+            this.jitaSell = data.jitaSell;
+            this.daysRemaining = data.daysRemaining;
+            this.manufacturingMargin = 10;
+            this.itemDataLoaded = true;
+        });
     }
 
     ngOnInit() {
         this.isSaving = false;
+        if (this.manufacturingOrder && this.manufacturingOrder.typeName) {
+            this.loadData();
+        }
     }
 
     clear() {
