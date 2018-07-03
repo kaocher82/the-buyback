@@ -3,7 +3,7 @@
     "promptValues": {
       "packageName": "com.thebuyback.eve"
     },
-    "jhipsterVersion": "4.14.1",
+    "jhipsterVersion": "4.14.4",
     "baseName": "theBuyback",
     "packageName": "com.thebuyback.eve",
     "packageFolder": "com/thebuyback/eve",
