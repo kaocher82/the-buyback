@@ -28,8 +28,8 @@
             <tbody>
             <tr *ngFor="let manufacturingOrder of manufacturingOrders ;trackBy: trackId">
                 <td>{{manufacturingOrder.typeName}}</td>
-                <td>{{manufacturingOrder.pricePerUnit}}</td>
-                <td>{{manufacturingOrder.amount}}</td>
+                <td>{{manufacturingOrder.pricePerUnit | number:'1.0-0'}} ISK</td>
+                <td>{{manufacturingOrder.amount | number:'1.0-0'}}</td>
                 <td>{{manufacturingOrder.instant | date:'medium'}}</td>
                 <td>{{manufacturingOrder.assignee}}</td>
                 <td>{{manufacturingOrder.status}}</td>
