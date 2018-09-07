@@ -68,9 +68,10 @@ public class DatabaseConfiguration {
     @Bean
     public MongoClientOptions mongoOptions() {
         return MongoClientOptions.builder()
-                                 .socketTimeout(5000)
+                                 .socketTimeout(10000)
                                  .maxConnectionIdleTime(20000)
                                  .heartbeatSocketTimeout(3000)
+                                 .socketKeepAlive(true)
                                  .build();
     }
 }
