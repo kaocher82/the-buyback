@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.github.mongobee.Mongobee;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,5 +63,14 @@ public class DatabaseConfiguration {
         mongobee.setEnabled(true);
         mongobee.setDbName("the-buyback");
         return mongobee;
+    }
+
+    @Bean
+    public MongoClientOptions mongoOptions() {
+        return MongoClientOptions.builder()
+                                 .socketTimeout(5000)
+                                 .maxConnectionIdleTime(20000)
+                                 .heartbeatSocketTimeout(3000)
+                                 .build();
     }
 }
