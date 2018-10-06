@@ -27,32 +27,9 @@ public class AssetService {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final AssetRepository assetRepository;
-    private final AppraisalService appraisalService;
-    private static final List<String> HUBS = Arrays.asList("68FT-6 - Mothership Bellicose", "GE-8JV - BROADCAST4REPS");
 
-    public AssetService(final AssetRepository assetRepository,
-                        final AppraisalService appraisalService) {
+    public AssetService(final AssetRepository assetRepository) {
         this.assetRepository = assetRepository;
-        this.appraisalService = appraisalService;
-    }
-
-    public List<Asset> findAssets(Set<String> lines) {
-        // limit to GE Fort and 68 KS
-        List<Asset> assets = assetRepository.findAllByTypeNameInAndLocationNameIn(lines, HUBS);
-
-        if (assets.isEmpty()) {
-            // fallback to evepraisal parser if someone was too dumb to read the instructions
-            try {
-                final Appraisal appraisal = appraisalService.getAppraisalFromNewLineSeparatedRaw(String.join("\n", lines));
-                final Set<String> itemNames = appraisal.getItems().stream().map(ItemWithQuantity::getTypeName).collect(
-                    Collectors.toSet());
-                assets = assetRepository.findAllByTypeNameInAndLocationNameIn(itemNames, HUBS);
-            } catch (AppraisalFailed e) {
-                log.error("Failed to load appraisal for assets: {}", String.join(";", lines), e);
-            }
-        }
-
-        return assets;
     }
 
     public AssetOverview getAssetsForOverview(final String region, final String isHub) {
@@ -103,14 +80,14 @@ public class AssetService {
                 break;
             case "TM-0P2":
                 if (isHub.equals("hub")) {
-                    locationName = "1L"; // todo: get real ID for tm- fort
+                    locationName = "TM-0P2 - Route 67";
                 } else {
                     systems.addAll(Arrays.asList("TM-0P2", "E3-SDZ", "N-CREL", "4OIV-X", "Y-JKJ8"));
                 }
                 break;
             case "GE-8JV":
                 if (isHub.equals("hub")) {
-                    locationName = "GE-8JV - BROADCAST4REPS";
+                    locationName = "GE-8JV - SOTA FACTORY";
                 } else {
                     systems.addAll(Arrays.asList("GE-8JV", "AOK-WQ", "B-XJX4", "7LHB-Z", "E1-Y4H", "MUXX-4", "AX-DOT",
                                                  "YHN-3K", "V-3YG7", "3-OKDA", "4M-HGL", "MY-W1V", "8B-2YA", "SNFV-I",

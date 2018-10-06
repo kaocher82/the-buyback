@@ -55,33 +55,6 @@ public class AssetResource {
         this.directorLoanRepository = directorLoanRepository;
     }
 
-    @PostMapping
-    @Timed
-    public ResponseEntity<List<AssetDTO>> requestAssets(@RequestBody AssetRequest appraisal) {
-        final Set<String> lines = Arrays.stream(appraisal.getText().split("\n"))
-                                            .filter(Objects::nonNull)
-                                            .map(String::trim)
-                                            .filter(line -> !line.isEmpty())
-                                            .collect(Collectors.toSet());
-
-        if (lines.size() > 50) {
-            return ResponseEntity.status(420).build();
-        }
-
-        final Set<Long> filterTypeIds = assetFilterRepository.findAll().stream().map(AssetFilter::getTypeId)
-                                                             .collect(Collectors.toSet());
-
-        final List<AssetDTO> assets = assetService.findAssets(lines)
-                                                  .stream()
-                                                  .filter(e -> !filterTypeIds.contains(e.getTypeId()))
-                                                  .map(AssetResource::toDTO)
-                                                  .collect(Collectors.toList());
-
-        log.info("{} searched for {} items: {}", SecurityUtils.getCurrentUserLoginAsString(), lines.size(), lines.toArray());
-
-        return ResponseEntity.ok(assets);
-    }
-
     @GetMapping("/{region}/{isHub}")
     public ResponseEntity<AssetOverview> getAssetOverview(@PathVariable final String region, @PathVariable final String isHub) {
         return ResponseEntity.ok(assetService.getAssetsForOverview(region, isHub));

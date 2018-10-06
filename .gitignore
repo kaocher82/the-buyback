@@ -142,7 +142,7 @@ Desktop.ini
 ######################
 .eslintcache
 
-application-prod.yml
+src/main/resources/config/application-prod.yml
 deploy_rsa
 deploy_rsa.pub
 secrets.tar
